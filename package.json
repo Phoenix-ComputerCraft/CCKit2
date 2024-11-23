@@ -1,0 +1,25 @@
+{
+  "name": "cckit2",
+  "version": "0.1.0",
+  "description": "UI framework for ComputerCraft, targeting Phoenix and CraftOS.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Phoenix-ComputerCraft/CCKit2.git"
+  },
+  "author": "JackMacWindows",
+  "license": "SEE LICENSE IN LICENSE",
+  "bugs": {
+    "url": "https://github.com/Phoenix-ComputerCraft/CCKit2/issues"
+  },
+  "homepage": "https://github.com/Phoenix-ComputerCraft/CCKit2#readme",
+  "devDependencies": {
+    "@jackmacwindows/typescript-to-lua": "^1.22.0",
+    "@jackmacwindows/lua-types": "^2.13.2",
+    "@phoenix-cc/libsystem": "^0.1.4",
+    "ts-node": "^10.9.1"
+  }
+}

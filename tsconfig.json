@@ -1,0 +1,31 @@
+{
+    "$schema": "https://raw.githubusercontent.com/MCJack123/TypeScriptToLua/master/tsconfig-schema.json",
+    "compilerOptions": {
+        "target": "ESNext",
+        "lib": ["ESNext"],
+        "moduleResolution": "node",
+        "strict": false,
+        "typeRoots": ["./types", "./node_modules"],
+        "types": ["@jackmacwindows/lua-types/cc", "@phoenix-cc/libsystem"],
+        "baseUrl": "./src",
+        "paths": {
+            "CCKit2/*": ["CCKit2/*"]
+        },
+        "rootDir": "src",
+        "outDir": "bin",
+        "declaration": true,
+        "removeComments": false
+    },
+    "tstl": {
+        "luaTarget": "CC",
+        "luaLibImport": "require",
+        "luaLibName": "typescript",
+        "luaPlugins": [
+            {"name": "./typecheck.ts"}
+        ]
+    },
+    "include": [
+        "./src/CCKit2/*.ts",
+        "./src/example/*.ts"
+    ]
+}

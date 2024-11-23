@@ -1,0 +1,86 @@
+import CCResponder from "CCKit2/CCResponder";
+import { CCSize } from "CCKit2/CCTypes";
+import CCView from "CCKit2/CCView";
+
+/**
+ * The CCViewController class is the primary way to design behavior for a view
+ * or window. It owns a root view which is tied to the view controller, whose
+ * lifecycle is defined by the view controller.
+ */
+export default class CCViewController extends CCResponder {
+    /** The root view of the view controller. */
+    public view: CCView = undefined;
+    /** Whether the view has been loaded yet. */
+    public get isViewLoaded(): boolean {return this.view != undefined;}
+    /** A string which describes the view this controller holds. */
+    public title?: string = undefined;
+
+    /**
+     * Returns the preferred size of the content, in characters.
+     */
+    public get preferredContentSize(): CCSize {
+        return {width: 30, height: 10};
+    }
+
+    /**
+     * Loads the root view into memory.
+     */
+    public loadView(): void {
+        const size = this.preferredContentSize;
+        this.view = new CCView({x: 1, y: 1, width: size.width, height: size.height});
+    }
+
+    /**
+     * Called after the view has been loaded into memory.
+     */
+    public viewDidLoad(): void {
+
+    }
+
+    /**
+     * Loads the view if it hasn't been loaded yet.
+     */
+    public loadViewIfNeeded(): void {
+        if (this.view == undefined) this.loadView();
+    }
+
+    /**
+     * Called when the view is about to appear on screen.
+     * @param animated Whether the view is being animated.
+     */
+    public viewWillAppear(animated: boolean) {
+
+    }
+
+    /**
+     * Called when the view is being added to the view hierarchy.
+     * @param animated Whether the view is being animated.
+     */
+    public viewIsAppearing(animated: boolean) {
+
+    }
+
+    /**
+     * Called when the view has just appeared on screen.
+     * @param animated Whether the view is being animated.
+     */
+    public viewDidAppear(animated: boolean) {
+
+    }
+
+    /**
+     * Called when the view is about to disappear from the screen.
+     * @param animated Whether the view is being animated.
+     */
+    public viewWillDisappear(animated: boolean) {
+
+    }
+
+    /**
+     * Called when the view has just disappeared from the screen.
+     * @param animated Whether the view is being animated.
+     */
+    public viewDidDisappear(animated: boolean) {
+
+    }
+}
