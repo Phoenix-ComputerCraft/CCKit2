@@ -13,6 +13,23 @@ function addLayoutRow(rows: CCRect[][], constants: number[], size: number, first
     constants.push(constant);
 }
 
+const LayoutAttributes = {
+    Left: CCLayoutConstraint.Attribute.Left,
+    Right: CCLayoutConstraint.Attribute.Right,
+    Top: CCLayoutConstraint.Attribute.Top,
+    Bottom: CCLayoutConstraint.Attribute.Bottom,
+    Leading: CCLayoutConstraint.Attribute.Leading,
+    Trailing: CCLayoutConstraint.Attribute.Trailing,
+    Width: CCLayoutConstraint.Attribute.Width,
+    Height: CCLayoutConstraint.Attribute.Height,
+    CenterX: CCLayoutConstraint.Attribute.CenterX,
+    CenterY: CCLayoutConstraint.Attribute.CenterY,
+    LastBaseline: CCLayoutConstraint.Attribute.LastBaseline,
+    FirstBaseline: CCLayoutConstraint.Attribute.FirstBaseline
+};
+
+const PropertyNames = ["Left", "Top", "Width", "Height"];
+
 /**
  * The CCView class is the base for all displayable objects on screen. It
  * handles rendering the element, resizing subviews, and user interaction.
@@ -33,6 +50,7 @@ export default class CCView extends CCResponder {
     /** The position and size of the view. */
     public get frame(): CCRect {return this._frame;} // TODO: modification of inner values
     public set frame(rect: CCRect) {
+        if (rect.x == this._frame.x && rect.y == this._frame.y && rect.width == this._frame.width && rect.height == this._frame.height) return;
         if ((rect.width < this._frame.width || rect.height < this._frame.height) && this.superview)
             this.superview.setNeedsDisplay();
         this._frame = rect;
@@ -238,6 +256,177 @@ export default class CCView extends CCResponder {
     }
 
     /**
+     * Adds a number of constraints to views using code. This can simplify
+     * settings constraints by using familiar code syntax instead of lengthy
+     * constraint constructions and activations.
+     * 
+     * The syntax is fairly simple:
+     *     
+     *     <ViewName>.<Attribute> = [<Multiplier> *] <ViewName>.<Attribute> [+|- <Constant>]
+     *     <ViewName>.<Attribute> = <Constant>
+     * 
+     * The code is processed using Lua as the parser, so it's not strictly
+     * required to be in exactly this format; but mind that operators other than
+     * add/sub/mul/div/unm aren't supported (and division is only valid if the
+     * divisor is a number), and no libraries are available in the environment.
+     * 
+     * @param code The constraint code to apply
+     * @param views A key-value map of names of views in the code, to the views they represent
+     */
+    public static addConstraintsByCode(code: string, views: {[name: string]: CCView}): void {
+        let attr_mt = new LuaTable();
+        attr_mt.set("__name", "attribute");
+        attr_mt.set("__add", function(this: void, a: any, b: any): LuaTable {
+            let attr = new LuaTable();
+            if (type(b) === "table" && getmetatable(b) === attr_mt) {
+                if (type(a) === "number") {
+                    attr.set("view", (b as LuaTable).get("view"));
+                    attr.set("attribute", (b as LuaTable).get("attribute"));
+                    attr.set("multiplier", (b as LuaTable).get("multiplier"));
+                    attr.set("constant", (b as LuaTable).get("constant") as number + a as number);
+                } else {
+                    error("attempt to add " + type(a) + " and attribute", 2);
+                }
+            } else { // a is object
+                if (type(b) === "number") {
+                    attr.set("view", (a as LuaTable).get("view"));
+                    attr.set("attribute", (a as LuaTable).get("attribute"));
+                    attr.set("multiplier", (a as LuaTable).get("multiplier"));
+                    attr.set("constant", (a as LuaTable).get("constant") as number + b as number);
+                } else {
+                    error("attempt to add attribute and " + type(b), 2);
+                }
+            }
+            return setmetatable(attr, attr_mt as LuaMetatable<LuaTable>);
+        });
+        attr_mt.set("__sub", function(this: void, a: any, b: any): LuaTable {
+            let attr = new LuaTable();
+            if (type(b) === "table" && getmetatable(b) === attr_mt) {
+                if (type(a) === "number") {
+                    attr.set("view", (b as LuaTable).get("view"));
+                    attr.set("attribute", (b as LuaTable).get("attribute"));
+                    attr.set("multiplier", (b as LuaTable).get("multiplier") as number * -1);
+                    attr.set("constant", (b as LuaTable).get("constant") as number + a as number);
+                } else {
+                    error("attempt to subtract " + type(a) + " and attribute", 2);
+                }
+            } else { // a is object
+                if (type(b) === "number") {
+                    attr.set("view", (a as LuaTable).get("view"));
+                    attr.set("attribute", (a as LuaTable).get("attribute"));
+                    attr.set("multiplier", (a as LuaTable).get("multiplier"));
+                    attr.set("constant", (a as LuaTable).get("constant") as number - b as number);
+                } else {
+                    error("attempt to subtract attribute and " + type(b), 2);
+                }
+            }
+            return setmetatable(attr, attr_mt as LuaMetatable<LuaTable>);
+        });
+        attr_mt.set("__mul", function(this: void, a: any, b: any): LuaTable {
+            let attr = new LuaTable();
+            if (type(b) === "table" && getmetatable(b) === attr_mt) {
+                if (type(a) === "number") {
+                    attr.set("view", (b as LuaTable).get("view"));
+                    attr.set("attribute", (b as LuaTable).get("attribute"));
+                    attr.set("multiplier", (b as LuaTable).get("multiplier") as number * a as number);
+                    attr.set("constant", (b as LuaTable).get("constant") as number * a as number);
+                } else {
+                    error("attempt to multiply " + type(a) + " and attribute", 2);
+                }
+            } else { // a is object
+                if (type(b) === "number") {
+                    attr.set("view", (a as LuaTable).get("view"));
+                    attr.set("attribute", (a as LuaTable).get("attribute"));
+                    attr.set("multiplier", (a as LuaTable).get("multiplier") as number * b as number);
+                    attr.set("constant", (a as LuaTable).get("constant") as number * b as number);
+                } else {
+                    error("attempt to multiply attribute and " + type(b), 2);
+                }
+            }
+            return setmetatable(attr, attr_mt as LuaMetatable<LuaTable>);
+        });
+        attr_mt.set("__div", function(this: void, a: any, b: any): LuaTable {
+            let attr = new LuaTable();
+            if (type(b) === "table" && getmetatable(b) === attr_mt) {
+                error("attempt to divide attribute and " + type(b), 2);
+            } else { // a is object
+                if (type(b) === "number") {
+                    attr.set("view", (a as LuaTable).get("view"));
+                    attr.set("attribute", (a as LuaTable).get("attribute"));
+                    attr.set("multiplier", (a as LuaTable).get("multiplier") as number * b as number);
+                    attr.set("constant", (a as LuaTable).get("constant") as number * b as number);
+                } else {
+                    error("attempt to divide " + type(a) + " and attribute", 2);
+                }
+            }
+            return setmetatable(attr, attr_mt as LuaMetatable<LuaTable>);
+        });
+        attr_mt.set("__unm", function(this: void, a: LuaTable): LuaTable {
+            let attr = new LuaTable();
+            attr.set("view", a.get("view"));
+            attr.set("attribute", a.get("attribute"));
+            attr.set("multiplier", a.get("multiplier") as number * -1);
+            attr.set("constant", a.get("constant") as number * -1);
+            return setmetatable(attr, attr_mt as LuaMetatable<LuaTable>);
+        });
+
+        let view_mt = new LuaTable();
+        view_mt.set("__name", "view");
+        view_mt.set("__index", function(this: void, self: LuaTable, key: any): LuaTable|undefined {
+            if (LayoutAttributes[key] !== undefined) {
+                let attr = new LuaTable();
+                attr.set("view", self.get("view"));
+                attr.set("attribute", key);
+                attr.set("multiplier", 1);
+                attr.set("constant", 0);
+                return setmetatable(attr, attr_mt as LuaMetatable<LuaTable>);
+            } else {
+                return undefined;
+            }
+        });
+        let constraints: CCLayoutConstraint[] = [];
+        view_mt.set("__newindex", function(this: void, self: LuaTable, key: any, value: any): void {
+            if (LayoutAttributes[key] === undefined) return undefined;
+            if (type(value) === "table" && getmetatable(value) === attr_mt) {
+                //print((self.get("view") as string) + "." + key + " = " + (value as LuaTable).get("multiplier") + " * " + (value as LuaTable).get("view") + "." + (value as LuaTable).get("attribute") + " + " + (value as LuaTable).get("constant"));
+                constraints.push(new CCLayoutConstraint(
+                    views[self.get("view") as string],
+                    LayoutAttributes[key],
+                    CCLayoutConstraint.Relation.Equal,
+                    views[(value as LuaTable).get("view") as string],
+                    LayoutAttributes[(value as LuaTable).get("attribute") as string],
+                    (value as LuaTable).get("multiplier") as number,
+                    (value as LuaTable).get("constant") as number
+                ));
+            } else if (type(value) === "number") {
+                constraints.push(new CCLayoutConstraint(
+                    views[self.get("view") as string],
+                    LayoutAttributes[key],
+                    CCLayoutConstraint.Relation.Equal,
+                    undefined,
+                    CCLayoutConstraint.Attribute.NotAnAttribute,
+                    0,
+                    value as number
+                ));
+            } else {
+                error("attempt to assign attribute to a " + type(value) + " value", 2);
+            }
+        });
+        let env = new LuaTable();
+        for (const name in views) {
+            let vtab = new LuaTable();
+            vtab.set("view", name);
+            env.set(name, setmetatable(vtab, view_mt as LuaMetatable<LuaTable>));
+        }
+        let [fn, err] = load(code, "=CCKit2: CCView.addConstraintsByCode chunk", "t", env);
+        assert(fn, err);
+        fn();
+        for (let constraint of constraints) {
+            constraint.active = true;
+        }
+    }
+
+    /**
      * Tells the receiver that the frame or constraints of the sender changed.
      * This triggers the receiver to update its constraints if any are related
      * to the sender, and cascades the message up and down throughout the hierarchy.
@@ -266,6 +455,7 @@ export default class CCView extends CCResponder {
 
     private layoutConstraints(views: LuaTable<CCView, number>, rows: CCRect[][], constants: number[], visited: LuaTable<CCView, boolean>, nextOffset: number): number {
         if (visited.has(this)) return nextOffset;
+        visited.set(this, true);
         let offset: number;
         if (views.has(this)) {
             offset = views.get(this);
@@ -387,7 +577,6 @@ export default class CCView extends CCResponder {
             addLayoutRow(rows, constants, nextOffset, offset, {x: 0, y: 0, width: 1, height: 0}, undefined, undefined, this.frame.width);
             addLayoutRow(rows, constants, nextOffset, offset, {x: 0, y: 0, width: 0, height: 1}, undefined, undefined, this.frame.height);
         }
-        visited.set(this, true);
         return nextOffset;
     }
 
@@ -422,6 +611,15 @@ export default class CCView extends CCResponder {
             matrix.push(row);
         }
 
+        /*let [file] = io.open("ConstraintDebug.txt", "a");
+        for (let i = 0; i < matrix.length; i++) {
+            let str = "";
+            for (let j = 0; j < matrix[i].length; j++)
+                str += matrix[i][j] + " ";
+            file.write(str + "\n");
+        }
+        file.write("\n");*/
+
         // Gaussian elimination to solve the matrix
         // From Wikipedia
 
@@ -432,7 +630,7 @@ export default class CCView extends CCResponder {
             /* Find the k-th pivot: */
             let i_max = h;
             for (let i = h + 1; i < matrix.length; i++) {
-                if (Math.abs(matrix[i][k]) > matrix[i_max][k]) {
+                if (Math.abs(matrix[i][k]) > Math.abs(matrix[i_max][k])) {
                     i_max = i;
                 }
             }
@@ -444,13 +642,13 @@ export default class CCView extends CCResponder {
                 matrix[h] = matrix[i_max];
                 matrix[i_max] = row;
                 let pivot = matrix[h][k];
-                /*for (let j = 0; j < n; j++) {
+                for (let j = 0; j < n; j++) {
                     matrix[h][j] /= pivot; // Normalize the pivot row
-                }*/
+                }
                 /* Do for all rows: */
                 for (let i = 0; i < matrix.length; i++) {
                     if (i !== h) {
-                        let f = matrix[i][k] / pivot;
+                        let f = matrix[i][k] / matrix[h][k];
                         /* Do for all remaining elements in current row: */
                         for (let j = k; j < n; j++)
                             matrix[i][j] -= matrix[h][j] * f;
@@ -462,12 +660,23 @@ export default class CCView extends CCResponder {
             }
         }
 
+        // Round numbers to fix precision & fix -0 results
+        for (let i = 0; i < matrix.length; i++) {
+            for (let j = 0; j < n; j++) {
+                let n = matrix[i][j];
+                if (Math.abs(n) < 0.000001) n = 0;
+                matrix[i][j] = Math.floor(n * 10000) / 10000;
+            }
+        }
+
         /*for (let i = 0; i < matrix.length; i++) {
             let str = "";
             for (let j = 0; j < matrix[i].length; j++)
                 str += matrix[i][j] + " ";
-            print(str);
-        }*/
+            file.write(str + "\n");
+        }
+        file.write("\n");
+        file.close();*/
 
         // Assign the solved values back to the views
         let rects: CCRect[] = [];
@@ -476,7 +685,14 @@ export default class CCView extends CCResponder {
         for (let i = 0; i < n - 1; i++) {
             while (matrix[i][i+roff] !== 1 && i + roff < n - 1) {
                 // TODO: log
-                print("Ambiguity in constraints: no solution for column " + tostring(i+roff))
+                let view: CCView | undefined = undefined;
+                for (let [v, index] of views) {
+                    if (Math.floor((i + roff) / 4) == index) {
+                        view = v;
+                        break;
+                    }
+                }
+                print("Ambiguity in constraints: no solution for <" + tostring(view) + ">:" + PropertyNames[(i + roff) % 4])
                 roff++;
             }
             if (i + roff == n - 1) break;
@@ -484,7 +700,14 @@ export default class CCView extends CCResponder {
             for (let j = i + roff + 1; j < n - 1; j++) {
                 if (matrix[i][j] !== 0) {
                     // TODO: log
-                    print("Ambiguity in constraints: ambiguous solution for column " + j + ", using existing value");
+                    let view: CCView | undefined = undefined;
+                    for (let [v, index] of views) {
+                        if (Math.floor(j / 4) == index) {
+                            view = v;
+                            break;
+                        }
+                    }
+                    print("Ambiguity in constraints: ambiguous solution for <" + tostring(view) + ">:" + PropertyNames[j % 4] + ", using existing value");
                     switch (j % 4) {
                         case 0: value += rects[Math.floor(j / 4)].x; break;
                         case 1: value += rects[Math.floor(j / 4)].y; break;
@@ -501,8 +724,9 @@ export default class CCView extends CCResponder {
             }
         }
         for (let [view, index] of views) {
-            view.frame = rects[index];
+            view._frame = rects[index];
             view.needsLayout = false;
+            view.setNeedsDisplay();
         }
     }
 }

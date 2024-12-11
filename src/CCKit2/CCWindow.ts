@@ -112,7 +112,12 @@ export class CCWindow extends CCResponder {
     /** Whether any subviews require redrawing. */
     public viewsNeedDisplay: boolean = false;
     /** The title of the window. */
-    public title: string = "Window";
+    public get title(): string {return this._title;}
+    public set title(value: string) {
+        this._title = value;
+        if (this.framebuffer !== undefined) this.framebuffer.setTitle(value);
+    }
+    private _title: string = "Window";
     /** Whether the title bar is visible. */
     public titleVisible: boolean = true;
     /** A file path that the window represents. */

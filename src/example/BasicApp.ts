@@ -44,82 +44,43 @@ class ViewController extends CCViewController {
 
     public viewDidLoad(): void {
         super.viewDidLoad();
+        this.view.window.title = "CCKit2 Demo";
         this.view.backgroundColor = CCColor.white;
         this.label = new CCLabel({x: 2, y: 2}, "Hello World!");
         this.view.addSubview(this.label);
         let v2 = new MyView({x: 5, y: 5, width: 5, height: 5});
         this.view.addSubview(v2);
+        let v3 = new MyView({x: 5, y: 5, width: 5, height: 5});
+        this.view.addSubview(v3);
         let button = new CCButton({x: 2, y: 3}, "Increment", () => this.increment());
         this.view.addSubview(button);
         let resizingView = new CCView({x: 0, y: 0, width: 0, height: 0});
         resizingView.backgroundColor = CCColor.yellow;
         this.view.addSubview(resizingView);
 
-        (new CCLayoutConstraint(
-            v2,
-            CCLayoutConstraint.Attribute.Left,
-            CCLayoutConstraint.Relation.Equal,
-            this.view,
-            CCLayoutConstraint.Attribute.Left,
-            1, 1
-        )).active = true;
-        (new CCLayoutConstraint(
-            v2,
-            CCLayoutConstraint.Attribute.Top,
-            CCLayoutConstraint.Relation.Equal,
-            button,
-            CCLayoutConstraint.Attribute.Bottom,
-            1, 1
-        )).active = true;
-        (new CCLayoutConstraint(
-            v2,
-            CCLayoutConstraint.Attribute.Right,
-            CCLayoutConstraint.Relation.Equal,
-            this.view,
-            CCLayoutConstraint.Attribute.Right,
-            1, -1
-        )).active = true;
-        (new CCLayoutConstraint(
-            v2,
-            CCLayoutConstraint.Attribute.Bottom,
-            CCLayoutConstraint.Relation.Equal,
-            this.view,
-            CCLayoutConstraint.Attribute.Bottom,
-            1, -1
-        )).active = true;
+        CCView.addConstraintsByCode(`
+            v2.Top = button.Bottom + 1
+            v2.Bottom = rootView.Bottom - 1
+            v2.Left = rootView.Left + 1
+            v2.Width = v3.Width * 2
 
-        (new CCLayoutConstraint(
-            resizingView,
-            CCLayoutConstraint.Attribute.Left,
-            CCLayoutConstraint.Relation.Equal,
-            this.label,
-            CCLayoutConstraint.Attribute.Right,
-            1, 1
-        )).active = true;
-        (new CCLayoutConstraint(
-            resizingView,
-            CCLayoutConstraint.Attribute.Top,
-            CCLayoutConstraint.Relation.Equal,
-            this.label,
-            CCLayoutConstraint.Attribute.Top,
-            1, 0
-        )).active = true;
-        (new CCLayoutConstraint(
-            resizingView,
-            CCLayoutConstraint.Attribute.Right,
-            CCLayoutConstraint.Relation.Equal,
-            this.view,
-            CCLayoutConstraint.Attribute.Right,
-            1, -1
-        )).active = true;
-        (new CCLayoutConstraint(
-            resizingView,
-            CCLayoutConstraint.Attribute.Bottom,
-            CCLayoutConstraint.Relation.Equal,
-            this.label,
-            CCLayoutConstraint.Attribute.Bottom,
-            1, 0
-        )).active = true;
+            v3.Top = button.Bottom + 1
+            v3.Bottom = rootView.Bottom - 1
+            v3.Left = v2.Right + 1
+            v3.Right = rootView.Right - 1
+
+            resizingView.Top = label.Top
+            resizingView.Bottom = label.Bottom
+            resizingView.Left = label.Right + 1
+            resizingView.Right = rootView.Right - 1
+        `, {
+            v2: v2,
+            v3: v3,
+            button: button,
+            rootView: this.view,
+            resizingView: resizingView,
+            label: this.label,
+        });
     }
 }
 

@@ -52,6 +52,7 @@ export declare interface CCWindowManagerFramebuffer {
     sendFront(): void;
     sendBack(): void;
     sendFrontAndFocus(): void;
+    setTitle(title: string): void;
     gfxHandle(): CCWindowManagerGraphicsFramebuffer;
 }
 
