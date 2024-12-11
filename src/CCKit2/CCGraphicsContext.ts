@@ -31,7 +31,7 @@ export default class CCGraphicsContext {
     }
     public set color(value: CCColor) {
         this.state.color = value;
-        if (this.target) this.target!.setBackgroundColor(value as Color);
+        if (this.target !== undefined) this.target!.setBackgroundColor(value as Color);
     }
 
     /**

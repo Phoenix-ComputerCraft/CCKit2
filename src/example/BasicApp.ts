@@ -4,6 +4,7 @@ import CCApplicationMain from "CCKit2/CCApplicationMain";
 import CCButton from "CCKit2/CCButton";
 import CCEvent from "CCKit2/CCEvent";
 import CCLabel from "CCKit2/CCLabel";
+import CCLayoutConstraint from "CCKit2/CCLayoutConstraint";
 import { CCColor, CCRect } from "CCKit2/CCTypes";
 import CCView from "CCKit2/CCView";
 import CCViewController from "CCKit2/CCViewController";
@@ -50,6 +51,75 @@ class ViewController extends CCViewController {
         this.view.addSubview(v2);
         let button = new CCButton({x: 2, y: 3}, "Increment", () => this.increment());
         this.view.addSubview(button);
+        let resizingView = new CCView({x: 0, y: 0, width: 0, height: 0});
+        resizingView.backgroundColor = CCColor.yellow;
+        this.view.addSubview(resizingView);
+
+        (new CCLayoutConstraint(
+            v2,
+            CCLayoutConstraint.Attribute.Left,
+            CCLayoutConstraint.Relation.Equal,
+            this.view,
+            CCLayoutConstraint.Attribute.Left,
+            1, 1
+        )).active = true;
+        (new CCLayoutConstraint(
+            v2,
+            CCLayoutConstraint.Attribute.Top,
+            CCLayoutConstraint.Relation.Equal,
+            button,
+            CCLayoutConstraint.Attribute.Bottom,
+            1, 1
+        )).active = true;
+        (new CCLayoutConstraint(
+            v2,
+            CCLayoutConstraint.Attribute.Right,
+            CCLayoutConstraint.Relation.Equal,
+            this.view,
+            CCLayoutConstraint.Attribute.Right,
+            1, -1
+        )).active = true;
+        (new CCLayoutConstraint(
+            v2,
+            CCLayoutConstraint.Attribute.Bottom,
+            CCLayoutConstraint.Relation.Equal,
+            this.view,
+            CCLayoutConstraint.Attribute.Bottom,
+            1, -1
+        )).active = true;
+
+        (new CCLayoutConstraint(
+            resizingView,
+            CCLayoutConstraint.Attribute.Left,
+            CCLayoutConstraint.Relation.Equal,
+            this.label,
+            CCLayoutConstraint.Attribute.Right,
+            1, 1
+        )).active = true;
+        (new CCLayoutConstraint(
+            resizingView,
+            CCLayoutConstraint.Attribute.Top,
+            CCLayoutConstraint.Relation.Equal,
+            this.label,
+            CCLayoutConstraint.Attribute.Top,
+            1, 0
+        )).active = true;
+        (new CCLayoutConstraint(
+            resizingView,
+            CCLayoutConstraint.Attribute.Right,
+            CCLayoutConstraint.Relation.Equal,
+            this.view,
+            CCLayoutConstraint.Attribute.Right,
+            1, -1
+        )).active = true;
+        (new CCLayoutConstraint(
+            resizingView,
+            CCLayoutConstraint.Attribute.Bottom,
+            CCLayoutConstraint.Relation.Equal,
+            this.label,
+            CCLayoutConstraint.Attribute.Bottom,
+            1, 0
+        )).active = true;
     }
 }
 

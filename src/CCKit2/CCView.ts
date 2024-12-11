@@ -2,6 +2,16 @@ import CCResponder from "CCKit2/CCResponder";
 import { CCColor, CCPoint, CCRect, CCRectIntersection } from "CCKit2/CCTypes";
 import CCWindow from "CCKit2/CCWindow";
 import CCGraphicsContext from "CCKit2/CCGraphicsContext";
+import CCLayoutConstraint from "./CCLayoutConstraint";
+
+function addLayoutRow(rows: CCRect[][], constants: number[], size: number, firstOffset: number, firstValues: CCRect, secondOffset: number|undefined, secondValues: CCRect|undefined, constant: number): void {
+    let row: CCRect[] = [];
+    for (let i = 0; i < size; i++) row.push({x: 0, y: 0, width: 0, height: 0});
+    row[firstOffset] = firstValues;
+    if (secondOffset !== undefined) row[secondOffset] = secondValues;
+    rows.push(row);
+    constants.push(constant);
+}
 
 /**
  * The CCView class is the base for all displayable objects on screen. It
@@ -21,13 +31,13 @@ export default class CCView extends CCResponder {
     /** Whether user interaction is enabled for this view. */
     public userInteractionEnabled: boolean = true;
     /** The position and size of the view. */
-    public get frame(): CCRect {return this._frame;}
+    public get frame(): CCRect {return this._frame;} // TODO: modification of inner values
     public set frame(rect: CCRect) {
         if ((rect.width < this._frame.width || rect.height < this._frame.height) && this.superview)
             this.superview.setNeedsDisplay();
         this._frame = rect;
         this.setNeedsDisplay();
-        // TODO: update window on screen
+        this.setNeedsLayout(this, this);
     }
     private _frame: CCRect;
     /** The view that contains this view, if it exists. */
@@ -40,6 +50,12 @@ export default class CCView extends CCResponder {
     public isFocused: boolean = false;
     /** Whether the view needs to be redrawn. */
     public needsDraw: boolean = true;
+    /** Whether the view needs to be laid out. */
+    public needsLayout: boolean = false;
+    /** Whether constraints need to be updated. */
+    public needsUpdateConstraints: boolean = false;
+
+    private constraints: CCLayoutConstraint[] = [];
 
     /**
      * Creates a new view with the specified frame rect.
@@ -176,5 +192,317 @@ export default class CCView extends CCResponder {
             }
         }
         return this;
+    }
+
+    /**
+     * Adds a constraint to the view. The first item of the constraint MUST be
+     * this view.
+     * @param constraint The constraint to add
+     * @see CCLayoutConstraint.active A safer way to enable a constraint
+     * @typecheck
+     */
+    public addConstraint(constraint: CCLayoutConstraint): void {
+        if (constraint.firstItem !== this) throw "Invalid constraint for view";
+        this.constraints.push(constraint);
+        this.setNeedsLayout(this, this);
+    }
+
+    /**
+     * Removes a constraint from the view. The first item of the constraint MUST
+     * be this view.
+     * @param constraint The constraint to add
+     * @see CCLayoutConstraint.active A safer way to enable a constraint
+     * @typecheck
+     */
+    public removeConstraint(constraint: CCLayoutConstraint): void {
+        if (constraint.firstItem !== this) throw "Invalid constraint for view";
+        const item = this.constraints.indexOf(constraint);
+        if (item === -1) return;
+        this.constraints.splice(item);
+        this.setNeedsLayout(this, this);
+    }
+
+    /**
+     * Adds a list of constraints to the view. The first item of the constraints
+     * MUST be this view.
+     * @param constraints The constraints to add
+     * @see CCLayoutConstraint.active A safer way to enable a constraint
+     * @typecheck
+     */
+    public addConstraints(constraints: CCLayoutConstraint[]): void {
+        for (let constraint of constraints) {
+            if (constraint.firstItem !== this) throw "Invalid constraint for view";
+            this.constraints.push(constraint);
+        }
+        this.setNeedsLayout(this, this);
+    }
+
+    /**
+     * Tells the receiver that the frame or constraints of the sender changed.
+     * This triggers the receiver to update its constraints if any are related
+     * to the sender, and cascades the message up and down throughout the hierarchy.
+     * It will also trigger a cascade on itself if it needs to update constraints.
+     * @param sender The view whose frame and/or constraints changed
+     * @param previous The view that called this method, to prevent backtracking
+     */
+    public setNeedsLayout(sender: CCView, previous: CCView): void {
+        for (const constraint of this.constraints) {
+            if (constraint.firstItem === sender || constraint.secondItem === sender) {
+                this.needsLayout = true;
+                break;
+            }
+        }
+        if (this.superview !== undefined && this.superview !== previous) {
+            this.superview.setNeedsLayout(sender, this);
+            if (this.needsLayout) this.superview.setNeedsLayout(this, this);
+        }
+        for (const subview of this.subviews) {
+            if (subview !== previous) {
+                subview.setNeedsLayout(sender, this);
+                if (this.needsLayout) subview.setNeedsLayout(this, this);
+            }
+        }
+    }
+
+    private layoutConstraints(views: LuaTable<CCView, number>, rows: CCRect[][], constants: number[], visited: LuaTable<CCView, boolean>, nextOffset: number): number {
+        if (visited.has(this)) return nextOffset;
+        let offset: number;
+        if (views.has(this)) {
+            offset = views.get(this);
+        } else {
+            offset = nextOffset;
+            nextOffset = nextOffset + 1;
+            views.set(this, offset);
+            for (let row of rows) row.push({x: 0, y: 0, width: 0, height: 0});
+        }
+        if (this.needsLayout && this.constraints.length > 0) {
+            for (const constraint of this.constraints) {
+                if (constraint.relation === CCLayoutConstraint.Relation.Equal) {
+                    let value1: CCRect = {x: 0, y: 0, width: 0, height: 0}
+                    switch (constraint.firstAttribute) {
+                        case CCLayoutConstraint.Attribute.Left:
+                            value1.x = 1;
+                            break;
+                        case CCLayoutConstraint.Attribute.Right:
+                            value1.x = 1;
+                            value1.width = 1;
+                            break;
+                        case CCLayoutConstraint.Attribute.Top:
+                            value1.y = 1;
+                            break;
+                        case CCLayoutConstraint.Attribute.Bottom:
+                            value1.y = 1;
+                            value1.height = 1;
+                            break;
+                        case CCLayoutConstraint.Attribute.Leading:
+                            value1.x = 1;
+                            break;
+                        case CCLayoutConstraint.Attribute.Trailing:
+                            value1.x = 1;
+                            value1.width = 1;
+                            break;
+                        case CCLayoutConstraint.Attribute.Width:
+                            value1.width = 1;
+                            break;
+                        case CCLayoutConstraint.Attribute.Height:
+                            value1.height = 1;
+                            break;
+                        case CCLayoutConstraint.Attribute.CenterX:
+                            value1.x = 1;
+                            value1.width = 0.5;
+                            break;
+                        case CCLayoutConstraint.Attribute.CenterY:
+                            value1.y = 1;
+                            value1.height = 0.5;
+                            break;
+                        case CCLayoutConstraint.Attribute.LastBaseline:
+                        case CCLayoutConstraint.Attribute.FirstBaseline:
+                        case CCLayoutConstraint.Attribute.NotAnAttribute:
+                            // ???
+                            break;
+                    }
+                    let offset2: number|undefined = undefined;
+                    let value2: CCRect|undefined = undefined;
+                    if (constraint.secondItem !== undefined && constraint.secondAttribute !== CCLayoutConstraint.Attribute.NotAnAttribute) {
+                        if (views.has(constraint.secondItem)) {
+                            offset2 = views.get(constraint.secondItem);
+                        } else {
+                            offset2 = nextOffset;
+                            nextOffset = nextOffset + 1;
+                            views.set(constraint.secondItem, offset2);
+                            for (let row of rows) row.push({x: 0, y: 0, width: 0, height: 0});
+                        }
+                        value2 = {x: 0, y: 0, width: 0, height: 0};
+                        switch (constraint.secondAttribute) {
+                            case CCLayoutConstraint.Attribute.Left:
+                                value2.x = -constraint.multiplier;
+                                break;
+                            case CCLayoutConstraint.Attribute.Right:
+                                value2.x = -constraint.multiplier;
+                                value2.width = -constraint.multiplier;
+                                break;
+                            case CCLayoutConstraint.Attribute.Top:
+                                value2.y = -constraint.multiplier;
+                                break;
+                            case CCLayoutConstraint.Attribute.Bottom:
+                                value2.y = -constraint.multiplier;
+                                value2.height = -constraint.multiplier;
+                                break;
+                            case CCLayoutConstraint.Attribute.Leading:
+                                value2.x = -constraint.multiplier;
+                                break;
+                            case CCLayoutConstraint.Attribute.Trailing:
+                                value2.x = -constraint.multiplier;
+                                value2.width = -constraint.multiplier;
+                                break;
+                            case CCLayoutConstraint.Attribute.Width:
+                                value2.width = -constraint.multiplier;
+                                break;
+                            case CCLayoutConstraint.Attribute.Height:
+                                value2.height = -constraint.multiplier;
+                                break;
+                            case CCLayoutConstraint.Attribute.CenterX:
+                                value2.x = -constraint.multiplier;
+                                value2.width = -constraint.multiplier / 2;
+                                break;
+                            case CCLayoutConstraint.Attribute.CenterY:
+                                value2.y = -constraint.multiplier;
+                                value2.height = -constraint.multiplier / 2;
+                                break;
+                            case CCLayoutConstraint.Attribute.LastBaseline:
+                            case CCLayoutConstraint.Attribute.FirstBaseline:
+                                // ???
+                                break;
+                        }
+                    }
+                    addLayoutRow(rows, constants, nextOffset, offset, value1, offset2, value2, constraint.constant);
+                    nextOffset = constraint.secondItem.layoutConstraints(views, rows, constants, visited, nextOffset);
+                } else {
+                    // TODO: implement inequalities
+                }
+            }
+        } else {
+            addLayoutRow(rows, constants, nextOffset, offset, {x: 1, y: 0, width: 0, height: 0}, undefined, undefined, this.frame.x);
+            addLayoutRow(rows, constants, nextOffset, offset, {x: 0, y: 1, width: 0, height: 0}, undefined, undefined, this.frame.y);
+            addLayoutRow(rows, constants, nextOffset, offset, {x: 0, y: 0, width: 1, height: 0}, undefined, undefined, this.frame.width);
+            addLayoutRow(rows, constants, nextOffset, offset, {x: 0, y: 0, width: 0, height: 1}, undefined, undefined, this.frame.height);
+        }
+        visited.set(this, true);
+        return nextOffset;
+    }
+
+    private traverseConstraints(views: LuaTable<CCView, number>, rows: CCRect[][], constants: number[], visited: LuaTable<CCView, boolean>, nextOffset: number): number {
+        if (this.needsLayout && this.constraints.length > 0) nextOffset = this.layoutConstraints(views, rows, constants, visited, nextOffset);
+        for (const view of this.subviews) nextOffset = view.traverseConstraints(views, rows, constants, visited, nextOffset);
+        return nextOffset;
+    }
+
+    /**
+     * Lays out the view hierarchy following constraints.
+     * This should only be called on a superview, which is done automatically.
+     * @package
+     */
+    public layoutSubtree(): void {
+        // Add all constraints to a list of rectangles + constants
+        let views = new LuaTable<CCView, number>();
+        let rows: CCRect[][] = [];
+        let constants: number[] = [];
+        let n = this.traverseConstraints(views, rows, constants, new LuaTable<CCView, boolean>(), 0) * 4 + 1;
+        if (n === 1) return;
+
+        // Convert the list to a matrix for solving
+        let matrix: number[][] = [];
+        for (let i = 0; i < rows.length; i++) {
+            let row: number[] = [];
+            for (let j = 0; j < rows[i].length; j++) {
+                let rect = rows[i][j];
+                row.push(rect.x, rect.y, rect.width, rect.height);
+            }
+            row.push(constants[i]);
+            matrix.push(row);
+        }
+
+        // Gaussian elimination to solve the matrix
+        // From Wikipedia
+
+        let h = 0; /* Initialization of the pivot row */
+        let k = 0; /* Initialization of the pivot column */
+        
+        while (h < matrix.length && k < n) {
+            /* Find the k-th pivot: */
+            let i_max = h;
+            for (let i = h + 1; i < matrix.length; i++) {
+                if (Math.abs(matrix[i][k]) > matrix[i_max][k]) {
+                    i_max = i;
+                }
+            }
+            if (matrix[i_max][k] === 0) {
+                /* No pivot in this column, pass to next column */
+                k = k + 1;
+            } else {
+                let row = matrix[h];
+                matrix[h] = matrix[i_max];
+                matrix[i_max] = row;
+                let pivot = matrix[h][k];
+                /*for (let j = 0; j < n; j++) {
+                    matrix[h][j] /= pivot; // Normalize the pivot row
+                }*/
+                /* Do for all rows: */
+                for (let i = 0; i < matrix.length; i++) {
+                    if (i !== h) {
+                        let f = matrix[i][k] / pivot;
+                        /* Do for all remaining elements in current row: */
+                        for (let j = k; j < n; j++)
+                            matrix[i][j] -= matrix[h][j] * f;
+                    }
+                }
+                /* Increase pivot row and column */
+                h = h + 1;
+                k = k + 1;
+            }
+        }
+
+        /*for (let i = 0; i < matrix.length; i++) {
+            let str = "";
+            for (let j = 0; j < matrix[i].length; j++)
+                str += matrix[i][j] + " ";
+            print(str);
+        }*/
+
+        // Assign the solved values back to the views
+        let rects: CCRect[] = [];
+        for (let [view, index] of views) rects[index] = view.frame;
+        let roff = 0;
+        for (let i = 0; i < n - 1; i++) {
+            while (matrix[i][i+roff] !== 1 && i + roff < n - 1) {
+                // TODO: log
+                print("Ambiguity in constraints: no solution for column " + tostring(i+roff))
+                roff++;
+            }
+            if (i + roff == n - 1) break;
+            let value = matrix[i][n-1];
+            for (let j = i + roff + 1; j < n - 1; j++) {
+                if (matrix[i][j] !== 0) {
+                    // TODO: log
+                    print("Ambiguity in constraints: ambiguous solution for column " + j + ", using existing value");
+                    switch (j % 4) {
+                        case 0: value += rects[Math.floor(j / 4)].x; break;
+                        case 1: value += rects[Math.floor(j / 4)].y; break;
+                        case 2: value += rects[Math.floor(j / 4)].width; break;
+                        case 3: value += rects[Math.floor(j / 4)].height; break;
+                    }
+                }
+            }
+            switch ((i + roff) % 4) {
+                case 0: rects[Math.floor((i + roff) / 4)].x = value; break;
+                case 1: rects[Math.floor((i + roff) / 4)].y = value; break;
+                case 2: rects[Math.floor((i + roff) / 4)].width = value; break;
+                case 3: rects[Math.floor((i + roff) / 4)].height = value; break;
+            }
+        }
+        for (let [view, index] of views) {
+            view.frame = rects[index];
+            view.needsLayout = false;
+        }
     }
 }

@@ -419,13 +419,16 @@ export class CCWindow extends CCResponder {
      * Redraws all subviews in the window.
      */
     public display(): void {
+        if (this.framebuffer === undefined) return;
         CCGraphicsContext.current = new CCGraphicsContext(this.framebuffer);
         CCGraphicsContext.current.pushState();
         if (this.contentViewController) {
+            this.contentViewController.view.layoutSubtree();
             const size = this.contentViewController.view.frame;
             CCGraphicsContext.current.setRect(size);
             this.contentViewController.view.display({x: 1, y: 1, width: size.width, height: size.height});
         } else {
+            this.contentView.layoutSubtree();
             const size = this.contentView.frame;
             CCGraphicsContext.current.setRect(size);
             this.contentView.display({x: 1, y: 1, width: size.width, height: size.height});
