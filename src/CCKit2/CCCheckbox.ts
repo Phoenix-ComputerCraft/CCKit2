@@ -3,7 +3,7 @@ import { CCColor, CCPoint, CCRect } from "CCKit2/CCTypes";
 import CCControl from "CCKit2/CCControl";
 import CCGraphicsContext from "CCKit2/CCGraphicsContext";
 
-export default class CCButton extends CCControl {
+export default class CCCheckbox extends CCControl {
     /** The color of the button. */
     public get buttonColor(): CCColor {return this._buttonColor;}
     public set buttonColor(value: CCColor) {
@@ -47,24 +47,43 @@ export default class CCButton extends CCControl {
         this.setNeedsDisplay();
     }
     private _textDisabledColor: CCColor = CCColor.gray;
+    /** Whether the checkbox is currently checked. */
+    public get checked(): boolean {return this._checked;}
+    public set checked(value: boolean) {
+        this._checked = value;
+        this.setNeedsDisplay();
+    }
+    private _checked: boolean = false;
+    /** The function called when the state changes. */
+    public onStateChange?: (this: void, sender: CCCheckbox, state: boolean) => void;
 
     /**
-     * Create a new button.
-     * @param position The position of the button
+     * Create a new checkbox.
+     * @param position The position of the checkbox
      * @param text The text for the button
-     * @param action The function to call when the button is pressed
      */
-    constructor(position: CCPoint, text: string, action: (this: void, button: CCView) => void) {
-        super({x: position.x, y: position.y, width: text.length + 2, height: 1}, action);
+    constructor(position: CCPoint, text: string) {
+        super({x: position.x, y: position.y, width: text.length + 2, height: 1}, undefined);
         this._text = text;
+        let self = this;
+        this.action = () => self.onClick();
     }
 
     public draw(rect: CCRect): void {
         if (this.window === undefined) return;
         const context = CCGraphicsContext.current;
-        const bgColor = (this.isPressed ? this._buttonActiveColor : (this.isDefault ? this._buttonDefaultColor : this._buttonColor)) as Color;
+        if (rect.x === 1) {
+            let bgColor = (this._checked ? this._buttonDefaultColor : (this.isPressed ? this._buttonActiveColor : this._buttonColor));
+            context.color = this._checked ? CCColor.white : CCColor.black;
+            context.drawTextWithBackground({x: 1, y: 1}, this._checked ? "x" : " ", bgColor);
+        }
         context.color = (this.isEnabled ? this._textColor : this._textDisabledColor) as Color;
-        const str = " " + this._text + " ";
-        context.drawTextWithBackground(rect, str.substring(rect.x - 1, rect.x - 1 + rect.width), bgColor);
+        const str = " " + this._text;
+        context.drawText({x: Math.max(rect.x, 2), y: rect.y}, str.substring(Math.max(rect.x - 2, 0), rect.x + rect.width - 1));
+    }
+
+    private onClick(): void {
+        this.checked = !this.checked;
+        if (this.onStateChange) this.onStateChange(this, this.checked);
     }
 }

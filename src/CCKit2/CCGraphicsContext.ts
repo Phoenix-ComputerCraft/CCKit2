@@ -1,5 +1,6 @@
 import { CCColor, CCPoint, CCRect, CCSize } from "CCKit2/CCTypes";
 import { CCWindowManagerFramebuffer, CCWindowManagerGraphicsFramebuffer } from "CCKit2/CCWindowManagerConnection";
+import CCImage from "CCKit2/CCImage";
 
 type GCState = CCRect & {
     color: CCColor;
@@ -284,7 +285,7 @@ export default class CCGraphicsContext {
             const [ogtext, fg, bg] = this.target.getLine(startReal.y);
             if (text.length > ogtext.length - startReal.x + 1)
                 text = text.substring(0, ogtext.length - startReal.x + 1);
-            this.target.blit(text, string.rep(string.format("%x", this.state.color), text.length), bg.substring(startReal.x - 1));
+            this.target.blit(text, string.rep(string.format("%x", this.state.color), text.length), bg.substring(startReal.x - 1, startReal.x - 1 + text.length));
             this.target.setBackgroundColor(this.state.color as Color);
         }
     }
@@ -302,9 +303,39 @@ export default class CCGraphicsContext {
         } else {
             this.target.setCursorPos(startReal.x, startReal.y);
             if (text.length > this.state.width / this.state.scale.width)
-                text = text.substring(0, floor(this.state.width / this.state.scale.width));
+                text = text.substring(0, floor(this.state.width / this.state.scale.width - (startReal.x - 1)));
             this.target.blit(text, string.rep(string.format("%x", this.state.color), text.length), string.rep(string.format("%x", background), text.length));
             this.target.setBackgroundColor(this.state.color as Color);
         }
+    }
+
+    /**
+     * Draw an image at the specified location.
+     * @param image The image to draw
+     * @param pos The position to draw the image at
+     */
+    public drawImage(image: CCImage, pos: CCPoint): void {
+        const startReal = this.pointToTargetSpace(pos);
+        if (this.gfxTarget) {
+            // TODO: pixel drawing
+        } else {
+            if (image.bimgRepresentation === undefined) {
+                // TODO: handle this better
+                throw "Image has no text representation";
+            }
+            for (let y = 0; y < image.bimgRepresentation.length; y++) {
+                let [text, fg, bg] = image.bimgRepresentation[y];
+                if (text.length > this.state.width / this.state.scale.width)
+                    text = text.substring(0, floor(this.state.width / this.state.scale.width - (startReal.x - 1)));
+                if (fg.length > this.state.width / this.state.scale.width)
+                    fg = fg.substring(0, floor(this.state.width / this.state.scale.width - (startReal.x - 1)));
+                if (bg.length > this.state.width / this.state.scale.width)
+                    bg = bg.substring(0, floor(this.state.width / this.state.scale.width - (startReal.x - 1)));
+                this.target.setCursorPos(startReal.x, startReal.y + y);
+                this.target.blit(text, fg, bg);
+            }
+            this.target.setBackgroundColor(this.state.color as Color);
+        }
+        // TODO: handle palettes
     }
 }
