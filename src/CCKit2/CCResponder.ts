@@ -1,4 +1,5 @@
 import CCEvent from "CCKit2/CCEvent";
+import { CCColor, CCPoint } from "CCKit2/CCTypes";
 
 /**
  * The CCResponder class handles receiving events from the application. Any
@@ -76,6 +77,15 @@ export default class CCResponder {
         }
     }
 
+    /**
+     * This is used to place a blinking cursor on screen while not drawing.
+     * It's only called on the first responder of a window.
+     * @returns The position and color of the cursor in window coordinates, or undefined to not place a cursor
+     */
+    public cursorPos(): [CCPoint, CCColor] | undefined {
+        return undefined;
+    }
+
     // The following methods are all receivers for certain event types. These
     // can be implemented separately to only catch specific events. If the event
     // method isn't specified, it gets passed to the next responder.
@@ -94,5 +104,6 @@ export default class CCResponder {
     public otherMouseUp(event: CCEvent): void {if (this.nextResponder) return this.nextResponder.otherMouseUp(event);}
     public keyDown(event: CCEvent): void {if (this.nextResponder) return this.nextResponder.keyDown(event);}
     public keyUp(event: CCEvent): void {if (this.nextResponder) return this.nextResponder.keyUp(event);}
+    public textInput(event: CCEvent): void {if (this.nextResponder) return this.nextResponder.textInput(event);}
     public scrollWheel(event: CCEvent): void {if (this.nextResponder) return this.nextResponder.scrollWheel(event);}
 }

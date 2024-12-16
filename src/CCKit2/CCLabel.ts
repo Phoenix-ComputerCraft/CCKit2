@@ -2,6 +2,9 @@ import { CCColor, CCPoint, CCRect } from "CCKit2/CCTypes";
 import CCView from "CCKit2/CCView";
 import CCGraphicsContext from "CCKit2/CCGraphicsContext";
 
+/**
+ * A label displays a single line of text without wrapping.
+ */
 export default class CCLabel extends CCView {
     /** The text for the label. */
     public get text(): string {return this._text;}

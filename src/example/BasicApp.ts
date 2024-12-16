@@ -9,6 +9,7 @@ import CCImageView from "CCKit2/CCImageView";
 import CCLabel from "CCKit2/CCLabel";
 import CCProgressIndicator from "CCKit2/CCProgressIndicator";
 import CCSlider from "CCKit2/CCSlider";
+import CCTextField from "CCKit2/CCTextField";
 import { CCColor, CCRect } from "CCKit2/CCTypes";
 import CCView from "CCKit2/CCView";
 import CCViewController from "CCKit2/CCViewController";
@@ -77,6 +78,9 @@ bbbbcdef`);
             sliderText.text = string.format("%.1f", position);
         }
         this.view.addSubview(sliderText);
+        let textBox = new CCTextField({x: 2, y: 7, width: 11, height: 1});
+        textBox.placeholderText = "Text...";
+        this.view.addSubview(textBox);
 
         /*let v2 = new MyView({x: 5, y: 5, width: 5, height: 5});
         this.view.addSubview(v2);

@@ -139,8 +139,6 @@ export default class CCView extends CCResponder {
 
     // TODO: add rest
 
-    // TODO: constraints
-
     /**
      * Draws the view inside the specified rectangle. Override this function to
      * provide custom view types.

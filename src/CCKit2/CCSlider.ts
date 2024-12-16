@@ -1,7 +1,7 @@
 import CCView from "CCKit2/CCView";
 import { CCColor, CCKey, CCRect } from "CCKit2/CCTypes";
 import CCEvent from "CCKit2/CCEvent";
-import CCGraphicsContext from "./CCGraphicsContext";
+import CCGraphicsContext from "CCKit2/CCGraphicsContext";
 
 /**
  * A slider allows input of a progressive value.

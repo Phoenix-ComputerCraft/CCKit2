@@ -313,6 +313,9 @@ export class CCWindow extends CCResponder {
             let view = this.mouseDownView ?? this.contentView.hitTest(event.locationInWindow!);
             if (view) {
                 view.tryToCall(mouseResponders[event.type], event);
+                if (event.type == CCEvent.Type.LeftMouseDown && view.acceptsFirstResponder && view.becomeFirstResponder() && (!this._firstResponder || this._firstResponder.resignFirstResponder())) {
+                    this._firstResponder = view;
+                }
                 switch (event.type) {
                     case CCEvent.Type.LeftMouseDown:
                     case CCEvent.Type.RightMouseDown:
@@ -330,7 +333,7 @@ export class CCWindow extends CCResponder {
             let view = this.mouseDownView ?? this.contentViewController.view.hitTest(event.locationInWindow!);
             if (view) {
                 view.tryToCall(mouseResponders[event.type], event);
-                if (event.type == CCEvent.Type.LeftMouseDown && view.acceptsFirstResponder && view.becomeFirstResponder()) {
+                if (event.type == CCEvent.Type.LeftMouseDown && view.acceptsFirstResponder && view.becomeFirstResponder() && (!this._firstResponder || this._firstResponder.resignFirstResponder())) {
                     this._firstResponder = view;
                 }
                 switch (event.type) {
@@ -429,6 +432,7 @@ export class CCWindow extends CCResponder {
      */
     public display(): void {
         if (this.framebuffer === undefined) return;
+        this.framebuffer.setCursorBlink(false);
         CCGraphicsContext.current = new CCGraphicsContext(this.framebuffer);
         CCGraphicsContext.current.pushState();
         if (this.contentViewController) {
@@ -443,6 +447,12 @@ export class CCWindow extends CCResponder {
             this.contentView.display({x: 1, y: 1, width: size.width, height: size.height});
         }
         CCGraphicsContext.current = undefined;
+        let cursor = this._firstResponder?.cursorPos();
+        if (cursor !== undefined) {
+            this.framebuffer.setCursorPos(cursor[0].x, cursor[0].y);
+            this.framebuffer.setTextColor(cursor[1] as Color);
+            this.framebuffer.setCursorBlink(true);
+        }
     }
 
     /**
