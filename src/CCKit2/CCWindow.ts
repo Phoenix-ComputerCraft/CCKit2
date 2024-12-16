@@ -10,7 +10,7 @@ import { CCWindowManagerFramebuffer } from "CCKit2/CCWindowManagerConnection";
 import CCApplication from "CCKit2/CCApplication";
 import CCGraphicsContext from "CCKit2/CCGraphicsContext";
 
-const mouseResponders = {
+const mouseResponders: {[key: number]: string} = {
     [CCEvent.Type.LeftMouseDown]: "mouseDown",
     [CCEvent.Type.LeftMouseDragged]: "mouseDragged",
     [CCEvent.Type.LeftMouseUp]: "mouseUp",
@@ -41,13 +41,13 @@ export class CCWindow extends CCResponder {
     /** The main view for the window, if no view controller is used. */
     public contentView?: CCView;
     /** The style mask for the window. */
-    public styleMask: CCWindow.StyleMask;
+    public styleMask: CCWindow.StyleMask = CCWindow.StyleMask.Closable | CCWindow.StyleMask.Miniaturizable | CCWindow.StyleMask.Resizable;
     /** Whether the window receives key and mouse events when a modal window is in the foreground. */
     public get worksWhenModal(): boolean {return false;}
     /** Whether the window hides itself when the app is deactivated. */
     public hidesOnDeactivate: boolean = false;
     /** The background color for the window. */
-    public backgroundColor: CCColor;
+    public backgroundColor: CCColor = CCColor.white;
     /** The color palette for the window. (Only relevant in fullscreen or graphics mode.) */
     public colorPalette: CCColor[] = [];
     /** Whether the window is able to hide. */
@@ -150,19 +150,23 @@ export class CCWindow extends CCResponder {
         if (first instanceof CCViewController) {
             this.contentViewController = first;
             const size = first.preferredContentSize;
-            this.framebuffer = CCApplication.shared.wmConnection.createWindow(this, undefined, undefined, size.width, size.height, first.title, {closable: true, minimizable: true, resizable: true}); // TODO: options
+            let fb = CCApplication.shared.wmConnection.createWindow(this, undefined, undefined, size.width, size.height, first.title || "Window", {closable: true, minimizable: true, resizable: true}); // TODO: options
+            if (fb === undefined) throw "Could not create window";
+            this.framebuffer = fb;
             first.loadViewIfNeeded();
             first.view.window = this;
             first.viewDidLoad();
         } else {
             this.contentView = new CCView(first);
-            this.framebuffer = CCApplication.shared.wmConnection.createWindow(this, first.x, first.y, first.width, first.height, "Window", {
-                utility: (styleMask & CCWindow.StyleMask.UtilityWindow) != 0,
-                borderless: (styleMask & CCWindow.StyleMask.Borderless) != 0,
-                closable: (styleMask & CCWindow.StyleMask.Closable) != 0,
-                minimizable: (styleMask & CCWindow.StyleMask.Miniaturizable) != 0,
-                resizable: (styleMask & CCWindow.StyleMask.Resizable) != 0,
+            let fb = CCApplication.shared.wmConnection.createWindow(this, first.x, first.y, first.width, first.height, "Window", {
+                utility: (styleMask! & CCWindow.StyleMask.UtilityWindow) != 0,
+                borderless: (styleMask! & CCWindow.StyleMask.Borderless) != 0,
+                closable: (styleMask! & CCWindow.StyleMask.Closable) != 0,
+                minimizable: (styleMask! & CCWindow.StyleMask.Miniaturizable) != 0,
+                resizable: (styleMask! & CCWindow.StyleMask.Resizable) != 0,
             });
+            if (fb === undefined) throw "Could not create window";
+            this.framebuffer = fb;
             this.contentView.window = this;
         }
         const [x, y] = this.framebuffer.getPosition();
@@ -432,7 +436,7 @@ export class CCWindow extends CCResponder {
             const size = this.contentViewController.view.frame;
             CCGraphicsContext.current.setRect(size);
             this.contentViewController.view.display({x: 1, y: 1, width: size.width, height: size.height});
-        } else {
+        } else if (this.contentView) {
             this.contentView.layoutSubtree();
             const size = this.contentView.frame;
             CCGraphicsContext.current.setRect(size);
@@ -580,7 +584,8 @@ export class CCWindow extends CCResponder {
         let index = CCApplication.shared.windows.indexOf(this);
         if (index !== -1) CCApplication.shared.windows.splice(index, 1);
         if (CCApplication.shared.windows.length === 0) CCApplication.shared.terminate();
-        this.framebuffer = undefined; // UGLY!!!
+        // @ts-ignore
+        this.framebuffer = undefined; // TODO: UGLY!!!
     }
 }
 

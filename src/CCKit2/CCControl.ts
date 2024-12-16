@@ -1,5 +1,5 @@
 import CCView from "CCKit2/CCView";
-import { CCColor, CCRect } from "CCKit2/CCTypes";
+import { CCColor, CCKey, CCRect } from "CCKit2/CCTypes";
 import CCEvent from "CCKit2/CCEvent";
 
 export default class CCControl extends CCView {
@@ -45,19 +45,19 @@ export default class CCControl extends CCView {
         this.isPressed = false;
         this.setNeedsDisplay();
         const start = this.convertToWindowSpace({x: 1, y: 1});
-        if (event.locationInWindow.x < start.x || event.locationInWindow.y < start.y || event.locationInWindow.x >= start.x + this.frame.width || event.locationInWindow.y >= start.y + this.frame.height)
+        if (event.locationInWindow!.x < start.x || event.locationInWindow!.y < start.y || event.locationInWindow!.x >= start.x + this.frame.width || event.locationInWindow!.y >= start.y + this.frame.height)
             return;
         this.action(this);
     }
 
     public keyDown(event: CCEvent): void {
-        if (!this.isEnabled || !this.isDefault) return; // TODO: keycodes
+        if (!this.isEnabled || !this.isDefault || (event.keyCode !== CCKey.Enter && event.keyCode !== CCKey.NumPadEnter)) return;
         this.isPressed = true;
         this.setNeedsDisplay();
     }
 
     public keyUp(event: CCEvent): void {
-        if (!this.isEnabled || !this.isDefault) return;
+        if (!this.isEnabled || !this.isDefault || (event.keyCode !== CCKey.Enter && event.keyCode !== CCKey.NumPadEnter)) return;
         this.isPressed = false;
         this.setNeedsDisplay();
         this.action(this);

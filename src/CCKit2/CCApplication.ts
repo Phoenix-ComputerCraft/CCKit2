@@ -139,7 +139,7 @@ export class CCApplication extends CCResponder {
             if (this.eventQueue.length === 0) {
                 this.eventQueue.push(this.wmConnection.pullEvent());
             }
-            this.sendEvent(this.eventQueue.shift());
+            this.sendEvent(this.eventQueue.shift()!);
         }
     }
 

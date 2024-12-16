@@ -8,12 +8,12 @@ function addLayoutRow(rows: CCRect[][], constants: number[], size: number, first
     let row: CCRect[] = [];
     for (let i = 0; i < size; i++) row.push({x: 0, y: 0, width: 0, height: 0});
     row[firstOffset] = firstValues;
-    if (secondOffset !== undefined) row[secondOffset] = secondValues;
+    if (secondOffset !== undefined) row[secondOffset] = secondValues!;
     rows.push(row);
     constants.push(constant);
 }
 
-const LayoutAttributes = {
+const LayoutAttributes: {[name: string]: CCLayoutConstraint.Attribute | undefined} = {
     Left: CCLayoutConstraint.Attribute.Left,
     Right: CCLayoutConstraint.Attribute.Right,
     Top: CCLayoutConstraint.Attribute.Top,
@@ -148,8 +148,8 @@ export default class CCView extends CCResponder {
      */
     public draw(rect: CCRect): void {
         if (this.backgroundColor === undefined || this.window === undefined) return;
-        CCGraphicsContext.current.color = this.backgroundColor;
-        CCGraphicsContext.current.drawFilledRectangle(rect);
+        CCGraphicsContext.current!.color = this.backgroundColor;
+        CCGraphicsContext.current!.drawFilledRectangle(rect);
     }
 
     /**
@@ -170,10 +170,10 @@ export default class CCView extends CCResponder {
             vr.x = vr.x - view.frame.x + 1;
             vr.y = vr.y - view.frame.y + 1;
             if (vr.width > 0 && vr.height > 0) {
-                CCGraphicsContext.current.pushState();
-                CCGraphicsContext.current.setRect(view.frame);
+                CCGraphicsContext.current!.pushState();
+                CCGraphicsContext.current!.setRect(view.frame);
                 view.display(vr);
-                CCGraphicsContext.current.popState();
+                CCGraphicsContext.current!.popState();
             }
         }
     }
@@ -391,17 +391,17 @@ export default class CCView extends CCResponder {
                 //print((self.get("view") as string) + "." + key + " = " + (value as LuaTable).get("multiplier") + " * " + (value as LuaTable).get("view") + "." + (value as LuaTable).get("attribute") + " + " + (value as LuaTable).get("constant"));
                 constraints.push(new CCLayoutConstraint(
                     views[self.get("view") as string],
-                    LayoutAttributes[key],
+                    LayoutAttributes[key]!,
                     CCLayoutConstraint.Relation.Equal,
                     views[(value as LuaTable).get("view") as string],
-                    LayoutAttributes[(value as LuaTable).get("attribute") as string],
+                    LayoutAttributes[(value as LuaTable).get("attribute") as string]!,
                     (value as LuaTable).get("multiplier") as number,
                     (value as LuaTable).get("constant") as number
                 ));
             } else if (type(value) === "number") {
                 constraints.push(new CCLayoutConstraint(
                     views[self.get("view") as string],
-                    LayoutAttributes[key],
+                    LayoutAttributes[key]!,
                     CCLayoutConstraint.Relation.Equal,
                     undefined,
                     CCLayoutConstraint.Attribute.NotAnAttribute,
@@ -419,8 +419,7 @@ export default class CCView extends CCResponder {
             env.set(name, setmetatable(vtab, view_mt as LuaMetatable<LuaTable>));
         }
         let [fn, err] = load(code, "=CCKit2: CCView.addConstraintsByCode chunk", "t", env);
-        assert(fn, err);
-        fn();
+        assert(fn, err)[0]();
         for (let constraint of constraints) {
             constraint.active = true;
         }
@@ -566,7 +565,7 @@ export default class CCView extends CCResponder {
                         }
                     }
                     addLayoutRow(rows, constants, nextOffset, offset, value1, offset2, value2, constraint.constant);
-                    nextOffset = constraint.secondItem.layoutConstraints(views, rows, constants, visited, nextOffset);
+                    if (constraint.secondItem !== undefined) nextOffset = constraint.secondItem.layoutConstraints(views, rows, constants, visited, nextOffset);
                 } else {
                     // TODO: implement inequalities
                 }

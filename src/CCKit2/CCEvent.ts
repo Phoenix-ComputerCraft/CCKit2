@@ -1,15 +1,15 @@
-import { CCPoint } from "CCKit2/CCTypes";
+import { CCKey, CCPoint } from "CCKit2/CCTypes";
 import CCWindow from "CCKit2/CCWindow";
 
 export class CCEvent {
     /** The type of the event. */
-    public type: CCEvent.Type;
+    public type: CCEvent.Type = CCEvent.Type.ApplicationDefined;
     /** The subtype of the event, if relevant. */
-    public subtype: CCEvent.SubType;
+    public subtype: CCEvent.SubType = CCEvent.SubType.ApplicationActivated;
     /** The location of the event relative to a window. */
     public locationInWindow?: CCPoint;
     /** The timestamp that the event occurred at. */
-    public timestamp: number;
+    public timestamp: number = 0;
     /** The window the event is intended for. */
     public window?: CCWindow;
     /** If the event is from CraftOS, the raw event data. */
@@ -17,7 +17,7 @@ export class CCEvent {
     /** If the event is from Phoenix, the raw event data. */
     public phoenixEvent?: {name: string, params: object};
     /** The modifier keys pressed with the event. */
-    public modifierFlags: CCEvent.ModifierFlags;
+    public modifierFlags?: CCEvent.ModifierFlags;
     /** For character input events, the characters pressed. */
     public characters?: string;
     /** For character input events, the characters pressed, without modifier keys. */
@@ -26,15 +26,15 @@ export class CCEvent {
         else return undefined;
     };
     /** For key events, the key code pressed. */
-    public keyCode: number;
+    public keyCode?: CCKey;
     /** For key down events, whether the key was repeated. */
-    public isRepeat: boolean;
+    public isRepeat?: boolean;
     /** For mouse events, the mouse button pressed. */
-    public buttonNumber: number;
+    public buttonNumber?: number;
     /** For mouse down events, the number of times the button was pressed. */
-    public clickCount: number;
+    public clickCount?: number;
     /** For mouse scroll events, the direction of the scroll (1 or -1). */
-    public scrollDirection: number;
+    public scrollDirection?: number;
     /** For application-defined events, any extra parameters to pass. */
     public extraParams?: object;
 

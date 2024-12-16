@@ -44,7 +44,7 @@ export declare interface CCWindowManagerFramebuffer {
     setBackgroundColour(color: Color): void;
     getBorderColor(): number;
     setBorderColor(color: number): void;
-    getLine(y: number): LuaMultiReturn<[string, string, string]> | undefined;
+    getLine(y: number): LuaMultiReturn<[string, string, string] | [undefined]>;
     restoreCursor(): void;
     isVisible(): boolean;
     setVisible(visible: boolean): void;
@@ -61,6 +61,7 @@ export declare interface CCWindowManagerFramebuffer {
  * @noSelf
  */
 export declare interface CCWindowManagerGraphicsFramebuffer {
+    getSize(): [number, number];
 
 }
 

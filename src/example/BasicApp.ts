@@ -7,7 +7,8 @@ import CCEvent from "CCKit2/CCEvent";
 import CCImage from "CCKit2/CCImage";
 import CCImageView from "CCKit2/CCImageView";
 import CCLabel from "CCKit2/CCLabel";
-import CCLayoutConstraint from "CCKit2/CCLayoutConstraint";
+import CCProgressIndicator from "CCKit2/CCProgressIndicator";
+import CCSlider from "CCKit2/CCSlider";
 import { CCColor, CCRect } from "CCKit2/CCTypes";
 import CCView from "CCKit2/CCView";
 import CCViewController from "CCKit2/CCViewController";
@@ -37,17 +38,19 @@ class MyView extends CCView {
 }
 
 class ViewController extends CCViewController {
-    private label: CCLabel;
+    private label!: CCLabel;
     private count: number = 0;
+    private progress!: CCProgressIndicator;
 
     private increment(): void {
         this.count++;
         this.label.text = "Count: " + this.count;
+        this.progress.progress = this.count / 100;
     }
 
     public viewDidLoad(): void {
         super.viewDidLoad();
-        this.view.window.title = "CCKit2 Demo";
+        this.view.window!.title = "CCKit2 Demo";
         this.view.backgroundColor = CCColor.white;
         this.label = new CCLabel({x: 2, y: 2}, "Hello World!");
         this.view.addSubview(this.label);
@@ -65,6 +68,15 @@ bbbbcdef`);
         checkbox.checked = true;
         checkbox.onStateChange = (_, state) => button.isEnabled = state;
         this.view.addSubview(checkbox);
+        this.progress = new CCProgressIndicator({x: 2, y: 5, width: 11, height: 1}, CCProgressIndicator.Style.ThinBar);
+        this.view.addSubview(this.progress);
+        let slider = new CCSlider({x: 2, y: 6, width: 11, height: 1});
+        this.view.addSubview(slider);
+        let sliderText = new CCLabel({x: 14, y: 6}, "0.0");
+        slider.action = function(this: void, sender: CCView, position: number): void {
+            sliderText.text = string.format("%.1f", position);
+        }
+        this.view.addSubview(sliderText);
 
         /*let v2 = new MyView({x: 5, y: 5, width: 5, height: 5});
         this.view.addSubview(v2);

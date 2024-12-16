@@ -9,7 +9,7 @@ import CCView from "CCKit2/CCView";
  */
 export default class CCViewController extends CCResponder {
     /** The root view of the view controller. */
-    public view: CCView = undefined;
+    public view!: CCView;
     /** Whether the view has been loaded yet. */
     public get isViewLoaded(): boolean {return this.view != undefined;}
     /** A string which describes the view this controller holds. */

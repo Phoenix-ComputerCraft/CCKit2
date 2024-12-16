@@ -26,6 +26,6 @@ export default class CCImageView extends CCView {
     }
 
     public draw(rect: CCRect): void {
-        CCGraphicsContext.current.drawImage(this._image, {x: 1, y: 1});
+        CCGraphicsContext.current!.drawImage(this._image, {x: 1, y: 1});
     }
 }

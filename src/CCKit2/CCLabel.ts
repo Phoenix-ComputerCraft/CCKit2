@@ -31,7 +31,7 @@ export default class CCLabel extends CCView {
 
     public draw(rect: CCRect): void {
         super.draw(rect);
-        CCGraphicsContext.current.color = this._textColor;
-        CCGraphicsContext.current.drawText({x: 1, y: 1}, this._text);
+        CCGraphicsContext.current!.color = this._textColor;
+        CCGraphicsContext.current!.drawText({x: 1, y: 1}, this._text);
     }
 }

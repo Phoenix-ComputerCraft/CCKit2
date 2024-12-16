@@ -19,11 +19,11 @@ type BIMG = {
  */
 export default class CCImage {
     /** The size of the image in characters. */
-    public size: CCSize;
+    public size!: CCSize;
     /** The blit image representation of the image, if available. */
     public bimgRepresentation?: [string, string, string][];
     /** The graphical buffer representation of the image. */
-    public pixelRepresentation: number[][];
+    public pixelRepresentation!: (number | undefined)[][];
     /** The palette associated with the image, if required. */
     public palette?: number[];
 
@@ -61,16 +61,16 @@ export default class CCImage {
         retval.pixelRepresentation = [];
         for (let y = 0; y < retval.bimgRepresentation.length; y++) {
             let src = retval.bimgRepresentation[y];
-            let line1: number[] = [];
-            let line2: number[] = [];
-            let line3: number[] = [];
+            let line1: (number | undefined)[] = [];
+            let line2: (number | undefined)[] = [];
+            let line3: (number | undefined)[] = [];
             for (let x = 0; x < src.length; x++) {
                 let ch = src[0].charCodeAt(x);
                 let fg = tonumber(src[1].charAt(x), 16);
                 let bg = tonumber(src[2].charAt(x), 16);
-                let a = ch & 1 ? fg : bg, b = ch & 2 ? fg : bg,
-                    c = ch & 4 ? fg : bg, d = ch & 8 ? fg : bg,
-                    e = ch & 16 ? fg : bg;
+                let a = (ch & 1) !== 0 ? fg : bg, b = (ch & 2) !== 0 ? fg : bg,
+                    c = (ch & 4) !== 0 ? fg : bg, d = (ch & 8) !== 0 ? fg : bg,
+                    e = (ch & 16) !== 0 ? fg : bg;
                 line1[x*6] = a;
                 line1[x*6+1] = a;
                 line1[x*6+2] = a;
@@ -111,7 +111,7 @@ export default class CCImage {
      */
     public static createFromNFP(image: string): CCImage {
         let lines = image.split("\n").flatMap(str => string.gsub(str, "%X", "")[0]);
-        if (lines[lines.length-1] === "") lines[lines.length-1] = undefined;
+        if (lines[lines.length-1] === "") delete lines[lines.length-1];
         let retval = new CCImage();
         retval.size = {width: 0, height: lines.length};
         for (let line of lines) retval.size.width = Math.max(retval.size.width, line.length);
@@ -124,7 +124,7 @@ export default class CCImage {
                 string.rep(" ", retval.size.width),
                 line
             ];
-            let pixels = line.split("").flatMap(c => {let n = tonumber(c, 16); return [n, n, n, n, n, n]});
+            let pixels = line.split("").flatMap(c => {let n = tonumber(c, 16); if (n === undefined) throw "Invalid NFP"; return [n, n, n, n, n, n]});
             retval.pixelRepresentation[retval.pixelRepresentation.length] = pixels;
             retval.pixelRepresentation[retval.pixelRepresentation.length] = pixels;
             retval.pixelRepresentation[retval.pixelRepresentation.length] = pixels;

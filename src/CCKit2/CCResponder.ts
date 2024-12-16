@@ -53,7 +53,9 @@ export default class CCResponder {
      * @returns Whether a responder was able to respond to the method
      */
     public tryToCall(method: string, ...args: any[]): boolean {
+        // @ts-ignore
         if (typeof this[method] === "function") {
+            // @ts-ignore
             this[method](...args);
             return true;
         } else if (this.nextResponder) {

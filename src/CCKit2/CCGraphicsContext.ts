@@ -41,15 +41,15 @@ export default class CCGraphicsContext {
      * @package
      */
     public constructor(target: CCWindowManagerFramebuffer|CCWindowManagerGraphicsFramebuffer) {
-        if (target["write"]) {
+        if ("write" in target) {
             this.target = target as CCWindowManagerFramebuffer;
             this.gfxTarget = undefined;
             [this.state.width, this.state.height] = this.target.getSize();
             this.nativeSize = {width: this.state.width, height: this.state.height};
-        } else if (target["setPixel"]) {
+        } else if ("setPixel" in target) {
             this.target = undefined;
             this.gfxTarget = target as CCWindowManagerGraphicsFramebuffer;
-            [this.state.width, this.state.height] = this.target.getSize();
+            [this.state.width, this.state.height] = this.gfxTarget.getSize();
             this.nativeSize = {width: this.state.width, height: this.state.height};
             this.state.width /= 6;
             this.state.height /= 9;
@@ -87,7 +87,7 @@ export default class CCGraphicsContext {
      */
     public popState(): void {
         if (this.stack.length === 0) return;
-        this.state = this.stack.pop();
+        this.state = this.stack.pop()!;
     }
 
     /** Returns the size of the context, in virtual pixels. */
@@ -170,7 +170,7 @@ export default class CCGraphicsContext {
             const width = endReal.x - startReal.x;
             if (this.gfxTarget) {
                 // TODO
-            } else {
+            } else if (this.target) {
                 this.target.setCursorPos(startReal.x, startReal.y);
                 this.target.write(string.rep(" ", width));
             }
@@ -237,7 +237,7 @@ export default class CCGraphicsContext {
         const width = endReal.x - startReal.x + 1;
         if (this.gfxTarget) {
             // TODO
-        } else {
+        } else if (this.target) {
             this.target.setCursorPos(startReal.x, startReal.y);
             this.target.write(string.rep(" ", width));
             this.target.setCursorPos(endReal.x, endReal.y);
@@ -260,7 +260,7 @@ export default class CCGraphicsContext {
         const width = endReal.x - startReal.x + 1;
         if (this.gfxTarget) {
             // TODO
-        } else {
+        } else if (this.target) {
             for (let y = startReal.y; y <= endReal.y; y++) {
                 this.target.setCursorPos(startReal.x, y);
                 this.target.write(string.rep(" ", width));
@@ -278,14 +278,14 @@ export default class CCGraphicsContext {
         const startReal = this.pointToTargetSpace(start);
         if (this.gfxTarget) {
             // TODO: font renderer
-        } else {
+        } else if (this.target) {
             this.target.setCursorPos(startReal.x, startReal.y);
             if (text.length > this.state.width / this.state.scale.width)
                 text = text.substring(0, floor(this.state.width / this.state.scale.width));
             const [ogtext, fg, bg] = this.target.getLine(startReal.y);
-            if (text.length > ogtext.length - startReal.x + 1)
-                text = text.substring(0, ogtext.length - startReal.x + 1);
-            this.target.blit(text, string.rep(string.format("%x", this.state.color), text.length), bg.substring(startReal.x - 1, startReal.x - 1 + text.length));
+            if (text.length > ogtext!.length - startReal.x + 1)
+                text = text.substring(0, ogtext!.length - startReal.x + 1);
+            this.target.blit(text, string.rep(string.format("%x", this.state.color), text.length), bg!.substring(startReal.x - 1, startReal.x - 1 + text.length));
             this.target.setBackgroundColor(this.state.color as Color);
         }
     }
@@ -300,7 +300,7 @@ export default class CCGraphicsContext {
         const startReal = this.pointToTargetSpace(start);
         if (this.gfxTarget) {
             // TODO: font renderer
-        } else {
+        } else if (this.target) {
             this.target.setCursorPos(startReal.x, startReal.y);
             if (text.length > this.state.width / this.state.scale.width)
                 text = text.substring(0, floor(this.state.width / this.state.scale.width - (startReal.x - 1)));
@@ -318,7 +318,7 @@ export default class CCGraphicsContext {
         const startReal = this.pointToTargetSpace(pos);
         if (this.gfxTarget) {
             // TODO: pixel drawing
-        } else {
+        } else if (this.target) {
             if (image.bimgRepresentation === undefined) {
                 // TODO: handle this better
                 throw "Image has no text representation";
