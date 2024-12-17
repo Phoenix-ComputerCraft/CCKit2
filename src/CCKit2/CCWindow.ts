@@ -56,7 +56,11 @@ export class CCWindow extends CCResponder {
     public get frame(): CCRect {return this._frame;}
     public set frame(rect: CCRect) {
         this._frame = rect;
-        // TODO: update window on screen
+        if (this.contentViewController) {
+            this.contentViewController.view.frame = {x: 1, y: 1, width: rect.width, height: rect.height};
+        } else if (this.contentView) {
+            this.contentView.frame = {x: 1, y: 1, width: rect.width, height: rect.height};
+        }
     }
     private _frame: CCRect;
     /** The minimum size that the window will allow resizing to. */
@@ -169,9 +173,9 @@ export class CCWindow extends CCResponder {
             this.framebuffer = fb;
             this.contentView.window = this;
         }
-        const [x, y] = this.framebuffer.getPosition();
         const [width, height] = this.framebuffer.getSize();
-        this._frame = {x: x, y: y, width: width, height: height};
+        this._frame = {x: 1, y: 1, width: width, height: height};
+        this.frame = this._frame;
         CCApplication.shared.windows.push(this);
     }
 
@@ -313,7 +317,7 @@ export class CCWindow extends CCResponder {
             let view = this.mouseDownView ?? this.contentView.hitTest(event.locationInWindow!);
             if (view) {
                 view.tryToCall(mouseResponders[event.type], event);
-                if (event.type == CCEvent.Type.LeftMouseDown && view.acceptsFirstResponder && view.becomeFirstResponder() && (!this._firstResponder || this._firstResponder.resignFirstResponder())) {
+                if (event.type == CCEvent.Type.LeftMouseDown && this._firstResponder !== view && view.acceptsFirstResponder && view.becomeFirstResponder() && (!this._firstResponder || this._firstResponder.resignFirstResponder())) {
                     this._firstResponder = view;
                 }
                 switch (event.type) {
@@ -333,7 +337,7 @@ export class CCWindow extends CCResponder {
             let view = this.mouseDownView ?? this.contentViewController.view.hitTest(event.locationInWindow!);
             if (view) {
                 view.tryToCall(mouseResponders[event.type], event);
-                if (event.type == CCEvent.Type.LeftMouseDown && view.acceptsFirstResponder && view.becomeFirstResponder() && (!this._firstResponder || this._firstResponder.resignFirstResponder())) {
+                if (event.type == CCEvent.Type.LeftMouseDown && this._firstResponder !== view && view.acceptsFirstResponder && view.becomeFirstResponder() && (!this._firstResponder || this._firstResponder.resignFirstResponder())) {
                     this._firstResponder = view;
                 }
                 switch (event.type) {
@@ -450,7 +454,7 @@ export class CCWindow extends CCResponder {
         let cursor = this._firstResponder?.cursorPos();
         if (cursor !== undefined) {
             this.framebuffer.setCursorPos(cursor[0].x, cursor[0].y);
-            this.framebuffer.setTextColor(cursor[1] as Color);
+            this.framebuffer.setTextColor(cursor[1]);
             this.framebuffer.setCursorBlink(true);
         }
     }

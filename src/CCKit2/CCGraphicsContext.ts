@@ -32,7 +32,7 @@ export default class CCGraphicsContext {
     }
     public set color(value: CCColor) {
         this.state.color = value;
-        if (this.target !== undefined) this.target!.setBackgroundColor(value as Color);
+        if (this.target !== undefined) this.target.setBackgroundColor(value);
     }
 
     /**
@@ -286,7 +286,7 @@ export default class CCGraphicsContext {
             if (text.length > ogtext!.length - startReal.x + 1)
                 text = text.substring(0, ogtext!.length - startReal.x + 1);
             this.target.blit(text, string.rep(string.format("%x", this.state.color), text.length), bg!.substring(startReal.x - 1, startReal.x - 1 + text.length));
-            this.target.setBackgroundColor(this.state.color as Color);
+            this.target.setBackgroundColor(this.state.color);
         }
     }
 
@@ -305,7 +305,7 @@ export default class CCGraphicsContext {
             if (text.length > this.state.width / this.state.scale.width)
                 text = text.substring(0, floor(this.state.width / this.state.scale.width - (startReal.x - 1)));
             this.target.blit(text, string.rep(string.format("%x", this.state.color), text.length), string.rep(string.format("%x", background), text.length));
-            this.target.setBackgroundColor(this.state.color as Color);
+            this.target.setBackgroundColor(this.state.color);
         }
     }
 
@@ -334,7 +334,7 @@ export default class CCGraphicsContext {
                 this.target.setCursorPos(startReal.x, startReal.y + y);
                 this.target.blit(text, fg, bg);
             }
-            this.target.setBackgroundColor(this.state.color as Color);
+            this.target.setBackgroundColor(this.state.color);
         }
         // TODO: handle palettes
     }

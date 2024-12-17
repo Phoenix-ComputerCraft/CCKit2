@@ -3,22 +3,24 @@ import CCGraphicsContext from "CCKit2/CCGraphicsContext";
 import CCButton from "CCKit2/CCButton";
 
 /**
- * A checkbox is a type of button that is either on or off.
+ * A radio button is a type of button that can only have one button active in
+ * a group. Groups are established when radio buttons share superviews and 
+ * state change actions.
  */
-export default class CCCheckbox extends CCButton {
-    /** Whether the checkbox is currently checked. */
+export default class CCRadioButton extends CCButton {
+    /** Whether the radio button is currently selected. */
     public get checked(): boolean {return this._checked;}
     public set checked(value: boolean) {
         this._checked = value;
         this.setNeedsDisplay();
     }
     private _checked: boolean = false;
-    /** The function called when the state changes. */
-    public onStateChange?: (this: void, sender: CCCheckbox, state: boolean) => void;
+    /** The function called when a button is clicked. */
+    public onStateChange?: (this: void, sender: CCRadioButton) => void;
 
     /**
-     * Create a new checkbox.
-     * @param position The position of the checkbox
+     * Create a new radio button.
+     * @param position The position of the button
      * @param text The text for the button
      */
     constructor(position: CCPoint, text: string) {
@@ -33,7 +35,7 @@ export default class CCCheckbox extends CCButton {
         if (rect.x === 1) {
             let bgColor = (this._checked ? this.buttonDefaultColor : (this.isPressed ? this.buttonActiveColor : this.buttonColor));
             context.color = this._checked ? CCColor.white : CCColor.black;
-            context.drawTextWithBackground({x: 1, y: 1}, this._checked ? "x" : " ", bgColor);
+            context.drawTextWithBackground({x: 1, y: 1}, this._checked ? "\x07" : string.char(0xBA), bgColor);
         }
         context.color = (this.isEnabled ? this.textColor : this.textDisabledColor);
         const str = " " + this.text;
@@ -41,7 +43,11 @@ export default class CCCheckbox extends CCButton {
     }
 
     private onClick(): void {
-        this.checked = !this.checked;
-        if (this.onStateChange) this.onStateChange(this, this.checked);
+        this.checked = true;
+        if (this.superview)
+            for (let view of this.superview.subviews)
+                if (view !== this && view instanceof CCRadioButton && view.onStateChange === this.onStateChange)
+                    view.checked = false;
+        if (this.onStateChange) this.onStateChange(this);
     }
 }

@@ -2,6 +2,7 @@ import CCApplication from "CCKit2/CCApplication";
 import CCEvent from "CCKit2/CCEvent";
 import CCWindow from "CCKit2/CCWindow";
 import * as defaultWM from "CCKit2/CCDefaultWindowManagerConnection";
+import { CCColor } from "./CCTypes";
 
 /**
  * The CCWindowManagerFramebuffer interface represents the underlying framebuffer
@@ -15,12 +16,12 @@ export declare interface CCWindowManagerFramebuffer {
     close(): void;
     getSize(): LuaMultiReturn<[number, number]>;
     getPosition(): LuaMultiReturn<[number, number]>;
-    getPaletteColor(color: Color): LuaMultiReturn<[number, number, number]>;
-    setPaletteColor(color: Color, rgb: number): void;
-    setPaletteColor(color: Color, r: number, g: number, b: number): void;
-    getPaletteColour(color: Color): LuaMultiReturn<[number, number, number]>;
-    setPaletteColour(color: Color, rgb: number): void;
-    setPaletteColour(color: Color, r: number, g: number, b: number): void;
+    getPaletteColor(color: CCColor): LuaMultiReturn<[number, number, number]>;
+    setPaletteColor(color: CCColor, rgb: number): void;
+    setPaletteColor(color: CCColor, r: number, g: number, b: number): void;
+    getPaletteColour(color: number): LuaMultiReturn<[number, number, number]>;
+    setPaletteColour(color: CCColor, rgb: number): void;
+    setPaletteColour(color: CCColor, r: number, g: number, b: number): void;
     reposition(x: number, y: number): void;
     resize(w: number, h: number): void;
     write(text: string): void;
@@ -34,17 +35,17 @@ export declare interface CCWindowManagerFramebuffer {
     isColor(): boolean;
     isColour(): boolean;
     scroll(lines: number): void;
-    getTextColor(): Color;
-    setTextColor(color: Color): void;
-    getBackgroundColor(): Color;
-    setBackgroundColor(color: Color): void;
-    getTextColour(): Color;
-    setTextColour(color: Color): void;
-    getBackgroundColour(): Color;
-    setBackgroundColour(color: Color): void;
-    getBorderColor(): number;
-    setBorderColor(color: number): void;
-    getLine(y: number): LuaMultiReturn<[string, string, string] | [undefined]>;
+    getTextColor(): CCColor;
+    setTextColor(color: CCColor): void;
+    getBackgroundColor(): CCColor;
+    setBackgroundColor(color: CCColor): void;
+    getTextColour(): CCColor;
+    setTextColour(color: CCColor): void;
+    getBackgroundColour(): CCColor;
+    setBackgroundColour(color: CCColor): void;
+    getBorderColor(): CCColor;
+    setBorderColor(color: CCColor): void;
+    getLine(y: number): LuaMultiReturn<[string, string, string] | []>;
     restoreCursor(): void;
     isVisible(): boolean;
     setVisible(visible: boolean): void;

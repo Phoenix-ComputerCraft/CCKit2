@@ -82,11 +82,17 @@ export default class CCTextField extends CCView {
         return [this.convertToWindowSpace({x: this._cursorPos - this.scrollPos + 1, y: 1}), this._textColor];
     }
 
+    public mouseDown(event: CCEvent): void {
+        const start = this.convertToWindowSpace({x: 1, y: 1});
+        this._cursorPos = Math.min(this.scrollPos + event.locationInWindow!.x - start.x, this._text.length);
+        this.setNeedsDisplay();
+    }
+
     public keyDown(event: CCEvent): void {
         if (!this.isActive) return;
         if (event.keyCode === CCKey.Left && this._cursorPos > 0) {
             this._cursorPos--;
-            if (this.scrollPos > this._cursorPos) this.scrollPos--;
+            if (this.scrollPos > this._cursorPos - 1 && this.scrollPos > 0) this.scrollPos--;
             this.setNeedsDisplay();
         } else if (event.keyCode === CCKey.Right && this._cursorPos < this._text.length) {
             this._cursorPos++;
@@ -103,7 +109,7 @@ export default class CCTextField extends CCView {
         } else if (event.keyCode === CCKey.Backspace && this._cursorPos > 0) {
             this._text = this._text.substring(0, this._cursorPos - 1) + this._text.substring(this._cursorPos);
             this._cursorPos--;
-            if (this.scrollPos > this._cursorPos) this.scrollPos--;
+            if (this.scrollPos > this._cursorPos - 1 && this.scrollPos > 0) this.scrollPos--;
             this.setNeedsDisplay();
         } else if (event.keyCode === CCKey.Delete) {
             this._text = this._text.substring(0, this._cursorPos) + this._text.substring(this._cursorPos + 1);

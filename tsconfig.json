@@ -6,7 +6,7 @@
         "moduleResolution": "node",
         "strict": true,
         "typeRoots": ["./types", "./node_modules"],
-        "types": ["@jackmacwindows/lua-types/cc", "@phoenix-cc/libsystem"],
+        "types": ["@jackmacwindows/lua-types/cc"],
         "baseUrl": "./src",
         "paths": {
             "CCKit2/*": ["CCKit2/*"]

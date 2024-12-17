@@ -8,6 +8,7 @@ import CCImage from "CCKit2/CCImage";
 import CCImageView from "CCKit2/CCImageView";
 import CCLabel from "CCKit2/CCLabel";
 import CCProgressIndicator from "CCKit2/CCProgressIndicator";
+import CCRadioButton from "CCKit2/CCRadioButton";
 import CCSlider from "CCKit2/CCSlider";
 import CCTextField from "CCKit2/CCTextField";
 import { CCColor, CCRect } from "CCKit2/CCTypes";
@@ -74,13 +75,25 @@ bbbbcdef`);
         let slider = new CCSlider({x: 2, y: 6, width: 11, height: 1});
         this.view.addSubview(slider);
         let sliderText = new CCLabel({x: 14, y: 6}, "0.0");
-        slider.action = function(this: void, sender: CCView, position: number): void {
+        slider.action = (_, position) => {
             sliderText.text = string.format("%.1f", position);
         }
         this.view.addSubview(sliderText);
         let textBox = new CCTextField({x: 2, y: 7, width: 11, height: 1});
         textBox.placeholderText = "Text...";
         this.view.addSubview(textBox);
+        let radioCallback: (this: void, sender: CCRadioButton) => void = (sender) => {
+
+        };
+        let radioA = new CCRadioButton({x: 22, y: 7}, "Opt 1");
+        radioA.onStateChange = radioCallback;
+        this.view.addSubview(radioA);
+        let radioB = new CCRadioButton({x: 22, y: 8}, "Opt 2");
+        radioB.onStateChange = radioCallback;
+        this.view.addSubview(radioB);
+        let radioC = new CCRadioButton({x: 22, y: 9}, "Opt 3");
+        radioC.onStateChange = radioCallback;
+        this.view.addSubview(radioC);
 
         /*let v2 = new MyView({x: 5, y: 5, width: 5, height: 5});
         this.view.addSubview(v2);
@@ -112,6 +125,15 @@ bbbbcdef`);
             resizingView: resizingView,
             label: this.label,
         });*/
+
+        let quit = new CCButton({x: 1, y: 1}, "Quit", () => this.view.window!.close());
+        this.view.addSubview(quit);
+        CCView.addConstraintsByCode(`
+            quit.CenterX = superview.CenterX
+            quit.Bottom = superview.Bottom - 1
+            quit.Width = 6
+            quit.Height = 1
+        `, {quit: quit, superview: this.view});
     }
 }
 
