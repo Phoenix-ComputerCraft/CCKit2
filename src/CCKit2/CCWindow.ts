@@ -594,6 +594,7 @@ export class CCWindow extends CCResponder {
      */
     public close(): void {
         this.framebuffer.close();
+        if (this.parent && this.isKeyWindow) this.parent.makeKey();
         // TODO: refactor into CCApplication?
         let index = CCApplication.shared.windows.indexOf(this);
         if (index !== -1) CCApplication.shared.windows.splice(index, 1);

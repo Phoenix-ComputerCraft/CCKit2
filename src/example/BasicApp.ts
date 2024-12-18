@@ -3,6 +3,7 @@ import CCApplicationDelegate from "CCKit2/CCApplicationDelegate";
 import CCApplicationMain from "CCKit2/CCApplicationMain";
 import CCButton from "CCKit2/CCButton";
 import CCCheckbox from "CCKit2/CCCheckbox";
+import CCDialog from "CCKit2/CCDialog";
 import CCEvent from "CCKit2/CCEvent";
 import CCImage from "CCKit2/CCImage";
 import CCImageView from "CCKit2/CCImageView";
@@ -94,6 +95,8 @@ bbbbcdef`);
         let radioC = new CCRadioButton({x: 22, y: 9}, "Opt 3");
         radioC.onStateChange = radioCallback;
         this.view.addSubview(radioC);
+        let popupButton = new CCButton({x: 3, y: 8}, "Dialog", () => CCDialog.messageWithOneButton(this.view.window, "Alert", "This is a test of the dialog box and text view functionality, showing word wrapping."));
+        this.view.addSubview(popupButton);
 
         /*let v2 = new MyView({x: 5, y: 5, width: 5, height: 5});
         this.view.addSubview(v2);

@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/Phoenix-ComputerCraft/CCKit2#readme",
   "devDependencies": {
-    "@jackmacwindows/typescript-to-lua": "^1.22.0",
+    "@jackmacwindows/typescript-to-lua": "^1.28.0",
     "@jackmacwindows/lua-types": "^2.13.2",
     "@phoenix-cc/libsystem": "^0.1.4",
     "ts-node": "^10.9.1"

@@ -12,6 +12,10 @@ export default class CCRadioButton extends CCButton {
     public get checked(): boolean {return this._checked;}
     public set checked(value: boolean) {
         this._checked = value;
+        if (value && this.superview)
+            for (let view of this.superview.subviews)
+                if (view !== this && view instanceof CCRadioButton && view.onStateChange === this.onStateChange)
+                    view.checked = false;
         this.setNeedsDisplay();
     }
     private _checked: boolean = false;

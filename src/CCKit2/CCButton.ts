@@ -63,7 +63,7 @@ export default class CCButton extends CCControl {
         if (this.window === undefined) return;
         const context = CCGraphicsContext.current!;
         const bgColor = (this.isPressed ? this._buttonActiveColor : (this.isDefault ? this._buttonDefaultColor : this._buttonColor));
-        context.color = (this.isEnabled ? this._textColor : this._textDisabledColor);
+        context.color = (this.isEnabled ? (this.isDefault ? CCColor.white : this._textColor) : this._textDisabledColor);
         const str = " " + this._text + " ";
         context.drawTextWithBackground(rect, str.substring(rect.x - 1, rect.x - 1 + rect.width), bgColor);
     }
