@@ -10,8 +10,10 @@ import CCImageView from "CCKit2/CCImageView";
 import CCLabel from "CCKit2/CCLabel";
 import CCProgressIndicator from "CCKit2/CCProgressIndicator";
 import CCRadioButton from "CCKit2/CCRadioButton";
+import CCScrollView from "CCKit2/CCScrollView";
 import CCSlider from "CCKit2/CCSlider";
 import CCTextField from "CCKit2/CCTextField";
+import CCTextView from "CCKit2/CCTextView";
 import { CCColor, CCRect } from "CCKit2/CCTypes";
 import CCView from "CCKit2/CCView";
 import CCViewController from "CCKit2/CCViewController";
@@ -60,13 +62,18 @@ class ViewController extends CCViewController {
         let button = new CCButton({x: 2, y: 3}, "Increment", () => this.increment());
         this.view.addSubview(button);
 
+        let scrollView = new CCScrollView({x: 18, y: 2, width: 12, height: 4}, {width: 11, height: 20});
+        this.view.addSubview(scrollView);
         let image = CCImage.createFromNFP(
 `ffff0123
 eeee4567
 dddd89ab
 bbbbcdef`);
-        let imageView = new CCImageView({x: 22, y: 2}, image);
-        this.view.addSubview(imageView);
+        let imageView = new CCImageView({x: 1, y: 1}, image);
+        scrollView.addSubview(imageView);
+        let textView = new CCTextView({x: 1, y: 5, width: 11, height: 16});
+        textView.text = `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`;
+        scrollView.addSubview(textView);
         let checkbox = new CCCheckbox({x: 3, y: 4}, "Enabled");
         checkbox.checked = true;
         checkbox.onStateChange = (_, state) => button.isEnabled = state;

@@ -2,9 +2,12 @@ import { CCColor, CCPoint, CCRect, CCSize } from "CCKit2/CCTypes";
 import { CCWindowManagerFramebuffer, CCWindowManagerGraphicsFramebuffer } from "CCKit2/CCWindowManagerConnection";
 import CCImage from "CCKit2/CCImage";
 
-type GCState = CCRect & {
-    color: CCColor;
+type GCState = {
+    translate: CCPoint;
+    crop: CCPoint;
+    size: CCSize;
     scale: CCSize;
+    color: CCColor;
 };
 
 const floor = math.floor;
@@ -20,7 +23,7 @@ export default class CCGraphicsContext {
     private gfxTarget?: CCWindowManagerGraphicsFramebuffer;
     private nativeSize: CCSize;
 
-    private state: GCState = {x: 0, y: 0, width: 0, height: 0, scale: {width: 1, height: 1}, color: CCColor.black};
+    private state: GCState = {translate: {x: 0, y: 0}, crop: {x: 0, y: 0}, size: {width: 0, height: 0}, scale: {width: 1, height: 1}, color: CCColor.black};
     private stack: GCState[] = [];
 
     /** The current context being used for drawing. */
@@ -44,24 +47,46 @@ export default class CCGraphicsContext {
         if ("write" in target) {
             this.target = target as CCWindowManagerFramebuffer;
             this.gfxTarget = undefined;
-            [this.state.width, this.state.height] = this.target.getSize();
-            this.nativeSize = {width: this.state.width, height: this.state.height};
+            [this.state.size.width, this.state.size.height] = this.target.getSize();
+            this.nativeSize = {width: this.state.size.width, height: this.state.size.height};
         } else if ("setPixel" in target) {
             this.target = undefined;
             this.gfxTarget = target as CCWindowManagerGraphicsFramebuffer;
-            [this.state.width, this.state.height] = this.gfxTarget.getSize();
-            this.nativeSize = {width: this.state.width, height: this.state.height};
-            this.state.width /= 6;
-            this.state.height /= 9;
+            [this.state.size.width, this.state.size.height] = this.gfxTarget.getSize();
+            this.nativeSize = {width: this.state.size.width, height: this.state.size.height};
+            this.state.size.width /= 6;
+            this.state.size.height /= 9;
         } else {
             throw "Invalid argument";
         }
     }
 
-    private pointToTargetSpace(point: CCPoint): CCPoint {
+    private pointToTargetSpace(point: CCPoint): CCPoint | undefined {
+        if (point.x - 1 < this.state.crop.x || point.x > this.state.crop.x + this.state.size.width || point.y - 1 < this.state.crop.y || point.y > this.state.crop.y + this.state.size.height)
+            return undefined;
         return {
-            x: min(max(floor((min(max(point.x, 1), this.state.width) - 1) / this.state.scale.width + this.state.x + 1), 1), this.nativeSize.width),
-            y: min(max(floor((min(max(point.y, 1), this.state.height) - 1) / this.state.scale.height + this.state.y + 1), 1), this.nativeSize.height)
+            x: min(max(floor((point.x - 1) / this.state.scale.width + this.state.translate.x + 1), 1), this.nativeSize.width),
+            y: min(max(floor((point.y - 1) / this.state.scale.height + this.state.translate.y + 1), 1), this.nativeSize.height)
+        }
+    }
+
+    private pointToTargetSpaceConstrainedX(point: CCPoint): (CCPoint & {offsetX: number}) | undefined {
+        if (point.y - 1 < this.state.crop.y || point.y > this.state.crop.y + this.state.size.height)
+            return undefined;
+        let offsetX: number = 0;
+        if (point.x <= this.state.crop.x) offsetX = this.state.crop.x + 1 - point.x;
+        else if (point.x > this.state.crop.x + this.state.size.width) offsetX = -(point.x - (this.state.crop.x + this.state.size.width));
+        return {
+            x: min(max(floor((min(max(point.x, this.state.crop.x + 1), this.state.crop.x + this.state.size.width) - 1) / this.state.scale.width + this.state.translate.x + 1), 1), this.nativeSize.width),
+            y: min(max(floor((point.y - 1) / this.state.scale.height + this.state.translate.y + 1), 1), this.nativeSize.height),
+            offsetX: offsetX
+        }
+    }
+
+    private pointToTargetSpaceConstrainedXY(point: CCPoint): CCPoint {
+        return {
+            x: min(max(floor((min(max(point.x, this.state.crop.x + 1), this.state.crop.x + this.state.size.width) - 1) / this.state.scale.width + this.state.translate.x + 1), 1), this.nativeSize.width),
+            y: min(max(floor((min(max(point.y, this.state.crop.y + 1), this.state.crop.y + this.state.size.height) - 1) / this.state.scale.height + this.state.translate.y + 1), 1), this.nativeSize.height)
         }
     }
 
@@ -70,10 +95,18 @@ export default class CCGraphicsContext {
      */
     public pushState(): void {
         this.stack.push({
-            x: this.state.x,
-            y: this.state.y,
-            width: this.state.width,
-            height: this.state.height,
+            translate: {
+                x: this.state.translate.x,
+                y: this.state.translate.y
+            },
+            crop: {
+                x: this.state.crop.x,
+                y: this.state.crop.y
+            },
+            size: {
+                width: this.state.size.width,
+                height: this.state.size.height
+            },
             scale: {
                 width: this.state.scale.width,
                 height: this.state.scale.height
@@ -93,8 +126,8 @@ export default class CCGraphicsContext {
     /** Returns the size of the context, in virtual pixels. */
     public get size(): CCSize {
         return {
-            width: this.state.width,
-            height: this.state.height
+            width: this.state.size.width,
+            height: this.state.size.height
         }
     }
 
@@ -103,12 +136,25 @@ export default class CCGraphicsContext {
      * @param point The point to relocate to, relative to the current origin
      */
     public setOrigin(point: CCPoint): void {
-        const changeX = min(max(point.x - 1, 0), this.state.width);
-        const changeY = min(max(point.y - 1, 0), this.state.height);
-        this.state.x += changeX / this.state.scale.width;
-        this.state.y += changeY / this.state.scale.height;
-        this.state.width -= changeX;
-        this.state.height -= changeY;
+        const changeX = min(max(point.x - 1, 0), this.state.size.width + this.state.crop.x);
+        const changeY = min(max(point.y - 1, 0), this.state.size.height + this.state.crop.y);
+        this.state.translate.x += changeX / this.state.scale.width;
+        this.state.translate.y += changeY / this.state.scale.height;
+        this.state.size.width -= max(changeX - this.state.crop.x, 0);
+        this.state.size.height -= max(changeY - this.state.crop.y, 0);
+    }
+
+    /**
+     * Moves the virtual origin point of the context. This effectively moves the
+     * "draw window" of the context, keeping the size the same and hiding off-
+     * screen drawing.
+     * @param delta The amount to move the virtual origin
+     */
+    public setVirtualOrigin(delta: CCPoint): void {
+        this.state.translate.x += delta.x / this.state.scale.width;
+        this.state.translate.y += delta.y / this.state.scale.height;
+        this.state.crop.x -= delta.x;
+        this.state.crop.y -= delta.y;
     }
 
     /**
@@ -116,8 +162,8 @@ export default class CCGraphicsContext {
      * @param size The new size of the context. Resizing larger will have no effect.
      */
     public setSize(size: CCSize): void {
-        this.state.width = min(max(size.width, 0), this.state.width);
-        this.state.height = min(max(size.height, 0), this.state.height);
+        this.state.size.width = min(max(size.width, 0), this.state.size.width);
+        this.state.size.height = min(max(size.height, 0), this.state.size.height);
     }
 
     /**
@@ -125,22 +171,24 @@ export default class CCGraphicsContext {
      * @param rect The rectangle to reposition to
      */
     public setRect(rect: CCRect): void {
-        const changeX = min(max(rect.x - 1, 0), this.state.width);
-        const changeY = min(max(rect.y - 1, 0), this.state.height);
-        this.state.x += changeX / this.state.scale.width;
-        this.state.y += changeY / this.state.scale.height;
-        this.state.width = min(max(rect.width, 0), this.state.width - changeX);
-        this.state.height = min(max(rect.height, 0), this.state.height - changeY);
+        const changeX = min(max(rect.x - 1, 0), this.state.size.width + this.state.crop.x);
+        const changeY = min(max(rect.y - 1, 0), this.state.size.height + this.state.crop.y);
+        this.state.translate.x += changeX / this.state.scale.width;
+        this.state.translate.y += changeY / this.state.scale.height;
+        this.state.size.width = min(max(rect.width, 0), this.state.size.width - max(changeX - this.state.crop.x, 0));
+        this.state.size.height = min(max(rect.height, 0), this.state.size.height - max(changeY - this.state.crop.y, 0));
+        this.state.crop.x = max(this.state.crop.x - changeX, 0);
+        this.state.crop.y = max(this.state.crop.y - changeY, 0);
     }
 
     /**
-     * Sets the virtual size of the context. This causes all future points to
-     * be scaled to fit inside this size.
+     * Rescales the size of the context. This causes all future points to be
+     * scaled to fit inside this size.
      * @param size The new virtual size of the context
      */
-    public setVirtualSize(size: CCSize): void {
-        this.state.width = size.width;
-        this.state.height = size.height;
+    public setScaledSize(size: CCSize): void {
+        this.state.size.width = size.width;
+        this.state.size.height = size.height;
         this.state.scale.width = size.width / this.state.scale.width;
         this.state.scale.height = size.height / this.state.scale.height;
     }
@@ -151,11 +199,13 @@ export default class CCGraphicsContext {
      */
     public drawPoint(point: CCPoint): void {
         const realPoint = this.pointToTargetSpace(point);
-        if (this.gfxTarget) {
-            // TODO
-        } else {
-            this.target!.setCursorPos(realPoint.x, realPoint.y);
-            this.target!.write(" ");
+        if (realPoint) {
+            if (this.gfxTarget) {
+                // TODO
+            } else {
+                this.target!.setCursorPos(realPoint.x, realPoint.y);
+                this.target!.write(" ");
+            }
         }
     }
 
@@ -165,18 +215,36 @@ export default class CCGraphicsContext {
      * @param end The point to end the line at
      */
     public drawLine(start: CCPoint, end: CCPoint): void {
-        if (start.y === end.y) {
-            const startReal = this.pointToTargetSpace(start), endReal = this.pointToTargetSpace(end);
-            const width = endReal.x - startReal.x;
-            if (this.gfxTarget) {
-                // TODO
-            } else if (this.target) {
-                this.target.setCursorPos(startReal.x, startReal.y);
-                this.target.write(string.rep(" ", width));
+        if (start.x === end.x && start.y === end.y) {
+            this.drawPoint(start);
+            return;
+        } else if (start.y === end.y) {
+            const startReal = this.pointToTargetSpaceConstrainedX(start), endReal = this.pointToTargetSpaceConstrainedX(end);
+            if (startReal && endReal && endReal.x - startReal.x > 0) {
+                const width = endReal.x - startReal.x;
+                if (this.gfxTarget) {
+                    // TODO
+                } else if (this.target) {
+                    this.target.setCursorPos(startReal.x, startReal.y);
+                    this.target.write(string.rep(" ", width));
+                }
+            }
+            return;
+        } else if (start.x === end.x) {
+            for (let y = min(start.y, end.y); y <= max(start.y, end.y); y++) {
+                const point = this.pointToTargetSpace({x: start.x, y: y});
+                if (point) {
+                    if (this.gfxTarget) {
+                        // TODO
+                    } else if (this.target) {
+                        this.target.setCursorPos(point.x, point.y);
+                        this.target.write(" ");
+                    }
+                }
             }
             return;
         }
-        if (math.abs(end.y - start.y) < math.abs(end.x - start.x)) {
+        if (Math.abs(end.y - start.y) < Math.abs(end.x - start.x)) {
             if (start.x > end.x) {
                 const a = end;
                 end = start;
@@ -233,11 +301,12 @@ export default class CCGraphicsContext {
      * @param rect The rectangle to draw
      */
     public drawRectangle(rect: CCRect): void {
-        const startReal = this.pointToTargetSpace(rect), endReal = this.pointToTargetSpace({x: rect.x + rect.width - 1, y: rect.y + rect.height - 1});
+        const startReal = this.pointToTargetSpaceConstrainedXY(rect), endReal = this.pointToTargetSpaceConstrainedXY({x: rect.x + rect.width - 1, y: rect.y + rect.height - 1});
         const width = endReal.x - startReal.x + 1;
         if (this.gfxTarget) {
             // TODO
         } else if (this.target) {
+            // TODO: fix bounds
             this.target.setCursorPos(startReal.x, startReal.y);
             this.target.write(string.rep(" ", width));
             this.target.setCursorPos(endReal.x, endReal.y);
@@ -256,7 +325,7 @@ export default class CCGraphicsContext {
      * @param rect The rectangle to draw
      */
     public drawFilledRectangle(rect: CCRect): void {
-        const startReal = this.pointToTargetSpace(rect), endReal = this.pointToTargetSpace({x: rect.x + rect.width - 1, y: rect.y + rect.height - 1});
+        const startReal = this.pointToTargetSpaceConstrainedXY(rect), endReal = this.pointToTargetSpaceConstrainedXY({x: rect.x + rect.width - 1, y: rect.y + rect.height - 1});
         const width = endReal.x - startReal.x + 1;
         if (this.gfxTarget) {
             // TODO
@@ -275,13 +344,16 @@ export default class CCGraphicsContext {
      * @param text The text to draw
      */
     public drawText(start: CCPoint, text: string): void {
-        const startReal = this.pointToTargetSpace(start);
+        const startReal = this.pointToTargetSpaceConstrainedX(start);
+        if (!startReal) return;
         if (this.gfxTarget) {
             // TODO: font renderer
         } else if (this.target) {
             this.target.setCursorPos(startReal.x, startReal.y);
-            if (text.length > this.state.width / this.state.scale.width)
-                text = text.substring(0, floor(this.state.width / this.state.scale.width));
+            if (startReal.offsetX < 0)
+                return;
+            else if (startReal.offsetX > 0)
+                text = text.substring(startReal.offsetX);
             const [ogtext, fg, bg] = this.target.getLine(startReal.y);
             if (text.length > ogtext!.length - startReal.x + 1)
                 text = text.substring(0, ogtext!.length - startReal.x + 1);
@@ -297,13 +369,16 @@ export default class CCGraphicsContext {
      * @param text The text to draw
      */
     public drawTextWithBackground(start: CCPoint, text: string, background: CCColor): void {
-        const startReal = this.pointToTargetSpace(start);
+        const startReal = this.pointToTargetSpaceConstrainedX(start);
+        if (!startReal) return;
         if (this.gfxTarget) {
             // TODO: font renderer
         } else if (this.target) {
             this.target.setCursorPos(startReal.x, startReal.y);
-            if (text.length > this.state.width / this.state.scale.width)
-                text = text.substring(0, floor(this.state.width / this.state.scale.width - (startReal.x - 1)));
+            if (startReal.offsetX < 0)
+                return;
+            else if (startReal.offsetX > 0)
+                text = text.substring(startReal.offsetX);
             this.target.blit(text, string.rep(string.format("%x", this.state.color), text.length), string.rep(string.format("%x", background), text.length));
             this.target.setBackgroundColor(this.state.color);
         }
@@ -315,7 +390,6 @@ export default class CCGraphicsContext {
      * @param pos The position to draw the image at
      */
     public drawImage(image: CCImage, pos: CCPoint): void {
-        const startReal = this.pointToTargetSpace(pos);
         if (this.gfxTarget) {
             // TODO: pixel drawing
         } else if (this.target) {
@@ -324,15 +398,19 @@ export default class CCGraphicsContext {
                 throw "Image has no text representation";
             }
             for (let y = 0; y < image.bimgRepresentation.length; y++) {
-                let [text, fg, bg] = image.bimgRepresentation[y];
-                if (text.length > this.state.width / this.state.scale.width)
-                    text = text.substring(0, floor(this.state.width / this.state.scale.width - (startReal.x - 1)));
-                if (fg.length > this.state.width / this.state.scale.width)
-                    fg = fg.substring(0, floor(this.state.width / this.state.scale.width - (startReal.x - 1)));
-                if (bg.length > this.state.width / this.state.scale.width)
-                    bg = bg.substring(0, floor(this.state.width / this.state.scale.width - (startReal.x - 1)));
-                this.target.setCursorPos(startReal.x, startReal.y + y);
-                this.target.blit(text, fg, bg);
+                const startReal = this.pointToTargetSpaceConstrainedX({x: pos.x, y: pos.y + y});
+                if (startReal) {
+                    let [text, fg, bg] = image.bimgRepresentation[y];
+                    if (startReal.offsetX < 0) {
+                        return;
+                    } else if (startReal.offsetX > 0) {
+                        text = text.substring(startReal.offsetX);
+                        fg = fg.substring(startReal.offsetX);
+                        bg = bg.substring(startReal.offsetX);
+                    }
+                    this.target.setCursorPos(startReal.x, startReal.y);
+                    this.target.blit(text, fg, bg);
+                }
             }
             this.target.setBackgroundColor(this.state.color);
         }

@@ -92,11 +92,20 @@ export type CCWindowManagerWindowOptions = {
 export default interface CCWindowManagerConnection {
     /**
      * Creates a new window in the window manager.
+     * @param forWindow The CCWindow instance this window is for
+     * @param x The X position of the window, or undefined to let the WM choose
+     * @param y The Y position of the window, or undefined to let the WM choose
+     * @param width The width of the window
+     * @param height The height of the window
+     * @param title The title for the window
+     * @param options Options to specify for the window
+     * @returns A new window framebuffer target, or undefined if it couldn't be created
      */
     createWindow(forWindow: CCWindow, x: number | undefined, y: number | undefined, width: number, height: number, title: string, options: CCWindowManagerWindowOptions): CCWindowManagerFramebuffer | undefined;
 
     /**
      * Waits for an event from the window manager or operating system.
+     * @returns An event to post to the application
      */
     pullEvent(): CCEvent;
 }

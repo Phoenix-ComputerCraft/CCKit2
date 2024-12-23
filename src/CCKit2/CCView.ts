@@ -92,6 +92,7 @@ export default class CCView extends CCResponder {
     public addSubview(view: CCView): void {
         this.subviews.push(view);
         view.superview = this;
+        view.nextResponder = this;
         view.window = this.window;
         view.needsDraw = true;
         this.needsDraw = true;
