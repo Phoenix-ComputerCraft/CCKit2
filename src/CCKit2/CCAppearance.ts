@@ -2,6 +2,7 @@ import { CCColor } from "CCKit2/CCTypes";
 
 /**
  * Stores parameters that define the appearance for an application.
+ * @category Application
  */
 export default class CCAppearance {
     /** Whether to show the title bar. */

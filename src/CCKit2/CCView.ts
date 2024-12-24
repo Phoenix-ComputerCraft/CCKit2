@@ -34,6 +34,7 @@ const PropertyNames = ["Left", "Top", "Width", "Height"];
  * The CCView class is the base for all displayable objects on screen. It
  * handles rendering the element, resizing subviews, and user interaction.
  * Subclasses can override the default behavior to provide custom elements.
+ * @category Views
  */
 export default class CCView extends CCResponder {
     /** The background color of the view. */

@@ -4,6 +4,7 @@ import CCButton from "CCKit2/CCButton";
 
 /**
  * A checkbox is a type of button that is either on or off.
+ * @category Views
  */
 export default class CCCheckbox extends CCButton {
     /** Whether the checkbox is currently checked. */

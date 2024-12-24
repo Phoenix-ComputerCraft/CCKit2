@@ -4,6 +4,7 @@ import CCGraphicsContext from "CCKit2/CCGraphicsContext";
 
 /**
  * A label displays a single line of text without wrapping.
+ * @category Views
  */
 export default class CCLabel extends CCView {
     /** The text for the label. */

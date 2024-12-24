@@ -56,8 +56,9 @@ function wrap(text: string, width: number): string[] {
 
 /**
  * A text view displays multiple lines of text with wrapping.
+ * @category Views
  */
-class CCTextView extends CCView {
+export class CCTextView extends CCView {
     public get frame(): CCRect {return super.frame;}
     public set frame(value: CCRect) {
         super.frame = value;
@@ -126,7 +127,10 @@ class CCTextView extends CCView {
     }
 }
 
-namespace CCTextView {
+/**
+ * @category Views
+ */
+export namespace CCTextView {
     /** The way to wrap text in a text view. */
     export enum WrapMode {
         /** Do not automatically wrap - clip text instead, but respect newlines. */

@@ -6,6 +6,7 @@ import CCEvent from "CCKit2/CCEvent";
 /**
  * A scroll view displays larger content inside a smaller view, which can be
  * scrolled to see the whole content.
+ * @category Views
  */
 export default class CCScrollView extends CCView {
     /** The view that holds the scroll view content. */

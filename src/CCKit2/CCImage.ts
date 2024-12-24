@@ -16,6 +16,7 @@ type BIMG = {
 
 /**
  * A CCImage represents an image that can be displayed on screen.
+ * @category Core
  */
 export default class CCImage {
     /** The size of the image in characters. */
@@ -31,7 +32,7 @@ export default class CCImage {
 
     /**
      * Create a new CCImage object from a blit image (BIMG) file/data.
-     * @param bimg The blit image to load (already unserialized)
+     * @param image The blit image to load (already unserialized)
      * @param frame The *0-indexed* frame number to load (defaults to the first frame)
      * @returns The newly loaded image
      * @typecheck

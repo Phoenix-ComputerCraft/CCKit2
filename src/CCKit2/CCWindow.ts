@@ -32,6 +32,7 @@ const mouseResponders: {[key: number]: string} = {
  * stacked, and hidden. It controls all drawing to the window region it owns,
  * holds the view controller and views that are drawn to the region, and handles
  * events sent from the window server to the window.
+ * @category Windows
  */
 export class CCWindow extends CCResponder {
     /** The delegate for the window. */
@@ -604,6 +605,9 @@ export class CCWindow extends CCResponder {
     }
 }
 
+/**
+ * @category Windows
+ */
 export namespace CCWindow {
     export enum StyleMask {
         Borderless = 1,

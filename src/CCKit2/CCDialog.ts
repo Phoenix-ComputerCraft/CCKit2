@@ -40,6 +40,7 @@ class CCDialogViewController extends CCViewController {
 
 /**
  * A dialog displays a new window on the screen with the specified message.
+ * @category Windows
  */
 export default class CCDialog {
     /** The title for the alert window. */

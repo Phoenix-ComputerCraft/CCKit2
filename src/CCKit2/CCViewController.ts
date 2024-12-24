@@ -6,6 +6,7 @@ import CCView from "CCKit2/CCView";
  * The CCViewController class is the primary way to design behavior for a view
  * or window. It owns a root view which is tied to the view controller, whose
  * lifecycle is defined by the view controller.
+ * @category View Controllers
  */
 export default class CCViewController extends CCResponder {
     /** The root view of the view controller. */

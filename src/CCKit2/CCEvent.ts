@@ -1,6 +1,11 @@
 import { CCKey, CCPoint } from "CCKit2/CCTypes";
 import CCWindow from "CCKit2/CCWindow";
 
+/**
+ * A CCEvent holds information about a single event that was triggered by the
+ * system, application, or window manager.
+ * @category Application
+ */
 export class CCEvent {
     /** The type of the event. */
     public type: CCEvent.Type = CCEvent.Type.ApplicationDefined;
@@ -56,6 +61,9 @@ export class CCEvent {
     }
 }
 
+/**
+ * @category Application
+ */
 export namespace CCEvent {
     export enum Type {
         LeftMouseDown,

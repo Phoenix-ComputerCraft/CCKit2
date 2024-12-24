@@ -5,6 +5,7 @@ import CCGraphicsContext from "CCKit2/CCGraphicsContext";
 
 /**
  * A CCImageView displays images on the screen.
+ * @category Views
  */
 export default class CCImageView extends CCView {
     /** The image to draw. */

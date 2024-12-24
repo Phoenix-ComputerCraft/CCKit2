@@ -1,5 +1,6 @@
 /**
  * A point in space.
+ * @category Types
  */
 export type CCPoint = {
     x: number;
@@ -8,6 +9,7 @@ export type CCPoint = {
 
 /**
  * A size with width and height.
+ * @category Types
  */
 export type CCSize = {
     width: number;
@@ -16,13 +18,19 @@ export type CCSize = {
 
 /**
  * A rectangle has both a position and size.
+ * @category Types
  */
 export type CCRect = CCPoint & CCSize;
 
 /**
  * Represents a color on screen, which can be modified with palettes.
+ * @category Types
  */
 export type CCColor = number;
+/**
+ * Represents a color on screen, which can be modified with palettes.
+ * @category Types
+ */
 export const CCColor: {[name: string]: CCColor} = {
     white: 0,
     orange: 1,
@@ -45,12 +53,18 @@ export const CCColor: {[name: string]: CCColor} = {
 }
 /**
  * Represents a color on screen, which can be modified with palettes.
+ * @category Types
  */
 export type CCColour = CCColor;
+/**
+ * Represents a color on screen, which can be modified with palettes.
+ * @category Types
+ */
 export const CCColour = CCColor;
 
 /**
  * Holds a weak reference to an object.
+ * @category Types
  */
 export class WeakRef<T> {
     public value?: T;
@@ -61,6 +75,7 @@ WeakRef.prototype["__mode"] = "v";
 
 /**
  * Represents an error thrown by the system.
+ * @category Types
  */
 export type CCError = string | {
     code: number,
@@ -71,6 +86,7 @@ export type CCError = string | {
 
 /**
  * Calculates the intersection of two rectangles.
+ * @category Types
  * @param a The first rectangle to intersect
  * @param b The second rectangle to intersect
  * @returns The intersection of a and b
@@ -89,6 +105,7 @@ export function CCRectIntersection(a: CCRect, b: CCRect): CCRect {
 /**
  * Holds a list of key constants used in CCKit2. These are independent of system-
  * specific codes; use this to check keycodes.
+ * @category Types
  */
 export enum CCKey {
     Backspace = 0x08,

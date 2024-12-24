@@ -4,6 +4,7 @@ import CCWindowManagerConnection from "CCKit2/CCWindowManagerConnection";
 /**
  * An application implementing the CCApplicationDelegate interface can be used
  * to receive life cycle events from the application.
+ * @category Application
  */
 export default interface CCApplicationDelegate {
     /** Called to get a window manager connection for the app. This is required. */

@@ -12,6 +12,7 @@ import CCWindowManagerConnection from "CCKit2/CCWindowManagerConnection";
 /**
  * The CCApplication class is the main class that controls the app run loop,
  * handles events, and manages the lifecycle of the program.
+ * @category Application
  */
 export class CCApplication extends CCResponder {
     /** The CCApplication instance for the current app. */
@@ -280,6 +281,9 @@ export class CCApplication extends CCResponder {
     }
 }
 
+/**
+ * @category Application
+ */
 export namespace CCApplication {
     export enum ModalResponse {
         OK,

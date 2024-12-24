@@ -3,6 +3,11 @@ import { CCColor, CCPoint, CCRect } from "CCKit2/CCTypes";
 import CCControl from "CCKit2/CCControl";
 import CCGraphicsContext from "CCKit2/CCGraphicsContext";
 
+/**
+ * A button implements a simple clickable region with text, which triggers a
+ * function when clicked.
+ * @category Views
+ */
 export default class CCButton extends CCControl {
     /** The color of the button. */
     public get buttonColor(): CCColor {return this._buttonColor;}

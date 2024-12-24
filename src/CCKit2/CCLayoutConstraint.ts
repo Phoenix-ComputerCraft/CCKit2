@@ -4,6 +4,7 @@ import CCView from "CCKit2/CCView";
  * The CCLayoutConstraint class defines a rule that constrains a value of one
  * view's geometry to another view, following a linear equation.
  * Use constraints to make a UI that automatically handles resizing.
+ * @category Core
  */
 export class CCLayoutConstraint {
     /** The first item to constrain. */
@@ -62,6 +63,9 @@ export class CCLayoutConstraint {
     }
 }
 
+/**
+ * @category Core
+ */
 export namespace CCLayoutConstraint {
     export enum Attribute {
         Left,

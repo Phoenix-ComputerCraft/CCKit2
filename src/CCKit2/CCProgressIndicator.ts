@@ -4,8 +4,9 @@ import CCView from "CCKit2/CCView";
 
 /**
  * A CCProgressIndicator displays a progress bar or wheel.
+ * @category Views
  */
-class CCProgressIndicator extends CCView {
+export class CCProgressIndicator extends CCView {
     /** The color of the active part of the progress bar. */
     public get activeColor(): CCColor {return this._activeColor;}
     public set activeColor(value: CCColor) {
@@ -90,7 +91,10 @@ class CCProgressIndicator extends CCView {
     // TODO: animation
 }
 
-namespace CCProgressIndicator {
+/**
+ * @category Views
+ */
+export namespace CCProgressIndicator {
     /** Styles for CCProgressIndicator display. */
     export enum Style {
         Spinning,  /** Spinning loading wheel */

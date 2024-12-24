@@ -2,7 +2,9 @@
   "name": "cckit2",
   "version": "0.1.0",
   "description": "UI framework for ComputerCraft, targeting Phoenix and CraftOS.",
-  "main": "index.js",
+  "exports": {
+    "./CCKit2/*": "./src/CCKit2/*.ts"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,9 +19,13 @@
   },
   "homepage": "https://github.com/Phoenix-ComputerCraft/CCKit2#readme",
   "devDependencies": {
-    "@jackmacwindows/typescript-to-lua": "^1.28.0",
     "@jackmacwindows/lua-types": "^2.13.2",
+    "@jackmacwindows/typescript-to-lua": "^1.28.0",
     "@phoenix-cc/libsystem": "^0.1.4",
-    "ts-node": "^10.9.1"
-  }
+    "ts-node": "^10.9.1",
+    "typedoc": "^0.27.5",
+    "typedoc-plugin-merge-modules": "^6.1.0",
+    "typedoc-plugin-rename-defaults": "^0.7.2"
+  },
+  "readme": "README.md"
 }

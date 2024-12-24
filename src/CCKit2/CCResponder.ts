@@ -4,6 +4,7 @@ import { CCColor, CCPoint } from "CCKit2/CCTypes";
 /**
  * The CCResponder class handles receiving events from the application. Any
  * object that wants to receive events must extend from CCResponder.
+ * @category Core
  */
 export default class CCResponder {
     /** Whether the object can become the first responder. */
@@ -50,7 +51,7 @@ export default class CCResponder {
      * Attempts to call the specified method on the object, passing the call on
      * to the next responder if this object doesn't implement it.
      * @param method The name of the method to call
-     * @param param Any parameters to pass to the method
+     * @param args Any parameters to pass to the method
      * @returns Whether a responder was able to respond to the method
      */
     public tryToCall(method: string, ...args: any[]): boolean {

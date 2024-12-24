@@ -7,6 +7,7 @@ import CCWindow from "CCKit2/CCWindow";
  * Starts the application main loop by creating the shared CCApplication,
  * creating the main window with the specified view controller class, and
  * running the main event loop.
+ * @category Application
  * @param viewController The class for the main view controller
  * @param delegate The application delegate for the program
  * @typecheck

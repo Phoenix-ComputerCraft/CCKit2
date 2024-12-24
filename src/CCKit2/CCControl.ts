@@ -4,6 +4,7 @@ import CCEvent from "CCKit2/CCEvent";
 
 /**
  * CCControl is the base class for many selectable input items.
+ * @category Views
  */
 export default class CCControl extends CCView {
     /** Whether the control is in default state. */
@@ -25,10 +26,9 @@ export default class CCControl extends CCView {
     public action: (this: void, sender: CCView) => void;
 
     /**
-     * Create a new button.
-     * @param position The position of the button
-     * @param text The text for the button
-     * @param action The function to call when the button is pressed
+     * Create a new control.
+     * @param frame The position of the control
+     * @param action The function to call when the control is pressed
      */
     constructor(frame: CCRect, action: (this: void, sender: CCView) => void) {
         super(frame);

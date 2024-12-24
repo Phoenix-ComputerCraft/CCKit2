@@ -5,6 +5,7 @@ import CCEvent from "CCKit2/CCEvent";
 
 /**
  * A text field allows inputting text in a single line.
+ * @category Views
  */
 export default class CCTextField extends CCView {
     /** The text currently in the field. */

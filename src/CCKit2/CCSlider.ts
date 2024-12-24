@@ -5,6 +5,7 @@ import CCGraphicsContext from "CCKit2/CCGraphicsContext";
 
 /**
  * A slider allows input of a progressive value.
+ * @category Views
  */
 export default class CCSlider extends CCView {
     /** Whether the control is enabled. */

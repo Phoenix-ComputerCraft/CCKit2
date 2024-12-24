@@ -17,6 +17,7 @@ const max = math.max;
 /**
  * The CCGraphicsContext class is used to draw onto a surface with various
  * transformations applied on top.
+ * @category Core
  */
 export default class CCGraphicsContext {
     private target?: CCWindowManagerFramebuffer;
@@ -340,7 +341,7 @@ export default class CCGraphicsContext {
     /**
      * Draw text at the specified point on top of existing content.
      * This does not wrap text - any overflow will be clipped.
-     * @param point The leftmost point to draw at
+     * @param start The leftmost point to draw at
      * @param text The text to draw
      */
     public drawText(start: CCPoint, text: string): void {
@@ -366,7 +367,7 @@ export default class CCGraphicsContext {
      * Draw text at the specified point on top of existing content, using the
      * old background color for the foreground (for drawing characters).
      * This does not wrap text - any overflow will be clipped.
-     * @param point The leftmost point to draw at
+     * @param start The leftmost point to draw at
      * @param text The text to draw
      */
     public drawTextInverted(start: CCPoint, text: string): void {
@@ -391,7 +392,7 @@ export default class CCGraphicsContext {
     /**
      * Draw text at the specified point with a background.
      * This does not wrap text - any overflow will be clipped.
-     * @param point The leftmost point to draw at
+     * @param start The leftmost point to draw at
      * @param text The text to draw
      */
     public drawTextWithBackground(start: CCPoint, text: string, background: CCColor): void {

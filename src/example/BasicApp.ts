@@ -3,6 +3,7 @@ import CCApplicationDelegate from "CCKit2/CCApplicationDelegate";
 import CCApplicationMain from "CCKit2/CCApplicationMain";
 import CCButton from "CCKit2/CCButton";
 import CCCheckbox from "CCKit2/CCCheckbox";
+import CCDefaultWindowManagerConnection from "CCKit2/CCDefaultWindowManagerConnection";
 import CCDialog from "CCKit2/CCDialog";
 import CCEvent from "CCKit2/CCEvent";
 import CCImage from "CCKit2/CCImage";
@@ -18,7 +19,7 @@ import CCTextView from "CCKit2/CCTextView";
 import { CCColor, CCRect } from "CCKit2/CCTypes";
 import CCView from "CCKit2/CCView";
 import CCViewController from "CCKit2/CCViewController";
-import CCWindowManagerConnection, { CCDefaultWindowManagerConnection } from "CCKit2/CCWindowManagerConnection";
+import CCWindowManagerConnection from "CCKit2/CCWindowManagerConnection";
 
 class MyView extends CCView {
     constructor(frame: CCRect) {

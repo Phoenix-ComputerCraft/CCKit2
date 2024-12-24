@@ -1,7 +1,5 @@
-import CCApplication from "CCKit2/CCApplication";
 import CCEvent from "CCKit2/CCEvent";
 import CCWindow from "CCKit2/CCWindow";
-import * as defaultWM from "CCKit2/CCDefaultWindowManagerConnection";
 import { CCColor } from "CCKit2/CCTypes";
 
 /**
@@ -10,6 +8,7 @@ import { CCColor } from "CCKit2/CCTypes";
  * a CraftOS window, but with additional methods relating to window ordering and
  * other window manager-specific tasks. This type can only be constructed through
  * a CCWindowManagerConnection instance.
+ * @category Windows
  * @noSelf
  */
 export declare interface CCWindowManagerFramebuffer {
@@ -59,6 +58,7 @@ export declare interface CCWindowManagerFramebuffer {
 
 /**
  * 
+ * @category Windows
  * @noSelf
  */
 export declare interface CCWindowManagerGraphicsFramebuffer {
@@ -66,6 +66,10 @@ export declare interface CCWindowManagerGraphicsFramebuffer {
 
 }
 
+/**
+ * Holds parameters for window creation.
+ * @category Windows
+ */
 export type CCWindowManagerWindowOptions = {
     z?: -4 | -3 | -2 | -1 | 0 | 1 | 2 | 3;
     closable?: boolean;
@@ -88,6 +92,7 @@ export type CCWindowManagerWindowOptions = {
  * 
  * Use the CCDefaultWindowManagerConnection function to acquire an instance of
  * CCWindowManagerConnection that's most appropriate for the current platform.
+ * @category Windows
  */
 export default interface CCWindowManagerConnection {
     /**
@@ -108,13 +113,4 @@ export default interface CCWindowManagerConnection {
      * @returns An event to post to the application
      */
     pullEvent(): CCEvent;
-}
-
-/**
- * Creates a new window manager connection for the current platform's default
- * connection type.
- * @returns A new window manager connection
- */
-export function CCDefaultWindowManagerConnection(app: CCApplication): CCWindowManagerConnection {
-    return defaultWM.default(app);
 }
