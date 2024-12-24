@@ -1,4 +1,4 @@
-import CCView from "./CCView";
+import CCView from "CCKit2/CCView";
 
 /**
  * The CCLayoutConstraint class defines a rule that constrains a value of one

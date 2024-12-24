@@ -1,7 +1,7 @@
 import CCView from "CCKit2/CCView";
 import { CCColor, CCKey, CCPoint, CCRect } from "CCKit2/CCTypes";
 import CCGraphicsContext from "CCKit2/CCGraphicsContext";
-import CCEvent from "./CCEvent";
+import CCEvent from "CCKit2/CCEvent";
 
 /**
  * A text field allows inputting text in a single line.

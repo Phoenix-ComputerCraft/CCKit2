@@ -1,6 +1,6 @@
-import CCGraphicsContext from "./CCGraphicsContext";
-import { CCColor, CCRect } from "./CCTypes";
-import CCView from "./CCView";
+import CCGraphicsContext from "CCKit2/CCGraphicsContext";
+import { CCColor, CCRect } from "CCKit2/CCTypes";
+import CCView from "CCKit2/CCView";
 
 /**
  * A CCProgressIndicator displays a progress bar or wheel.

@@ -2,7 +2,7 @@ import CCResponder from "CCKit2/CCResponder";
 import { CCColor, CCPoint, CCRect, CCRectIntersection } from "CCKit2/CCTypes";
 import CCWindow from "CCKit2/CCWindow";
 import CCGraphicsContext from "CCKit2/CCGraphicsContext";
-import CCLayoutConstraint from "./CCLayoutConstraint";
+import CCLayoutConstraint from "CCKit2/CCLayoutConstraint";
 
 function addLayoutRow(rows: CCRect[][], constants: number[], size: number, firstOffset: number, firstValues: CCRect, secondOffset: number|undefined, secondValues: CCRect|undefined, constant: number): void {
     let row: CCRect[] = [];

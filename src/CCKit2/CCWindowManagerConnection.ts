@@ -2,7 +2,7 @@ import CCApplication from "CCKit2/CCApplication";
 import CCEvent from "CCKit2/CCEvent";
 import CCWindow from "CCKit2/CCWindow";
 import * as defaultWM from "CCKit2/CCDefaultWindowManagerConnection";
-import { CCColor } from "./CCTypes";
+import { CCColor } from "CCKit2/CCTypes";
 
 /**
  * The CCWindowManagerFramebuffer interface represents the underlying framebuffer
