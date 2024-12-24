@@ -12,6 +12,7 @@ import CCProgressIndicator from "CCKit2/CCProgressIndicator";
 import CCRadioButton from "CCKit2/CCRadioButton";
 import CCScrollView from "CCKit2/CCScrollView";
 import CCSlider from "CCKit2/CCSlider";
+import CCTabView from "CCKit2/CCTabView";
 import CCTextField from "CCKit2/CCTextField";
 import CCTextView from "CCKit2/CCTextView";
 import { CCColor, CCRect } from "CCKit2/CCTypes";
@@ -57,13 +58,18 @@ class ViewController extends CCViewController {
         super.viewDidLoad();
         this.view.window!.title = "CCKit2 Demo";
         this.view.backgroundColor = CCColor.white;
-        this.label = new CCLabel({x: 2, y: 2}, "Hello World!");
-        this.view.addSubview(this.label);
-        let button = new CCButton({x: 2, y: 3}, "Increment", () => this.increment());
-        this.view.addSubview(button);
+        let tabView = new CCTabView({x: 1, y: 1, width: this.view.frame.width, height: this.view.frame.height - 1}, ["Basic", "Table"]);
+        this.view.addSubview(tabView);
+        let basicView = tabView.contentViewAt(0);
+        basicView.backgroundColor = CCColor.white;
 
-        let scrollView = new CCScrollView({x: 18, y: 2, width: 12, height: 4}, {width: 11, height: 20});
-        this.view.addSubview(scrollView);
+        this.label = new CCLabel({x: 1, y: 1}, "Hello World!");
+        basicView.addSubview(this.label);
+        let button = new CCButton({x: 1, y: 2}, "Increment", () => this.increment());
+        basicView.addSubview(button);
+
+        let scrollView = new CCScrollView({x: 17, y: 1, width: 12, height: 4}, {width: 11, height: 20});
+        basicView.addSubview(scrollView);
         let image = CCImage.createFromNFP(
 `ffff0123
 eeee4567
@@ -74,44 +80,44 @@ bbbbcdef`);
         let textView = new CCTextView({x: 1, y: 5, width: 11, height: 16});
         textView.text = `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`;
         scrollView.addSubview(textView);
-        let checkbox = new CCCheckbox({x: 3, y: 4}, "Enabled");
+        let checkbox = new CCCheckbox({x: 2, y: 3}, "Enabled");
         checkbox.checked = true;
         checkbox.onStateChange = (_, state) => button.isEnabled = state;
-        this.view.addSubview(checkbox);
-        this.progress = new CCProgressIndicator({x: 2, y: 5, width: 11, height: 1}, CCProgressIndicator.Style.ThinBar);
-        this.view.addSubview(this.progress);
-        let slider = new CCSlider({x: 2, y: 6, width: 11, height: 1});
-        this.view.addSubview(slider);
-        let sliderText = new CCLabel({x: 14, y: 6}, "0.0");
+        basicView.addSubview(checkbox);
+        this.progress = new CCProgressIndicator({x: 1, y: 4, width: 11, height: 1}, CCProgressIndicator.Style.ThinBar);
+        basicView.addSubview(this.progress);
+        let slider = new CCSlider({x: 1, y: 5, width: 11, height: 1});
+        basicView.addSubview(slider);
+        let sliderText = new CCLabel({x: 13, y: 5}, "0.0");
         slider.action = (_, position) => {
             sliderText.text = string.format("%.1f", position);
         }
-        this.view.addSubview(sliderText);
-        let textBox = new CCTextField({x: 2, y: 7, width: 11, height: 1});
+        basicView.addSubview(sliderText);
+        let textBox = new CCTextField({x: 1, y: 6, width: 11, height: 1});
         textBox.placeholderText = "Text...";
-        this.view.addSubview(textBox);
+        basicView.addSubview(textBox);
         let radioCallback: (this: void, sender: CCRadioButton) => void = (sender) => {
 
         };
-        let radioA = new CCRadioButton({x: 22, y: 7}, "Opt 1");
+        let radioA = new CCRadioButton({x: 21, y: 5}, "Opt 1");
         radioA.onStateChange = radioCallback;
-        this.view.addSubview(radioA);
-        let radioB = new CCRadioButton({x: 22, y: 8}, "Opt 2");
+        basicView.addSubview(radioA);
+        let radioB = new CCRadioButton({x: 21, y: 6}, "Opt 2");
         radioB.onStateChange = radioCallback;
-        this.view.addSubview(radioB);
-        let radioC = new CCRadioButton({x: 22, y: 9}, "Opt 3");
+        basicView.addSubview(radioB);
+        let radioC = new CCRadioButton({x: 21, y: 7}, "Opt 3");
         radioC.onStateChange = radioCallback;
-        this.view.addSubview(radioC);
-        let popupButton = new CCButton({x: 3, y: 8}, "Dialog", () => CCDialog.messageWithOneButton(this.view.window, "Alert", "This is a test of the dialog box and text view functionality, showing word wrapping."));
-        this.view.addSubview(popupButton);
+        basicView.addSubview(radioC);
+        let popupButton = new CCButton({x: 2, y: 7}, "Dialog", () => CCDialog.messageWithOneButton(this.view.window, "Alert", "This is a test of the dialog box and text view functionality, showing word wrapping."));
+        basicView.addSubview(popupButton);
 
         /*let v2 = new MyView({x: 5, y: 5, width: 5, height: 5});
-        this.view.addSubview(v2);
+        basicView.addSubview(v2);
         let v3 = new MyView({x: 5, y: 5, width: 5, height: 5});
-        this.view.addSubview(v3);
+        basicView.addSubview(v3);
         let resizingView = new CCView({x: 0, y: 0, width: 0, height: 0});
         resizingView.backgroundColor = CCColor.yellow;
-        this.view.addSubview(resizingView);
+        basicView.addSubview(resizingView);
         CCView.addConstraintsByCode(`
             v2.Top = button.Bottom + 1
             v2.Bottom = rootView.Bottom - 1
@@ -140,7 +146,7 @@ bbbbcdef`);
         this.view.addSubview(quit);
         CCView.addConstraintsByCode(`
             quit.CenterX = superview.CenterX
-            quit.Bottom = superview.Bottom - 1
+            quit.Bottom = superview.Bottom
             quit.Width = 6
             quit.Height = 1
         `, {quit: quit, superview: this.view});

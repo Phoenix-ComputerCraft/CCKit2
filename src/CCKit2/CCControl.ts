@@ -2,6 +2,9 @@ import CCView from "CCKit2/CCView";
 import { CCColor, CCKey, CCRect } from "CCKit2/CCTypes";
 import CCEvent from "CCKit2/CCEvent";
 
+/**
+ * CCControl is the base class for many selectable input items.
+ */
 export default class CCControl extends CCView {
     /** Whether the control is in default state. */
     public get isDefault(): boolean {return this._isDefault;}

@@ -363,6 +363,32 @@ export default class CCGraphicsContext {
     }
 
     /**
+     * Draw text at the specified point on top of existing content, using the
+     * old background color for the foreground (for drawing characters).
+     * This does not wrap text - any overflow will be clipped.
+     * @param point The leftmost point to draw at
+     * @param text The text to draw
+     */
+    public drawTextInverted(start: CCPoint, text: string): void {
+        const startReal = this.pointToTargetSpaceConstrainedX(start);
+        if (!startReal) return;
+        if (this.gfxTarget) {
+            // TODO: font renderer
+        } else if (this.target) {
+            this.target.setCursorPos(startReal.x, startReal.y);
+            if (startReal.offsetX < 0)
+                return;
+            else if (startReal.offsetX > 0)
+                text = text.substring(startReal.offsetX);
+            const [ogtext, fg, bg] = this.target.getLine(startReal.y);
+            if (text.length > ogtext!.length - startReal.x + 1)
+                text = text.substring(0, ogtext!.length - startReal.x + 1);
+            this.target.blit(text, bg!.substring(startReal.x - 1, startReal.x - 1 + text.length), string.rep(string.format("%x", this.state.color), text.length));
+            this.target.setBackgroundColor(this.state.color);
+        }
+    }
+
+    /**
      * Draw text at the specified point with a background.
      * This does not wrap text - any overflow will be clipped.
      * @param point The leftmost point to draw at
