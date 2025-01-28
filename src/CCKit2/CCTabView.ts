@@ -88,6 +88,16 @@ export default class CCTabView extends CCView {
         this.setNeedsDisplay();
     }
 
+    public didMoveToSuperview(): void {
+        super.didMoveToSuperview();
+        for (let view of this.contentViews) {
+            if (view.window !== this.window) {
+                view.window = this.window;
+                view.didMoveToSuperview();
+            }
+        }
+    }
+
     public draw(rect: CCRect): void {
         super.draw(rect);
         let ctx = CCGraphicsContext.current!;

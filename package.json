@@ -6,14 +6,15 @@
     "./CCKit2/*": "./src/CCKit2/*.ts"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tstl",
+    "doc": "typedoc"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Phoenix-ComputerCraft/CCKit2.git"
   },
   "author": "JackMacWindows",
-  "license": "SEE LICENSE IN LICENSE",
+  "license": "GPL-2.0-only",
   "bugs": {
     "url": "https://github.com/Phoenix-ComputerCraft/CCKit2/issues"
   },
