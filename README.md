@@ -33,6 +33,9 @@ If you prefer to build from source:
 4. Copy `bin/CCKit2` in each repo to the computer, merging the WM files into the core library.
   - If you're using Phoenix, copy to `/usr/lib/CCKit2`. The files here will override the default package in `/usr/lib/libCCKit2.a`.
   - If you're using CraftOS, copy to `/CCKit2`.
+5. Install the TypeScript support library.
+  - If you're using Phoenix, install the `typescript` package (`sudo apt install typescript`), or copy `bin/typescript.lua` to `/usr/lib`.
+  - If you're using CraftOS, copy `bin/typescript.lua` to `/typescript.lua`.
 
 ### 2. Project Set-Up
 #### TypeScript

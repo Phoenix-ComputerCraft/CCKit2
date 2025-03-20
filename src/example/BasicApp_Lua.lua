@@ -1,12 +1,9 @@
 local LuaWrappers = require "CCKit2.LuaWrappers"
-local CCApplication = LuaWrappers.import "CCKit2.CCApplication"
-local CCApplicationDelegate = LuaWrappers.import "CCKit2.CCApplicationDelegate"
 local CCApplicationMain = LuaWrappers.import "CCKit2.CCApplicationMain"
 local CCButton = LuaWrappers.import "CCKit2.CCButton"
 local CCCheckbox = LuaWrappers.import "CCKit2.CCCheckbox"
 local CCDefaultWindowManagerConnection = LuaWrappers.import "CCKit2.CCDefaultWindowManagerConnection"
 local CCDialog = LuaWrappers.import "CCKit2.CCDialog"
-local CCEvent = LuaWrappers.import "CCKit2.CCEvent"
 local CCImage = LuaWrappers.import "CCKit2.CCImage"
 local CCImageView = LuaWrappers.import "CCKit2.CCImageView"
 local CCLabel = LuaWrappers.import "CCKit2.CCLabel"
@@ -20,10 +17,9 @@ local CCTabView = LuaWrappers.import "CCKit2.CCTabView"
 local CCTextField = LuaWrappers.import "CCKit2.CCTextField"
 local CCTextView = LuaWrappers.import "CCKit2.CCTextView"
 local CCTypes = LuaWrappers.import "CCKit2.CCTypes"
-local CCColor, CCRect = CCTypes.CCColor, CCTypes.CCRect
+local CCColor = CCTypes.CCColor
 local CCView = LuaWrappers.import "CCKit2.CCView"
 local CCViewController = LuaWrappers.import "CCKit2.CCViewController"
-local CCWindowManagerConnection = LuaWrappers.import "CCKit2.CCWindowManagerConnection"
 
 local MyView = LuaWrappers.class("MyView", CCView, {
     ____constructor = function(self, frame)

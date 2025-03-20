@@ -6,7 +6,7 @@
     "./CCKit2/*": "./src/CCKit2/*.ts"
   },
   "scripts": {
-    "build": "tstl",
+    "build": "tstl; node mklib.js",
     "doc": "typedoc"
   },
   "repository": {
@@ -23,6 +23,7 @@
     "@jackmacwindows/lua-types": "^2.13.2",
     "@jackmacwindows/typescript-to-lua": "^1.28.0",
     "@phoenix-cc/libsystem": "^0.1.4",
+    "luamin": "^1.0.4",
     "ts-node": "^10.9.1",
     "typedoc": "^0.27.5",
     "typedoc-plugin-merge-modules": "^6.1.0",
