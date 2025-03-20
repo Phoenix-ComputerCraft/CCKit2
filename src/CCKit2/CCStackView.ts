@@ -5,6 +5,7 @@ import CCLayoutConstraint from "CCKit2/CCLayoutConstraint";
 /**
  * A stack view arranges child views in an either vertical or horizontal fashion,
  * automatically resizing each view to fit, with optional weighting.
+ * @category Views
  */
 export default class CCStackView extends CCView {
     /** The amount of spacing between views in characters. */

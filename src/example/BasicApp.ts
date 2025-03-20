@@ -3,6 +3,7 @@ import CCApplicationDelegate from "CCKit2/CCApplicationDelegate";
 import CCApplicationMain from "CCKit2/CCApplicationMain";
 import CCButton from "CCKit2/CCButton";
 import CCCheckbox from "CCKit2/CCCheckbox";
+import CCComboBox from "CCKit2/CCComboBox";
 import CCDefaultWindowManagerConnection from "CCKit2/CCDefaultWindowManagerConnection";
 import CCDialog from "CCKit2/CCDialog";
 import CCEvent from "CCKit2/CCEvent";
@@ -18,7 +19,7 @@ import CCStackView from "CCKit2/CCStackView";
 import CCTabView from "CCKit2/CCTabView";
 import CCTextField from "CCKit2/CCTextField";
 import CCTextView from "CCKit2/CCTextView";
-import { CCColor, CCRect } from "CCKit2/CCTypes";
+import { CCColor, CCRect, CCSize } from "CCKit2/CCTypes";
 import CCView from "CCKit2/CCView";
 import CCViewController from "CCKit2/CCViewController";
 import CCWindowManagerConnection from "CCKit2/CCWindowManagerConnection";
@@ -50,6 +51,10 @@ class ViewController extends CCViewController {
     private label!: CCLabel;
     private count: number = 0;
     private progress!: CCProgressIndicator;
+
+    public get preferredContentSize(): CCSize {
+        return {width: 30, height: 11};
+    }
 
     private increment(): void {
         this.count++;
@@ -113,6 +118,8 @@ bbbbcdef`);
         basicView.addSubview(radioC);
         let popupButton = new CCButton({x: 2, y: 7}, "Dialog", () => CCDialog.messageWithOneButton(this.view.window, "Alert", "This is a test of the dialog box and text view functionality, showing word wrapping."));
         basicView.addSubview(popupButton);
+        let comboBox = new CCComboBox({x: 2, y: 8, width: 11, height: 1}, ["Pick Me", "Choose Me", "Select Me"]);
+        basicView.addSubview(comboBox);
 
         /*let v2 = new MyView({x: 5, y: 5, width: 5, height: 5});
         basicView.addSubview(v2);

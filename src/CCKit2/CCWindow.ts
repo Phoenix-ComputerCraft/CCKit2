@@ -64,6 +64,11 @@ export class CCWindow extends CCResponder {
         }
     }
     private _frame: CCRect;
+    /** The position of the window on screen. */
+    public get position(): CCPoint {
+        let [x, y] = this.framebuffer.getPosition();
+        return {x: x, y: y};
+    }
     /** The minimum size that the window will allow resizing to. */
     public minSize: CCSize = {width: 1, height: 1};
     /** The maximum size that the window will allow resizing to. */
@@ -169,6 +174,7 @@ export class CCWindow extends CCResponder {
                 closable: (styleMask! & CCWindow.StyleMask.Closable) != 0,
                 minimizable: (styleMask! & CCWindow.StyleMask.Miniaturizable) != 0,
                 resizable: (styleMask! & CCWindow.StyleMask.Resizable) != 0,
+                z: (styleMask! & CCWindow.StyleMask.AboveOthers) != 0 ? 1 : 0,
             });
             if (fb === undefined) throw "Could not create window";
             this.framebuffer = fb;
@@ -242,7 +248,7 @@ export class CCWindow extends CCResponder {
      * @package
      */
     _becomeKey(): void {
-        throw "Not implemented";
+        //throw "Not implemented";
     }
 
     /**
@@ -250,14 +256,14 @@ export class CCWindow extends CCResponder {
      * @package
      */
     _resignKey(): void {
-        throw "Not implemented";
+        //throw "Not implemented";
     }
 
     /**
      * Makes the window the main window of the app.
      */
     public makeMain(): void {
-        throw "Not implemented";
+        //throw "Not implemented";
     }
 
     /**
@@ -265,7 +271,7 @@ export class CCWindow extends CCResponder {
      * @package
      */
     _becomeMain(): void {
-        throw "Not implemented";
+        //throw "Not implemented";
     }
 
     /**
@@ -273,7 +279,7 @@ export class CCWindow extends CCResponder {
      * @package
      */
     _resignMain(): void {
-        throw "Not implemented";
+        //throw "Not implemented";
     }
 
     /**
@@ -621,7 +627,8 @@ export namespace CCWindow {
         Resizable = 16,
         FullScreen = 32,
         FullSizeContentView = 64,
-        UtilityWindow = 128
+        UtilityWindow = 128,
+        AboveOthers = 256,
     }
 
     export enum OrderingMode {

@@ -45,6 +45,8 @@ local MyView = LuaWrappers.class("MyView", CCView, {
 })
 
 local ViewController = LuaWrappers.class("ViewController", CCViewController, {
+    count = 0,
+
     increment = function(self)
         self.count = self.count + 1
         self.label.text = "Count: " .. self.count
