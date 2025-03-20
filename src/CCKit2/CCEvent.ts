@@ -98,7 +98,8 @@ export namespace CCEvent {
         PowerOff,
         MouseEvent,
         Touch,
-        Quit
+        Quit,
+        WindowResized
     }
 
     export type ModifierFlags = number;

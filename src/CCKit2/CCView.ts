@@ -51,6 +51,10 @@ export default class CCView extends CCResponder {
     /** The position and size of the view. */
     public get frame(): CCRect {return this._frame;} // TODO: modification of inner values
     public set frame(rect: CCRect) {
+        if (this.isLayingOut) {
+            this._frame = rect;
+            return;
+        }
         if (rect.x == this._frame.x && rect.y == this._frame.y && rect.width == this._frame.width && rect.height == this._frame.height) return;
         if ((rect.width < this._frame.width || rect.height < this._frame.height) && this.superview)
             this.superview.setNeedsDisplay();
@@ -75,6 +79,7 @@ export default class CCView extends CCResponder {
     public needsUpdateConstraints: boolean = false;
 
     private constraints: CCLayoutConstraint[] = [];
+    private isLayingOut: boolean = false;
 
     /**
      * Creates a new view with the specified frame rect.
@@ -512,6 +517,7 @@ export default class CCView extends CCResponder {
                     }
                     let offset2: number|undefined = undefined;
                     let value2: CCRect|undefined = undefined;
+                    let constantModifier: number = 0;
                     if (constraint.secondItem !== undefined && constraint.secondAttribute !== CCLayoutConstraint.Attribute.NotAnAttribute) {
                         if (views.has(constraint.secondItem)) {
                             offset2 = views.get(constraint.secondItem);
@@ -521,27 +527,37 @@ export default class CCView extends CCResponder {
                             views.set(constraint.secondItem, offset2);
                             for (let row of rows) row.push({x: 0, y: 0, width: 0, height: 0});
                         }
+                        let isSuperview: boolean = false;
+                        if (constraint.firstItem.superview === constraint.secondItem) isSuperview = true;
+                        else if (constraint.firstItem.superview !== constraint.secondItem.superview)
+                            throw "Found invalid constraint, constraints only valid between a view and its parent or siblings";
                         value2 = {x: 0, y: 0, width: 0, height: 0};
                         switch (constraint.secondAttribute) {
                             case CCLayoutConstraint.Attribute.Left:
-                                value2.x = -constraint.multiplier;
+                                if (isSuperview) constantModifier = constraint.multiplier;
+                                else value2.x = -constraint.multiplier;
                                 break;
                             case CCLayoutConstraint.Attribute.Right:
-                                value2.x = -constraint.multiplier;
+                                if (isSuperview) constantModifier = constraint.multiplier;
+                                else value2.x = -constraint.multiplier;
                                 value2.width = -constraint.multiplier;
                                 break;
                             case CCLayoutConstraint.Attribute.Top:
-                                value2.y = -constraint.multiplier;
+                                if (isSuperview) constantModifier = constraint.multiplier;
+                                else value2.y = -constraint.multiplier;
                                 break;
                             case CCLayoutConstraint.Attribute.Bottom:
-                                value2.y = -constraint.multiplier;
+                                if (isSuperview) constantModifier = constraint.multiplier;
+                                else value2.y = -constraint.multiplier;
                                 value2.height = -constraint.multiplier;
                                 break;
                             case CCLayoutConstraint.Attribute.Leading:
-                                value2.x = -constraint.multiplier;
+                                if (isSuperview) constantModifier = constraint.multiplier;
+                                else value2.x = -constraint.multiplier;
                                 break;
                             case CCLayoutConstraint.Attribute.Trailing:
-                                value2.x = -constraint.multiplier;
+                                if (isSuperview) constantModifier = constraint.multiplier;
+                                else value2.x = -constraint.multiplier;
                                 value2.width = -constraint.multiplier;
                                 break;
                             case CCLayoutConstraint.Attribute.Width:
@@ -551,11 +567,13 @@ export default class CCView extends CCResponder {
                                 value2.height = -constraint.multiplier;
                                 break;
                             case CCLayoutConstraint.Attribute.CenterX:
-                                value2.x = -constraint.multiplier;
+                                if (isSuperview) constantModifier = constraint.multiplier;
+                                else value2.x = -constraint.multiplier;
                                 value2.width = -constraint.multiplier / 2;
                                 break;
                             case CCLayoutConstraint.Attribute.CenterY:
-                                value2.y = -constraint.multiplier;
+                                if (isSuperview) constantModifier = constraint.multiplier;
+                                else value2.y = -constraint.multiplier;
                                 value2.height = -constraint.multiplier / 2;
                                 break;
                             case CCLayoutConstraint.Attribute.LastBaseline:
@@ -564,7 +582,7 @@ export default class CCView extends CCResponder {
                                 break;
                         }
                     }
-                    addLayoutRow(rows, constants, nextOffset, offset, value1, offset2, value2, constraint.constant);
+                    addLayoutRow(rows, constants, nextOffset, offset, value1, offset2, value2, constraint.constant + constantModifier);
                     if (constraint.secondItem !== undefined) nextOffset = constraint.secondItem.layoutConstraints(views, rows, constants, visited, nextOffset);
                 } else {
                     // TODO: implement inequalities
@@ -611,6 +629,7 @@ export default class CCView extends CCResponder {
         }
 
         /*let [file] = io.open("ConstraintDebug.txt", "a");
+        if (file === undefined) throw "";
         for (let i = 0; i < matrix.length; i++) {
             let str = "";
             for (let j = 0; j < matrix[i].length; j++)
@@ -723,7 +742,9 @@ export default class CCView extends CCResponder {
             }
         }
         for (let [view, index] of views) {
-            view._frame = rects[index];
+            view.isLayingOut = true;
+            view.frame = rects[index];
+            view.isLayingOut = false;
             view.needsLayout = false;
             view.setNeedsDisplay();
         }

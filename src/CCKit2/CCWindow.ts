@@ -404,6 +404,10 @@ export class CCWindow extends CCResponder {
                     case CCEvent.SubType.WindowClosed:
                         this.close();
                         break;
+                    case CCEvent.SubType.WindowResized:
+                        const [width, height] = this.framebuffer.getSize();
+                        this.frame = {x: 1, y: 1, width: width, height: height};
+                        break;
                     case CCEvent.SubType.PowerOff:
                     case CCEvent.SubType.MouseEvent:
                     case CCEvent.SubType.Touch:

@@ -87,6 +87,10 @@ local LuaWrappers = require "CCKit2.LuaWrappers"
 
 When loading CCKit2 classes, use `LuaWrappers.import` instead of `require`, as it returns a more manageable module format than the one that TypeScript exports.
 
+To create a class, use `local MyClass = LuaWrappers.class("MyClass", super, fields)`. The second argument is the base class to extend from (`nil` if there is none), and the third is a table of methods and fields in the class. The fields table holds methods of the class directly, as well as descriptors (defined as tables with a `get` and optional `set` function inside), and default values to set for certain properties. The `____constructor` field is the constructor for the class. All methods must take a `self` parameter before other parameters.
+
+To construct an instance of a class, call `LuaWrappers.new` with the class + any arguments to pass to the constructor. If you want to check if an object is an instance of a class, call `LuaWrappers.instanceOf(obj, class)`.
+
 ### 3. Basic Template
 Here's a barebones template program to demonstrate the structure of a CCKit2 application.
 

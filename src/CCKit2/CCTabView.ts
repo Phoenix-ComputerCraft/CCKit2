@@ -98,6 +98,16 @@ export default class CCTabView extends CCView {
         }
     }
 
+    public setNeedsLayout(sender: CCView, previous: CCView): void {
+        super.setNeedsLayout(sender, previous);
+        for (const subview of this.contentViews) {
+            if (subview !== previous) {
+                subview.setNeedsLayout(sender, this);
+                if (this.needsLayout) subview.setNeedsLayout(this, this);
+            }
+        }
+    }
+
     public draw(rect: CCRect): void {
         super.draw(rect);
         let ctx = CCGraphicsContext.current!;

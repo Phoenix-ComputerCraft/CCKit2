@@ -9,10 +9,12 @@ import CCEvent from "CCKit2/CCEvent";
 import CCImage from "CCKit2/CCImage";
 import CCImageView from "CCKit2/CCImageView";
 import CCLabel from "CCKit2/CCLabel";
+import CCLayoutConstraint from "CCKit2/CCLayoutConstraint";
 import CCProgressIndicator from "CCKit2/CCProgressIndicator";
 import CCRadioButton from "CCKit2/CCRadioButton";
 import CCScrollView from "CCKit2/CCScrollView";
 import CCSlider from "CCKit2/CCSlider";
+import CCStackView from "CCKit2/CCStackView";
 import CCTabView from "CCKit2/CCTabView";
 import CCTextField from "CCKit2/CCTextField";
 import CCTextView from "CCKit2/CCTextView";
@@ -59,7 +61,7 @@ class ViewController extends CCViewController {
         super.viewDidLoad();
         this.view.window!.title = "CCKit2 Demo";
         this.view.backgroundColor = CCColor.white;
-        let tabView = new CCTabView({x: 1, y: 1, width: this.view.frame.width, height: this.view.frame.height - 1}, ["Basic", "Table"]);
+        let tabView = new CCTabView({x: 1, y: 1, width: this.view.frame.width, height: this.view.frame.height - 1}, ["Basic", "Table", "Stack"]);
         this.view.addSubview(tabView);
         let basicView = tabView.contentViewAt(0);
         basicView.backgroundColor = CCColor.white;
@@ -143,6 +145,21 @@ bbbbcdef`);
             label: this.label,
         });*/
 
+        let stackContainer = tabView.contentViewAt(2);
+        let stackView = new CCStackView({x: 1, y: 1, width: stackContainer.frame.width, height: stackContainer.frame.height});
+        stackContainer.addSubview(stackView);
+        stackView.addConstraints([
+            new CCLayoutConstraint(stackView, CCLayoutConstraint.Attribute.Top, CCLayoutConstraint.Relation.Equal, stackContainer, CCLayoutConstraint.Attribute.Top, 1, 0),
+            new CCLayoutConstraint(stackView, CCLayoutConstraint.Attribute.Bottom, CCLayoutConstraint.Relation.Equal, stackContainer, CCLayoutConstraint.Attribute.Bottom, 1, 0),
+            new CCLayoutConstraint(stackView, CCLayoutConstraint.Attribute.Left, CCLayoutConstraint.Relation.Equal, stackContainer, CCLayoutConstraint.Attribute.Left, 1, 0),
+            new CCLayoutConstraint(stackView, CCLayoutConstraint.Attribute.Right, CCLayoutConstraint.Relation.Equal, stackContainer, CCLayoutConstraint.Attribute.Right, 1, 0)
+        ]);
+        stackView.spacing = 1;
+        stackView.arrangedHorizontally = true;
+        stackView.addSubview(new MyView({x: 1, y: 1, width: 10, height: 10}), 2);
+        stackView.addSubview(new MyView({x: 1, y: 1, width: 10, height: 10}), 1);
+        stackView.addSubview(new MyView({x: 1, y: 1, width: 10, height: 10}), 3);
+
         let quit = new CCButton({x: 1, y: 1}, "Quit", () => this.view.window!.close());
         this.view.addSubview(quit);
         CCView.addConstraintsByCode(`
@@ -150,7 +167,12 @@ bbbbcdef`);
             quit.Bottom = superview.Bottom
             quit.Width = 6
             quit.Height = 1
-        `, {quit: quit, superview: this.view});
+
+            tabView.Top = superview.Top
+            tabView.Bottom = superview.Bottom - 1
+            tabView.Left = superview.Left
+            tabView.Right = superview.Right
+        `, {quit: quit, superview: this.view, tabView: tabView});
     }
 }
 
