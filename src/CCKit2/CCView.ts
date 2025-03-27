@@ -144,6 +144,30 @@ export default class CCView extends CCResponder {
         }
     }
 
+    /**
+     * Called when a subview was removed.
+     * @param view The view that was removed
+     */
+    public didRemoveSubview(view: CCView): void {
+        this.setNeedsLayout(this, this);
+        this.setNeedsDisplay();
+    }
+
+    /**
+     * Removes this view from its superview.
+     */
+    public removeFromSuperview(): void {
+        if (this.superview === undefined || this.superview === null) return;
+        for (let i = 0; i < this.superview.subviews.length; i++) {
+            if (this.superview.subviews[i] === this) {
+                this.superview.subviews.splice(i, 1);
+                this.superview.didRemoveSubview(this);
+                this.superview = undefined;
+                return;
+            }
+        }
+    }
+
     // TODO: add rest
 
     /**

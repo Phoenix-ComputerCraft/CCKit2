@@ -346,7 +346,8 @@ export default class CCGraphicsContext {
      */
     public drawText(start: CCPoint, text: string): void {
         const startReal = this.pointToTargetSpaceConstrainedX(start);
-        if (!startReal) return;
+        const endReal = this.pointToTargetSpaceConstrainedX({x: start.x + text.length, y: start.y});
+        if (!startReal || !endReal) return;
         if (this.gfxTarget) {
             // TODO: font renderer
         } else if (this.target) {
@@ -355,6 +356,8 @@ export default class CCGraphicsContext {
                 return;
             else if (startReal.offsetX > 0)
                 text = text.substring(startReal.offsetX);
+            if (endReal.x - startReal.x + 1 < text.length)
+                text = text.substring(0, endReal.x - startReal.x + 1);
             const [ogtext, fg, bg] = this.target.getLine(startReal.y);
             if (text.length > ogtext!.length - startReal.x + 1)
                 text = text.substring(0, ogtext!.length - startReal.x + 1);
@@ -372,7 +375,8 @@ export default class CCGraphicsContext {
      */
     public drawTextInverted(start: CCPoint, text: string): void {
         const startReal = this.pointToTargetSpaceConstrainedX(start);
-        if (!startReal) return;
+        const endReal = this.pointToTargetSpaceConstrainedX({x: start.x + text.length, y: start.y});
+        if (!startReal || !endReal) return;
         if (this.gfxTarget) {
             // TODO: font renderer
         } else if (this.target) {
@@ -381,6 +385,8 @@ export default class CCGraphicsContext {
                 return;
             else if (startReal.offsetX > 0)
                 text = text.substring(startReal.offsetX);
+            if (endReal.x - startReal.x + 1 < text.length)
+                text = text.substring(0, endReal.x - startReal.x + 1);
             const [ogtext, fg, bg] = this.target.getLine(startReal.y);
             if (text.length > ogtext!.length - startReal.x + 1)
                 text = text.substring(0, ogtext!.length - startReal.x + 1);
@@ -397,7 +403,8 @@ export default class CCGraphicsContext {
      */
     public drawTextWithBackground(start: CCPoint, text: string, background: CCColor): void {
         const startReal = this.pointToTargetSpaceConstrainedX(start);
-        if (!startReal) return;
+        const endReal = this.pointToTargetSpaceConstrainedX({x: start.x + text.length, y: start.y});
+        if (!startReal || !endReal) return;
         if (this.gfxTarget) {
             // TODO: font renderer
         } else if (this.target) {
@@ -406,6 +413,11 @@ export default class CCGraphicsContext {
                 return;
             else if (startReal.offsetX > 0)
                 text = text.substring(startReal.offsetX);
+            if (endReal.x - startReal.x + 1 < text.length)
+                text = text.substring(0, endReal.x - startReal.x + 1);
+            const [ogtext, fg, bg] = this.target.getLine(startReal.y);
+            if (text.length > ogtext!.length - startReal.x + 1)
+                text = text.substring(0, ogtext!.length - startReal.x + 1);
             this.target.blit(text, string.rep(string.format("%x", this.state.color), text.length), string.rep(string.format("%x", background), text.length));
             this.target.setBackgroundColor(this.state.color);
         }

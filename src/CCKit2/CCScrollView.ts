@@ -28,7 +28,6 @@ export default class CCScrollView extends CCView {
     private _showHorizontalScrollBar: boolean;
 
     private scrollPos: CCPoint = {x: 0, y: 0};
-    private shiftDown: boolean = false;
 
     /**
      * Creates a new scroll view.
@@ -42,6 +41,19 @@ export default class CCScrollView extends CCView {
         super.addSubview(inner);
         this._showVerticalScrollBar = innerSize.height > frame.height;
         this._showHorizontalScrollBar = innerSize.width > frame.width;
+    }
+
+    /**
+     * Resizes the content view to the specified size.
+     * @param size The new size of the inner view
+     */
+    public resizeContentView(innerSize: CCSize): void {
+        this.subviews[0].frame = {x: 1, y: 1, width: Math.max(innerSize.width, this.frame.width), height: Math.max(innerSize.height, this.frame.height)};
+        this.scrollPos.x = Math.min(this.scrollPos.x, Math.max(this.subviews[0].frame.width - this.frame.width - 1, 0));
+        this.scrollPos.y = Math.min(this.scrollPos.y, Math.max(this.subviews[0].frame.height - this.frame.height - 1, 0));
+        this._showVerticalScrollBar = innerSize.height > this.frame.height;
+        this._showHorizontalScrollBar = innerSize.width > this.frame.width;
+        this.setNeedsDisplay();
     }
 
     public addSubview(view: CCView): void {
@@ -79,7 +91,7 @@ export default class CCScrollView extends CCView {
             this.needsDraw = false;
             this.subviews[0].needsDraw = true;
         }
-        this.subviews[0].display({x: rect.x + this.scrollPos.x, y: rect.y + this.scrollPos.y, width: rect.width, height: rect.height});
+        this.subviews[0].display({x: rect.x + this.scrollPos.x, y: rect.y + this.scrollPos.y, width: rect.width - (this._showVerticalScrollBar ? 1 : 0), height: rect.height - (this._showHorizontalScrollBar ? 1 : 0)});
         ctx.popState();
         this.drawScrollBars();
     }
@@ -97,20 +109,13 @@ export default class CCScrollView extends CCView {
         return this.subviews[0].hitTest({x: point.x - this.frame.x + this.scrollPos.x + 1, y: point.y - this.frame.y + this.scrollPos.y + 1});
     }
 
-    public keyDown(event: CCEvent): void {
-        if (event.keyCode === CCKey.LeftShift || event.keyCode === CCKey.RightShift) this.shiftDown = true;
-    }
-
-    public keyUp(event: CCEvent): void {
-        if (event.keyCode === CCKey.LeftShift || event.keyCode === CCKey.RightShift) this.shiftDown = false;
-    }
-
     public scrollWheel(event: CCEvent): void {
-        if (this.shiftDown) {
-            this.scrollPos.x = Math.min(Math.max(this.scrollPos.x + event.scrollDirection!, 0), Math.max(this.subviews[0].frame.width - this.frame.width - 1, 0));
-        } else {
-            this.scrollPos.y = Math.min(Math.max(this.scrollPos.y + event.scrollDirection!, 0), Math.max(this.subviews[0].frame.height - this.frame.height - 1, 0));
-        }
+        this.scrollPos.y = Math.min(Math.max(this.scrollPos.y + event.scrollDirection!, 0), Math.max(this.subviews[0].frame.height - this.frame.height + (this._showHorizontalScrollBar ? 1 : 0), 0));
+        this.setNeedsDisplay();
+    }
+
+    public horizontalScrollWheel(event: CCEvent): void {
+        this.scrollPos.x = Math.min(Math.max(this.scrollPos.x + event.scrollDirection!, 0), Math.max(this.subviews[0].frame.width - this.frame.width + (this._showVerticalScrollBar ? 1 : 0), 0));
         this.setNeedsDisplay();
     }
 }

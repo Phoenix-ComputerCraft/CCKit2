@@ -16,6 +16,8 @@ import CCRadioButton from "CCKit2/CCRadioButton";
 import CCScrollView from "CCKit2/CCScrollView";
 import CCSlider from "CCKit2/CCSlider";
 import CCStackView from "CCKit2/CCStackView";
+import CCTableView from "CCKit2/CCTableView";
+import CCTableViewStaticDataSource from "CCKit2/CCTableViewStaticDataSource";
 import CCTabView from "CCKit2/CCTabView";
 import CCTextField from "CCKit2/CCTextField";
 import CCTextView from "CCKit2/CCTextView";
@@ -23,6 +25,19 @@ import { CCColor, CCRect, CCSize } from "CCKit2/CCTypes";
 import CCView from "CCKit2/CCView";
 import CCViewController from "CCKit2/CCViewController";
 import CCWindowManagerConnection from "CCKit2/CCWindowManagerConnection";
+
+const tableData: (string | number)[][] = [
+    ["Name", "Address", "Phone", "Age"],
+    ["John Doe", "123 Apple Way", "555-1234", 49],
+    ["Phillip Gonzalez", "2568 Weekley Street", "302-9163", 23],
+    ["Herbert Rodriguez", "3208 Hood Avenue", "755-6449", 71],
+    ["Johnnie Wooding", "159 Heavens Way", "241-7892", 76],
+    ["Mary McDonald", "802 Star Route", "590-2842", 27],
+    ["Donna Cook", "320 Westfall Avenue", "954-0272", 43],
+    ["Alberto Powers", "4826 Stone Lane", "350-1833", 22],
+    ["Minnie Cortez", "2230 Comfort Court", "255-9970", 59],
+    ["Shane Moore", "4258 Ocello Street", "893-5070", 76],
+];
 
 class MyView extends CCView {
     constructor(frame: CCRect) {
@@ -151,6 +166,11 @@ bbbbcdef`);
             resizingView: resizingView,
             label: this.label,
         });*/
+
+        let tableContainer = tabView.contentViewAt(1);
+        let tableView = new CCTableView({x: 1, y: 1, width: tableContainer.frame.width, height: tableContainer.frame.height}, new CCTableViewStaticDataSource(tableData));
+        tableView.canSelectRow = true;
+        tableContainer.addSubview(tableView);
 
         let stackContainer = tabView.contentViewAt(2);
         let stackView = new CCStackView({x: 1, y: 1, width: stackContainer.frame.width, height: stackContainer.frame.height});

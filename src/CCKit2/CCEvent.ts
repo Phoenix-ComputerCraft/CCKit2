@@ -85,7 +85,8 @@ export namespace CCEvent {
         CCKitDefined,
         ApplicationDefined,
         Periodic,
-        SystemDefined
+        SystemDefined,
+        HorizontalScrollWheel,
     }
 
     export enum SubType {

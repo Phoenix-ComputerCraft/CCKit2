@@ -23,7 +23,8 @@ const mouseResponders: {[key: number]: string} = {
     [CCEvent.Type.MouseMoved]: "mouseMoved",
     [CCEvent.Type.MouseEntered]: "mouseEntered",
     [CCEvent.Type.MouseExited]: "mouseExited",
-    [CCEvent.Type.ScrollWheel]: "scrollWheel"
+    [CCEvent.Type.ScrollWheel]: "scrollWheel",
+    [CCEvent.Type.HorizontalScrollWheel]: "horizontalScrollWheel",
 };
 
 /**
@@ -393,6 +394,7 @@ export class CCWindow extends CCResponder {
                 if (this.firstResponder) this.firstResponder.tryToCall("textInput", event);
                 break;
             case CCEvent.Type.ScrollWheel:
+            case CCEvent.Type.HorizontalScrollWheel:
                 this.sendMouseEvent(event);
                 break;
             case CCEvent.Type.CCKitDefined:

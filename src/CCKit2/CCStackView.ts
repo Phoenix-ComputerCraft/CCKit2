@@ -41,6 +41,16 @@ export default class CCStackView extends CCView {
         this.updateConstraints();
     }
 
+    public didRemoveSubview(view: CCView): void {
+        super.didRemoveSubview(view);
+        for (let i = 0; i < this.containedViews.length; i++) {
+            if (this.containedViews[i].view === view) {
+                this.containedViews.splice(i, 1);
+                return;
+            }
+        }
+    }
+
     private resetConstraints(): void {
 
     }
