@@ -4,6 +4,15 @@ import CCControl from "CCKit2/CCControl";
 import CCWindow from "CCKit2/CCWindow";
 import CCButton from "CCKit2/CCButton";
 import CCView from "CCKit2/CCView";
+import CCEvent from "CCKit2/CCEvent";
+
+class ComboWindow extends CCWindow {
+    public sendEvent(event: CCEvent): void {
+        if (event.type === CCEvent.Type.SystemDefined && event.subtype === CCEvent.SubType.WindowDeactivated)
+            this.close();
+        else return super.sendEvent(event);
+    }
+}
 
 /**
  * A combo box allows selection from multiple items in a compact button view.
@@ -83,7 +92,7 @@ export default class CCComboBox extends CCControl {
         let winpos = this.window!.position;
         let rect: CCRect = {x: winpos.x + start.x, y: winpos.y + start.y - this._selectedIndex, width: 0, height: this._selections.length};
         for (let s of this._selections) rect.width = Math.max(rect.width, s.length + 2);
-        let win = new CCWindow(rect, CCWindow.StyleMask.Borderless | CCWindow.StyleMask.AboveOthers, false, this.window!.screen);
+        let win = new ComboWindow(rect, CCWindow.StyleMask.Borderless | CCWindow.StyleMask.AboveOthers, false, this.window!.screen);
         let view = win.contentView!
         for (let i = 0; i < this._selections.length; i++) {
             let i2 = i;
@@ -97,7 +106,7 @@ export default class CCComboBox extends CCControl {
             view.addSubview(button);
         }
         win.display();
-        win.makeKey();
+        win.makeKeyAndOrderFront();
     }
 
     public draw(rect: CCRect): void {

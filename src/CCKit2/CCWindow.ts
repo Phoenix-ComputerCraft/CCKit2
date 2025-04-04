@@ -408,6 +408,8 @@ export class CCWindow extends CCResponder {
                     case CCEvent.SubType.ScreenChanged:
                     case CCEvent.SubType.WindowExposed:
                     case CCEvent.SubType.WindowMoved:
+                    case CCEvent.SubType.WindowActivated:
+                    case CCEvent.SubType.WindowDeactivated:
                         break;
                     case CCEvent.SubType.WindowClosed:
                         this.close();

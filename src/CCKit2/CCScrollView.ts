@@ -45,7 +45,7 @@ export default class CCScrollView extends CCView {
 
     /**
      * Resizes the content view to the specified size.
-     * @param size The new size of the inner view
+     * @param innerSize The new size of the inner view
      */
     public resizeContentView(innerSize: CCSize): void {
         this.subviews[0].frame = {x: 1, y: 1, width: Math.max(innerSize.width, this.frame.width), height: Math.max(innerSize.height, this.frame.height)};

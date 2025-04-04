@@ -1,6 +1,6 @@
 import CCViewController from "CCKit2/CCViewController";
 import CCWindow from "CCKit2/CCWindow";
-import { CCSize } from "CCKit2/CCTypes";
+import { CCColor, CCSize } from "CCKit2/CCTypes";
 import CCTextView from "CCKit2/CCTextView";
 import CCButton from "CCKit2/CCButton";
 
@@ -25,6 +25,8 @@ class CCDialogViewController extends CCViewController {
     }
 
     public viewDidLoad(): void {
+        super.viewDidLoad();
+        this.view.backgroundColor = CCColor.white;
         let textView = new CCTextView({x: 1, y: 2, width: this.view.frame.width, height: this.view.frame.height - 3});
         textView.text = this.dialog.message;
         this.view.addSubview(textView);
