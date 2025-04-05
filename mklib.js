@@ -65,4 +65,20 @@ fs.readdir("bin/CCKit2")
         mode: 0o755,
         data: luamin.minify(data.toString('latin1'))
     }))
-    .then(() => fs.writeFile("bin/libCCKit2.a", ar_save(files)));
+    .then(() => fs.writeFile("bin/libCCKit2.a", ar_save(files)))
+    .then(() => fs.readFile("../CCKit2-craftos/bin/CCCraftOSWindowManagerConnection.lua"))
+    .then(data => files.push({
+        name: "CCCraftOSWindowManagerConnection.lua",
+        timestamp: Math.floor(Date.now() / 1000),
+        owner: 0,
+        group: 0,
+        mode: 0o755,
+        data: luamin.minify(data.toString('latin1'))
+    }))
+    .then(() => fs.readFile("../CCKit2-craftos/bin/CCDefaultWindowManagerConnection.lua"))
+    .then(data => {
+        for (let file of files)
+            if (file.name === "CCDefaultWindowManagerConnection.lua")
+                file.data = luamin.minify(data.toString('latin1'));
+    })
+    .then(() => fs.writeFile("bin/libCCKit2-craftos.a", ar_save(files)));

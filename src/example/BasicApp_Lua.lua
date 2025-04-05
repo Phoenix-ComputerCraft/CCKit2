@@ -14,12 +14,27 @@ local CCScrollView = LuaWrappers.import "CCKit2.CCScrollView"
 local CCSlider = LuaWrappers.import "CCKit2.CCSlider"
 local CCStackView = LuaWrappers.import "CCKit2.CCStackView"
 local CCTabView = LuaWrappers.import "CCKit2.CCTabView"
+local CCTableView = LuaWrappers.import "CCKit2.CCTableView"
+local CCTableViewStaticDataSource = LuaWrappers.import "CCKit2.CCTableViewStaticDataSource"
 local CCTextField = LuaWrappers.import "CCKit2.CCTextField"
 local CCTextView = LuaWrappers.import "CCKit2.CCTextView"
 local CCTypes = LuaWrappers.import "CCKit2.CCTypes"
 local CCColor = CCTypes.CCColor
 local CCView = LuaWrappers.import "CCKit2.CCView"
 local CCViewController = LuaWrappers.import "CCKit2.CCViewController"
+
+local tableData = {
+    {"Name", "Address", "Phone", "Age"},
+    {"John Doe", "123 Apple Way", "555-1234", 49},
+    {"Phillip Gonzalez", "2568 Weekley Street", "302-9163", 23},
+    {"Herbert Rodriguez", "3208 Hood Avenue", "755-6449", 71},
+    {"Johnnie Wooding", "159 Heavens Way", "241-7892", 76},
+    {"Mary McDonald", "802 Star Route", "590-2842", 27},
+    {"Donna Cook", "320 Westfall Avenue", "954-0272", 43},
+    {"Alberto Powers", "4826 Stone Lane", "350-1833", 22},
+    {"Minnie Cortez", "2230 Comfort Court", "255-9970", 59},
+    {"Shane Moore", "4258 Ocello Street", "893-5070", 76},
+}
 
 local MyView = LuaWrappers.class("MyView", CCView, {
     ____constructor = function(self, frame)
@@ -138,6 +153,11 @@ bbbbcdef]])
             resizingView = resizingView,
             label = self.label,
         })]=]
+
+        local tableContainer = tabView:contentViewAt(1)
+        local tableView = LuaWrappers.new(CCTableView, {x = 1, y = 1, width = tableContainer.frame.width, height = tableContainer.frame.height}, LuaWrappers.new(CCTableViewStaticDataSource, tableData));
+        tableView.canSelectRow = true
+        tableContainer:addSubview(tableView)
 
         local stackContainer = tabView:contentViewAt(2)
         local stackView = LuaWrappers.new(CCStackView, {x = 1, y = 1, width = stackContainer.frame.width, height = stackContainer.frame.height})
