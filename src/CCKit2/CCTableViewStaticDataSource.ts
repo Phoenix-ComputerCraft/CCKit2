@@ -6,6 +6,7 @@ import CCLabel from "CCKit2/CCLabel";
 /**
  * This class defines a default instance of `CCTableViewDataSource` which reads
  * data from a 2D array of strings or numbers.
+ * @category Views
  */
 export default class CCTableViewStaticDataSource implements CCTableViewDataSource {
     /** The array storing the data for the table. */

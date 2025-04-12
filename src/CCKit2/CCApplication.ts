@@ -43,7 +43,13 @@ export class CCApplication extends CCResponder {
     /** The icon for the app. */
     public appIcon?: CCImage;
     /** The menu bar entries for the app. */
-    public menu?: CCMenu;
+    public get menu(): CCMenu | undefined {return this._menu;}
+    public set menu(value: CCMenu | undefined) {
+        this._menu = value;
+        if (value && this.wmConnection.updateAppMenu)
+            this.wmConnection.updateAppMenu(value.serialize());
+    }
+    private _menu?: CCMenu;
 
     /** The event currently being processed. */
     public get currentEvent(): CCEvent | undefined {
@@ -98,6 +104,10 @@ export class CCApplication extends CCResponder {
         if (event.type === CCEvent.Type.CCKitDefined && event.subtype === CCEvent.SubType.Quit) {
             if (this.delegate.applicationWillTerminate) this.delegate.applicationWillTerminate(this);
             this.stop();
+        }
+        if (event.type === CCEvent.Type.MenuItem && this._menu) {
+            this._menu.triggerAction(event.menuItemKey!);
+            return;
         }
         if (event.window !== undefined) return event.window.sendEvent(event);
         if (this.keyWindow) return this.keyWindow.sendEvent(event);

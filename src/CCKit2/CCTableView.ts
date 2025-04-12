@@ -37,6 +37,7 @@ class RowView extends CCView {
  * of each row, column and cell. The view is kept in a scroll view, which allows
  * automatic overflow control.
  * @see CCTableViewDataSource
+ * @category Views
  */
 export default class CCTableView extends CCScrollView {
     /** @deprecated Do not use this field on a table view. */

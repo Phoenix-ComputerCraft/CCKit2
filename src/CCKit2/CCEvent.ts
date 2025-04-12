@@ -42,6 +42,8 @@ export class CCEvent {
     public scrollDirection?: number;
     /** For application-defined events, any extra parameters to pass. */
     public extraParams?: object;
+    /** For menu item events, the key of the menu item triggered. */
+    public menuItemKey?: string;
 
     /**
      * Starts sending periodic events to the application.
@@ -87,6 +89,7 @@ export namespace CCEvent {
         Periodic,
         SystemDefined,
         HorizontalScrollWheel,
+        MenuItem,
     }
 
     export enum SubType {

@@ -237,3 +237,5 @@ export enum CCKey {
     Colon = 0xCA,
     Underscore = 0xCB,
 }
+
+export type CCKeyCombo = {key: CCKey, ctrl: boolean, alt: boolean, shift: boolean};

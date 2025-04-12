@@ -7,6 +7,7 @@ import CCView from "CCKit2/CCView";
  * as the size of columns and contents of each cell. A default implementation
  * for basic data is available in `CCTableViewStaticDataSource`.
  * @see CCTableViewStaticDataSource
+ * @category Views
  */
 export default interface CCTableViewDataSource {
     /**

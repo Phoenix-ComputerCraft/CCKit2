@@ -1,6 +1,6 @@
 import CCEvent from "CCKit2/CCEvent";
 import CCWindow from "CCKit2/CCWindow";
-import { CCColor } from "CCKit2/CCTypes";
+import { CCColor, CCKey, CCKeyCombo } from "CCKit2/CCTypes";
 
 /**
  * The CCWindowManagerFramebuffer interface represents the underlying framebuffer
@@ -80,6 +80,21 @@ export type CCWindowManagerWindowOptions = {
 }
 
 /**
+ * Holds information about a menu item in a serializable way.
+ * @category Application
+ */
+export type CCMenuItemDescription = {
+    /** The text for the menu item (if null, denotes a separator) */
+    title?: string;
+    /** A key combo that will trigger the item */
+    keyCombo?: CCKeyCombo;
+    /** If this item has a submenu, the items to display */
+    subitems?: CCMenuItemDescription[];
+    /** A key for an action to send when the item is triggered (if null, the item will be disabled) */
+    action?: string;
+}
+
+/**
  * The CCWindowManagerConnection interface is used by classes that implement a
  * connection to a window server, which hosts all of the windows and handles
  * things like drawing, decorations, positioning, and occlusion.
@@ -113,4 +128,13 @@ export default interface CCWindowManagerConnection {
      * @returns An event to post to the application
      */
     pullEvent(): CCEvent;
+
+    /**
+     * Updates the window manager with the app's current menu state. Each item
+     * corresponds to a main menu button in the titlebar, though note that the
+     * first item will always be given the title of the app, regardless of its
+     * `title` field.
+     * @param menu The menus to display in the menu bar
+     */
+    updateAppMenu?(menu: CCMenuItemDescription[]): void;
 }
