@@ -48,12 +48,12 @@ if fs and term then
     print("Installing...")
     fs.makeDir("CCKit2")
     for _, f in ipairs(retval) do
-        local handle = assert(fs.open("CCKit2/" .. f.name), "w")
+        local handle = assert(fs.open("CCKit2/" .. f.name, "w"))
         handle.write(f.data)
         handle.close()
     end
     fs.makeDir("system")
-    local handle = assert(fs.open("system/expect.lua"), "w")
+    local handle = assert(fs.open("system/expect.lua", "w"))
     handle.write(system_expect)
     handle.close()
     print("Done!")
