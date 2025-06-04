@@ -196,4 +196,4 @@ local AppDelegate = LuaWrappers.class("AppDelegate", nil, {
     end
 })
 
-CCApplicationMain(nil, ViewController, LuaWrappers.new(AppDelegate))
+CCApplicationMain(nil, ViewController, LuaWrappers.new(AppDelegate), ...)

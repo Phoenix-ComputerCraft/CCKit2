@@ -12,8 +12,8 @@ import CCWindow from "CCKit2/CCWindow";
  * @param delegate The application delegate for the program
  * @typecheck
  */
-export default function CCApplicationMain(viewController: new () => CCViewController, delegate: CCApplicationDelegate): void {
-    let app = new CCApplication(delegate);
+export default function CCApplicationMain(viewController: new () => CCViewController, delegate: CCApplicationDelegate, ...args: string[]): void {
+    let app = new CCApplication(delegate, args);
     let vc = new viewController();
     let win = new CCWindow(vc);
     app.mainWindow = win;

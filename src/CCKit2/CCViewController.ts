@@ -29,6 +29,8 @@ export default class CCViewController extends CCResponder {
     public loadView(): void {
         const size = this.preferredContentSize;
         this.view = new CCView({x: 1, y: 1, width: size.width, height: size.height});
+        this.view.nextResponder = this;
+        this.viewDidLoad();
     }
 
     /**
@@ -83,5 +85,23 @@ export default class CCViewController extends CCResponder {
      */
     public viewDidDisappear(animated: boolean) {
 
+    }
+
+    /**
+     * Presents a new view controller in place of this one.
+     * @param vc The view controller to present
+     */
+    public present(vc: CCViewController): void {
+        if (this.view.window === null) throw "Presenting view controller is not currently displayed";
+        if (vc.view !== null && vc.view.window !== null) throw "Presented view controller is already displayed";
+        vc.loadViewIfNeeded();
+        this.viewWillDisappear(false);
+        vc.view.window = this.view.window;
+        vc.view.didMoveToSuperview();
+        this.view.window = undefined;
+        this.view.didMoveToSuperview();
+        vc.viewWillAppear(false);
+        vc.view.window!.display();
+        vc.viewDidAppear(false);
     }
 }

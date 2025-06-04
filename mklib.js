@@ -45,7 +45,7 @@ function ar_save(data, file) {
 
 let files = []
 fs.readdir("bin/CCKit2")
-    .then(names => Promise.all(names.flatMap(name => name.indexOf(".lua") !== -1 ?
+    .then(names => Promise.all(names.flatMap(name => name.indexOf(".lua") !== -1 && name.indexOf(".d.lua") === -1 ?
         fs.readFile("bin/CCKit2/" + name)
             .then(data => data.indexOf("local ____exports = {}\nreturn ____exports") === -1 ? files.push({
                 name: name,

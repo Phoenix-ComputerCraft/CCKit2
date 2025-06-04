@@ -142,6 +142,7 @@ export class CCWindow extends CCResponder {
 
     /** The window's backing framebuffer. */
     private framebuffer: CCWindowManagerFramebuffer;
+    private viewHasAppeared: boolean = false;
 
     /**
      * Creates a new window using a view controller for the contents.
@@ -160,15 +161,17 @@ export class CCWindow extends CCResponder {
         super();
         if (first instanceof CCViewController) {
             this.contentViewController = first;
+            first.nextResponder = this;
             const size = first.preferredContentSize;
             let fb = CCApplication.shared.wmConnection.createWindow(this, undefined, undefined, size.width, size.height, first.title || "Window", {closable: true, minimizable: true, resizable: true}); // TODO: options
             if (fb === undefined) throw "Could not create window";
             this.framebuffer = fb;
             first.loadViewIfNeeded();
             first.view.window = this;
-            first.viewDidLoad();
+            first.view.didMoveToSuperview();
         } else {
             this.contentView = new CCView(first);
+            this.contentView.nextResponder = this;
             let fb = CCApplication.shared.wmConnection.createWindow(this, first.x, first.y, first.width, first.height, "Window", {
                 utility: (styleMask! & CCWindow.StyleMask.UtilityWindow) != 0,
                 borderless: (styleMask! & CCWindow.StyleMask.Borderless) != 0,
@@ -185,6 +188,7 @@ export class CCWindow extends CCResponder {
         this._frame = {x: 1, y: 1, width: width, height: height};
         this.frame = this._frame;
         CCApplication.shared.windows.push(this);
+        this.nextResponder = CCApplication.shared;
     }
 
     /**
@@ -399,6 +403,8 @@ export class CCWindow extends CCResponder {
                 break;
             case CCEvent.Type.CCKitDefined:
             case CCEvent.Type.ApplicationDefined:
+                if (this.firstResponder) this.firstResponder.tryToCall("customEvent", event);
+                break;
             case CCEvent.Type.Periodic:
                 break;
             case CCEvent.Type.SystemDefined:
@@ -455,10 +461,17 @@ export class CCWindow extends CCResponder {
         CCGraphicsContext.current = new CCGraphicsContext(this.framebuffer);
         CCGraphicsContext.current.pushState();
         if (this.contentViewController) {
+            if (!this.viewHasAppeared) {
+                this.contentViewController.viewWillAppear(false);
+            }
             this.contentViewController.view.layoutSubtree();
             const size = this.contentViewController.view.frame;
             CCGraphicsContext.current.setRect(size);
             this.contentViewController.view.display({x: 1, y: 1, width: size.width, height: size.height});
+            if (!this.viewHasAppeared) {
+                this.contentViewController.viewDidAppear(false);
+                this.viewHasAppeared = true;
+            }
         } else if (this.contentView) {
             this.contentView.layoutSubtree();
             const size = this.contentView.frame;

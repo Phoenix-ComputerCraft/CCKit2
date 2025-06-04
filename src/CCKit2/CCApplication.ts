@@ -61,12 +61,41 @@ export class CCApplication extends CCResponder {
     /**
      * @package
      */
-    constructor(del: CCApplicationDelegate) {
+    constructor(del: CCApplicationDelegate, args: string[]) {
         super();
         if (CCApplication.shared != undefined) throw "CCApplication instance already exists";
         this.delegate = del;
         CCApplication.shared = this;
-        this.wmConnection = del.applicationWindowManagerConnection(this);
+        let conn: CCWindowManagerConnection | undefined = undefined;
+        for (let i = 0; i < args.length; i++) {
+            if (args[i] === "--help") {
+                print(
+`Arguments for CCKit2 applications:
+  --backend <name|path>: Selects a window manager to override the default choice.
+  --open <path>: Opens a file or directory using the application, if supported.
+  --help: Shows this help.`
+                );
+                throw "";
+            } else if (args[i] === "--backend") {
+                i++;
+                if (args[i] === null) throw "Missing parameter for --backend argument";
+                let mod: {default: new (app: CCApplication) => CCWindowManagerConnection};
+                if (args[i].indexOf("/") !== -1) {
+                    mod = dofile(args[i]);
+                } else if (args[i].indexOf(".") !== -1) {
+                    mod = require(args[i]);
+                } else {
+                    mod = require("CCKit2." + args[i]);
+                }
+                if (typeof mod.default !== "function") throw ""
+                conn = new mod.default(this);
+            } else if (args[i] === "--open") {
+                i++;
+                // TODO
+            }
+        }
+        if (conn) this.wmConnection = conn;
+        else this.wmConnection = del.applicationWindowManagerConnection(this);
     }
 
     /**

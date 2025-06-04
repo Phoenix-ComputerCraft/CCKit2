@@ -79,7 +79,6 @@ class ViewController extends CCViewController {
 
     public viewDidLoad(): void {
         super.viewDidLoad();
-        this.view.window!.title = "CCKit2 Demo";
         this.view.backgroundColor = CCColor.white;
         let tabView = new CCTabView({x: 1, y: 1, width: this.view.frame.width, height: this.view.frame.height - 1}, ["Basic", "Table", "Stack"]);
         this.view.addSubview(tabView);
@@ -201,6 +200,10 @@ bbbbcdef`);
             tabView.Right = superview.Right
         `, {quit: quit, superview: this.view, tabView: tabView});
     }
+
+    public viewWillAppear(animated: boolean): void {
+        this.view.window!.title = "CCKit2 Demo";
+    }
 }
 
 class AppDelegate implements CCApplicationDelegate {
@@ -209,4 +212,4 @@ class AppDelegate implements CCApplicationDelegate {
     }
 }
 
-CCApplicationMain(ViewController, new AppDelegate());
+CCApplicationMain(ViewController, new AppDelegate(), ...$vararg);

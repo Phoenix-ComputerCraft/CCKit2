@@ -108,4 +108,5 @@ export default class CCResponder {
     public textInput(event: CCEvent): void {if (this.nextResponder) return this.nextResponder.textInput(event);}
     public scrollWheel(event: CCEvent): void {if (this.nextResponder) return this.nextResponder.scrollWheel(event);}
     public horizontalScrollWheel(event: CCEvent): void {if (this.nextResponder) return this.nextResponder.horizontalScrollWheel(event);}
+    public customEvent(event: CCEvent): void {if (this.nextResponder) return this.nextResponder.customEvent(event);}
 }

@@ -21,7 +21,7 @@ You will also need a window manager that's compatible with CCKit2.
 For Hydra support, run `sudo apt install hydra cckit2-wm-hydra`. For basic framebuffer support, run `sudo apt install cckit2-wm-fb`.
 
 #### CraftOS
-To install system-wide, run `pastebin run `. This will place CCKit2's files in `/CCKit2`. Note that applications in a folder will need to have `CCKit2` copied inside to work properly.
+To install system-wide, run `pastebin run 2GuhGwmB`. This will place CCKit2's files in `/CCKit2`. Note that applications in a folder will need to have `CCKit2` copied inside to work properly.
 
 Alternatively, download and extract the latest build of CCKit2 for CraftOS from the Releases page. This will include the CraftOS window manager with it, so it won't need any extra fiddling to work. Then copy the `CCKit2` folder into the root of the computer.
 
@@ -119,7 +119,7 @@ class AppDelegate implements CCApplicationDelegate {
     }
 }
 
-CCApplicationMain(ViewController, new AppDelegate());
+CCApplicationMain(ViewController, new AppDelegate(), ...$vararg);
 ```
 
 ```lua
@@ -143,7 +143,7 @@ local AppDelegate = LuaWrappers.class("AppDelegate", nil, {
     end
 })
 
-CCApplicationMain(nil, ViewController, LuaWrappers.new(AppDelegate))
+CCApplicationMain(nil, ViewController, LuaWrappers.new(AppDelegate), ...)
 ```
 
 Read on to learn what each of these parts does.

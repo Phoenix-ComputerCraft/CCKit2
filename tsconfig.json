@@ -21,7 +21,8 @@
         "luaLibImport": "require",
         "luaLibName": "typescript",
         "luaPlugins": [
-            {"name": "./typecheck.ts"}
+            {"name": "./typecheck.ts"},
+            {"name": "./makells.ts"},
         ]
     },
     "include": [

@@ -60,6 +60,13 @@ export class CCProgressIndicator extends CCView {
                     for (let y = 0; y < this.frame.height; y++) {
                         context.drawText({x: 1, y: y + 1}, string.rep(string.char(0x7F), this.frame.width));
                     }
+
+                    /*
+                    term.blit(("\x9E"):rep(40), ("b0"):rep(20), ("0b"):rep(20))
+                    term.blit(("\x87"):rep(40), ("b0"):rep(20), ("0b"):rep(20))
+                    term.blit(("\x9E"):rep(40), ("0b"):rep(20), ("b0"):rep(20))
+                    term.blit(("\x87"):rep(40), ("0b"):rep(20), ("b0"):rep(20))
+                    */
                 } else {
                     let width = Math.floor(this._progress * this.frame.width);
                     context.color = this._activeColor;
