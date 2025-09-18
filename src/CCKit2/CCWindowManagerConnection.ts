@@ -137,4 +137,13 @@ export default interface CCWindowManagerConnection {
      * @param menu The menus to display in the menu bar
      */
     updateAppMenu?(menu: CCMenuItemDescription[]): void;
+
+    /**
+     * If the app is waiting for an event in pullEvent, this function will cause
+     * it to wake up and return an empty CCEvent (which will be ignored). This
+     * is used to handle CCKit events immediately.
+     * 
+     * If the app is not waiting for an event, this function should do nothing.
+     */
+    wakeUp(): void;
 }

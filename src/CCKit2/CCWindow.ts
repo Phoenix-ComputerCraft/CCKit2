@@ -235,6 +235,7 @@ export class CCWindow extends CCResponder {
      */
     public makeKey(): void {
         // TODO: shouldBecomeKey?
+        CCApplication.shared.keyWindow?._resignKey();
         CCApplication.shared.keyWindow = this;
         this._becomeKey();
     }
@@ -244,8 +245,10 @@ export class CCWindow extends CCResponder {
      * front of the screen.
      */
     public makeKeyAndOrderFront(): void {
+        CCApplication.shared.keyWindow?._resignKey();
         CCApplication.shared.keyWindow = this;
         this.framebuffer.sendFrontAndFocus();
+        this._becomeKey();
     }
 
     /**
@@ -253,7 +256,7 @@ export class CCWindow extends CCResponder {
      * @package
      */
     _becomeKey(): void {
-        //throw "Not implemented";
+        this.isKeyWindow = true;
     }
 
     /**
@@ -261,7 +264,7 @@ export class CCWindow extends CCResponder {
      * @package
      */
     _resignKey(): void {
-        //throw "Not implemented";
+        this.isKeyWindow = false;
     }
 
     /**
@@ -621,6 +624,7 @@ export class CCWindow extends CCResponder {
      * Closes the window and removes it from the screen.
      */
     public close(): void {
+        // TODO: allow blocking closing
         this.framebuffer.close();
         if (this.parent && this.isKeyWindow) this.parent.makeKey();
         // TODO: refactor into CCApplication?

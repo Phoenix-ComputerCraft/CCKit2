@@ -1,6 +1,7 @@
 import CCView from "CCKit2/CCView";
 import { CCColor, CCRect } from "CCKit2/CCTypes";
 import CCGraphicsContext from "CCKit2/CCGraphicsContext";
+import CCLayoutConstraint from "CCKit2/CCLayoutConstraint";
 
 // From CC: Tweaked ROM - cc.strings.wrap
 // Copyright 2020 The CC: Tweaked Developers
@@ -87,8 +88,25 @@ export class CCTextView extends CCView {
         this.setNeedsDisplay();
     }
     private _wrapMode: CCTextView.WrapMode = CCTextView.WrapMode.ByWord;
+    /** The number of lines visible in the current width. */
+    public get lineCount(): number {return this.lines.length;}
+    /** Whether to automatically resize the height of the view via constraints. */
+    public get autoResizing(): boolean {return this._autoResizing;}
+    public set autoResizing(value: boolean) {
+        if (value === this._autoResizing) return;
+        this._autoResizing = value;
+        if (value) {
+            this.autoresizingConstraint = new CCLayoutConstraint(this, CCLayoutConstraint.Attribute.Height, CCLayoutConstraint.Relation.Equal, undefined, CCLayoutConstraint.Attribute.NotAnAttribute, 1, this.lines.length);
+            this.addConstraint(this.autoresizingConstraint);
+        } else {
+            this.removeConstraint(this.autoresizingConstraint!);
+            this.autoresizingConstraint = undefined;
+        }
+    }
+    private _autoResizing: boolean = false;
 
     private lines: string[] = [];
+    private autoresizingConstraint?: CCLayoutConstraint;
 
     /**
      * Create a new text view.
@@ -123,6 +141,10 @@ export class CCTextView extends CCView {
             case CCTextView.WrapMode.ByWord:
                 this.lines = wrap(this._text, width);
                 break;
+        }
+        if (this.autoresizingConstraint !== undefined && this.autoresizingConstraint.constant !== this.lines.length) {
+            this.autoresizingConstraint.constant = this.lines.length;
+            this.setNeedsLayout(this, this);
         }
     }
 }

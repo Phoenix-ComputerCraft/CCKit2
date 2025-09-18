@@ -97,6 +97,8 @@ export default class CCViewController extends CCResponder {
         vc.loadViewIfNeeded();
         this.viewWillDisappear(false);
         vc.view.window = this.view.window;
+        if (vc.view.window!.contentViewController === this)
+            vc.view.window!.contentViewController = vc;
         vc.view.didMoveToSuperview();
         this.view.window = undefined;
         this.view.didMoveToSuperview();

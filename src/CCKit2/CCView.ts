@@ -221,7 +221,7 @@ export default class CCView extends CCResponder {
      */
     public convertToWindowSpace(point: CCPoint): CCPoint {
         if (this.superview === undefined) return point;
-        return this.superview.convertToWindowSpace({x: this.frame.x + point.x - 1, y: this.frame.y + point.y - 1})
+        return this.superview.convertToWindowSpace({x: this.frame.x + point.x - 1, y: this.frame.y + point.y - 1});
     }
 
     /**

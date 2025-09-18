@@ -11,6 +11,7 @@ export default class CCLabel extends CCView {
     public get text(): string {return this._text;}
     public set text(value: string) {
         this._text = value;
+        if (value.length < this.frame.width) this.superview?.setNeedsDisplay();
         this.frame = {x: this.frame.x, y: this.frame.y, width: value.length, height: 1};
         this.setNeedsDisplay();
     }

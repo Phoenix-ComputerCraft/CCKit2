@@ -3,6 +3,7 @@ import CCWindow from "CCKit2/CCWindow";
 import { CCColor, CCSize } from "CCKit2/CCTypes";
 import CCTextView from "CCKit2/CCTextView";
 import CCButton from "CCKit2/CCButton";
+import CCApplication from "./CCApplication";
 
 class CCDialogViewController extends CCViewController {
     private dialog: CCDialog;
@@ -33,7 +34,8 @@ class CCDialogViewController extends CCViewController {
 
         for (let i = this.dialog.buttons.length - 1, x = this.view.frame.width + 1; i >= 0; i--) {
             x -= this.dialog.buttons[i].length + 3;
-            let button = new CCButton({x: x, y: this.view.frame.height - 1}, this.dialog.buttons[i], () => this.select(i));
+            const ci = i;
+            let button = new CCButton({x: x, y: this.view.frame.height - 1}, this.dialog.buttons[i], () => this.select(ci));
             if (i === this.dialog.defaultButton) button.isDefault = true;
             this.view.addSubview(button);
         }
@@ -62,7 +64,7 @@ export default class CCDialog {
      */
     public display(parent?: CCWindow): void {
         let window = new CCWindow(new CCDialogViewController(this));
-        window.parent = parent;
+        window.parent = parent ?? CCApplication.shared.keyWindow;
         window.title = this.title;
         window.display();
         window.makeKeyAndOrderFront();

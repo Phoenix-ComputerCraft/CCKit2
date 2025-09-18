@@ -36,3 +36,7 @@ export {default as CCTableView} from "CCKit2/CCTableView";
 export {default as CCTableViewDataSource} from "CCKit2/CCTableViewDataSource";
 export {default as CCTableViewStaticDataSource} from "CCKit2/CCTableViewStaticDataSource";
 export {default as CCMenuItem} from "CCKit2/CCMenuItem";
+export {default as CCScrollTextView} from "CCKit2/CCScrollTextView";
+export {default as CCBoxView} from "CCKit2/CCBoxView";
+export {default as CCOutlineView} from "CCKit2/CCOutlineView";
+export {default as CCOutlineViewDataSource} from "CCKit2/CCOutlineViewDataSource";

@@ -45,6 +45,13 @@ export default class CCTextField extends CCView {
         this.setNeedsDisplay();
     }
     private _isEnabled: boolean = true;
+    /** Whether the text is displayed as a password. */
+    public get isSecureTextEntry(): boolean {return this._isSecureTextEntry;}
+    public set isSecureTextEntry(value: boolean) {
+        this._isSecureTextEntry = value;
+        this.setNeedsDisplay();
+    }
+    private _isSecureTextEntry: boolean = false;
 
     private isActive: boolean = false;
     private _cursorPos: number = 0;
@@ -75,7 +82,7 @@ export default class CCTextField extends CCView {
     public draw(rect: CCRect): void {
         super.draw(rect);
         CCGraphicsContext.current!.color = (this._isEnabled && !(this._text === "" && !this.isActive)) ? this._textColor : this._disabledTextColor;
-        CCGraphicsContext.current!.drawText({x: 1, y: 1}, (this._text === "" && !this.isActive) ? this._placeholderText : this._text.substring(this.scrollPos, this.scrollPos + this.frame.width));
+        CCGraphicsContext.current!.drawText({x: 1, y: 1}, (this._text === "" && !this.isActive) ? this._placeholderText : (this._isSecureTextEntry ? "\u0007".repeat(Math.min(this._text.length - this.scrollPos, this.frame.width)) : this._text.substring(this.scrollPos, this.scrollPos + this.frame.width)));
     }
 
     public cursorPos(): [CCPoint, CCColor] | undefined {

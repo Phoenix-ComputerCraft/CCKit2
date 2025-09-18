@@ -20,4 +20,5 @@ export default function CCApplicationMain(viewController: new () => CCViewContro
     win.display();
     win.makeKeyAndOrderFront();
     app.run();
+    for (let w of app.windows) w.close();
 }

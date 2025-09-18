@@ -28,6 +28,8 @@ export default class CCScrollView extends CCView {
     private _showHorizontalScrollBar: boolean;
 
     private scrollPos: CCPoint = {x: 0, y: 0};
+    private horizontalClicked = false;
+    private verticalClicked = false;
 
     /**
      * Creates a new scroll view.
@@ -98,7 +100,7 @@ export default class CCScrollView extends CCView {
 
     public convertToWindowSpace(point: CCPoint): CCPoint {
         if (this.superview === undefined) return point;
-        return this.superview.convertToWindowSpace({x: this.frame.x + point.x - this.scrollPos.x - 1, y: this.frame.y + point.y - this.scrollPos.y - 1})
+        return this.superview.convertToWindowSpace({x: this.frame.x + point.x - this.scrollPos.x - 1, y: this.frame.y + point.y - this.scrollPos.y - 1});
     }
 
     public hitTest(point: CCPoint): CCView | undefined {

@@ -91,7 +91,10 @@ export class CCApplication extends CCResponder {
                 conn = new mod.default(this);
             } else if (args[i] === "--open") {
                 i++;
-                // TODO
+                // TODO: finish
+                if (args[i] !== undefined && del.applicationOpenFile !== undefined) {
+                    del.applicationOpenFile(this, args[i]);
+                }
             }
         }
         if (conn) this.wmConnection = conn;
