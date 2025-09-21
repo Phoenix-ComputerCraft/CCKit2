@@ -202,6 +202,7 @@ bbbbcdef`);
     }
 
     public viewWillAppear(animated: boolean): void {
+        super.viewWillAppear(animated);
         this.view.window!.title = "CCKit2 Demo";
     }
 }

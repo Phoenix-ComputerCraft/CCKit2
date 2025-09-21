@@ -6,6 +6,8 @@ Instructions vary depending on what OS and language you're using.
 
 ### 1. Installation
 #### Phoenix
+**NOTE: These instructions are written for the future. CCKit2 is not currently available in the public repos. More information will be provided when CCKit2 is available on Phoenix.**
+
 These steps only apply to users who installed the "minimal" OS without a desktop. Desktop users already have everything installed.
 
 Install the `cckit2` package through `apt`:
@@ -21,7 +23,7 @@ You will also need a window manager that's compatible with CCKit2.
 For Hydra support, run `sudo apt install hydra cckit2-wm-hydra`. For basic framebuffer support, run `sudo apt install cckit2-wm-fb`.
 
 #### CraftOS
-To install system-wide, run `pastebin run 2GuhGwmB`. This will place CCKit2's files in `/CCKit2`. Note that applications in a folder will need to have `CCKit2` copied inside to work properly.
+To install system-wide, run `pastebin run 2GuhGwmB`. This will place CCKit2's files in `/CCKit2`. Note that applications in a folder will need to have `CCKit2` copied inside to work properly, or have a line adjusting `package.path` to look in the root.
 
 Alternatively, download and extract the latest build of CCKit2 for CraftOS from the Releases page. This will include the CraftOS window manager with it, so it won't need any extra fiddling to work. Then copy the `CCKit2` folder into the root of the computer.
 
@@ -64,13 +66,15 @@ Alternatively, you may set it up manually:
         "baseUrl": "./src",
         "rootDir": "src",
         "outDir": "bin",
-        "declaration": true,
         "removeComments": false
     },
     "tstl": {
         "luaTarget": "CC",
         "luaLibImport": "require",
-        "luaLibName": "typescript"
+        "luaLibName": "typescript",
+        "plugins": [
+            {"name": "./node_modules/@phoenix-cc/cckit2/resolution.ts"}
+        ]
     },
     "include": [
         "./src/*.ts"
@@ -92,7 +96,28 @@ When loading CCKit2 classes, use `LuaWrappers.import` instead of `require`, as i
 
 To create a class, use `local MyClass = LuaWrappers.class("MyClass", super, fields)`. The second argument is the base class to extend from (`nil` if there is none), and the third is a table of methods and fields in the class. The fields table holds methods of the class directly, as well as descriptors (defined as tables with a `get` and optional `set` function inside), and default values to set for certain properties. The `____constructor` field is the constructor for the class. All methods must take a `self` parameter before other parameters.
 
+For compatibility with LuaLS annotations, use the following layout to define classes:
+
+```lua
+---@class MyClass: BaseClass
+local MyClass = {}
+
+MyClass.field = 2
+
+---@param arg type
+---@return type
+function MyClass:method(arg)
+    -- ...
+end
+
+MyClass = LuaWrappers.class("MyClass", BaseClass, MyClass)
+```
+
+This will ensure the methods and fields are assigned to the class properly.
+
 To construct an instance of a class, call `LuaWrappers.new` with the class + any arguments to pass to the constructor. If you want to check if an object is an instance of a class, call `LuaWrappers.instanceOf(obj, class)`.
+
+Lua Language Server meta files are provided in the SDK ZIP, under the `Typings/Lua` subdirectory. These can be loaded in your IDE to provide autocompletion for CCKit2 types in Lua. Be aware that the typing provided in LLS is much weaker than the type guarantees in TypeScript, so accuracy may vary.
 
 ### 3. Basic Template
 Here's a barebones template program to demonstrate the structure of a CCKit2 application.
@@ -124,24 +149,33 @@ CCApplicationMain(ViewController, new AppDelegate(), ...$vararg);
 
 ```lua
 local LuaWrappers = require "CCKit2.LuaWrappers"
-local CCApplicationMain = LuaWrappers.import "CCApplicationMain"
-local CCDefaultWindowManagerConnection = LuaWrappers.import "CCDefaultWindowManagerConnection"
-local CCViewController = LuaWrappers.import "CCViewController"
+---@module "CCKit2.CCApplicationMain"
+local CCApplicationMain = LuaWrappers.import "CCKit2.CCApplicationMain"
+---@module "CCKit2.CCDefaultWindowManagerConnection"
+local CCDefaultWindowManagerConnection = LuaWrappers.import "CCKit2.CCDefaultWindowManagerConnection"
+---@module "CCKit2.CCViewController"
+local CCViewController = LuaWrappers.import "CCKit2.CCViewController"
 
-local ViewController = LuaWrappers.class("ViewController", CCViewController, {
-    viewDidLoad = function(self)
-        CCViewController.prototype.viewDidLoad(self)
-        -- Add views to the view controller here.
-        -- local myView = LuaWrappers.new(CCLabel, {x = 1, y = 1}, "Hello World!")
-        -- self.view:addSubview(myView)
-    end
-})
+---@class ViewController: CCViewController
+local ViewController = {}
 
-local AppDelegate = LuaWrappers.class("AppDelegate", nil, {
-    applicationWindowManagerConnection = function(self, app)
-        return CCDefaultWindowManagerConnection(nil, app)
-    end
-})
+function ViewController:viewDidLoad()
+    CCViewController.prototype.viewDidLoad(self)
+    -- Add views to the view controller here.
+    -- local myView = LuaWrappers.new(CCLabel, {x = 1, y = 1}, "Hello World!")
+    -- self.view:addSubview(myView)
+end
+
+ViewController = LuaWrappers.class("ViewController", CCViewController, ViewController)
+
+---@class AppDelegate: CCApplicationDelegate
+local AppDelegate = {}
+
+function AppDelegate:applicationWindowManagerConnection(app)
+    return CCDefaultWindowManagerConnection(nil, app)
+end
+
+AppDelegate = LuaWrappers.class("AppDelegate", nil, AppDelegate)
 
 CCApplicationMain(nil, ViewController, LuaWrappers.new(AppDelegate), ...)
 ```
@@ -211,9 +245,12 @@ class MyViewController extends CCViewController {
 ```
 
 ```lua
-local MyViewController = LuaWrappers.class("MyViewController", CCViewController, {
+---@class MyViewController: CCViewController
+local MyViewController = {}
 
-})
+-- ...
+
+MyViewController = LuaWrappers.class("MyViewController", CCViewController, MyViewController)
 ```
 
 To catch an event, such as `viewDidLoad`, override that method in the view controller, making sure to call the `super` implementation in the process:
@@ -226,10 +263,10 @@ To catch an event, such as `viewDidLoad`, override that method in the view contr
 ```
 
 ```lua
-    viewDidLoad = function(self)
-        CCViewController.prototype.viewDidLoad(self)
+function MyViewController:viewDidLoad()
+    CCViewController.prototype.viewDidLoad(self)
 
-    end,
+end
 ```
 
 ### Application and Main Loop
