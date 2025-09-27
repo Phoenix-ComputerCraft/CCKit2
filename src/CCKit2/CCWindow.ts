@@ -460,6 +460,7 @@ export class CCWindow extends CCResponder {
      */
     public display(): void {
         if (this.framebuffer === undefined) return;
+        this.framebuffer.setVisible(false);
         this.framebuffer.setCursorBlink(false);
         CCGraphicsContext.current = new CCGraphicsContext(this.framebuffer);
         CCGraphicsContext.current.pushState();
@@ -488,6 +489,7 @@ export class CCWindow extends CCResponder {
             this.framebuffer.setTextColor(cursor[1]);
             this.framebuffer.setCursorBlink(true);
         }
+        this.framebuffer.setVisible(true);
     }
 
     /**

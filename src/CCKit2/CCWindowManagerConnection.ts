@@ -1,6 +1,7 @@
 import CCEvent from "CCKit2/CCEvent";
 import CCWindow from "CCKit2/CCWindow";
 import { CCColor, CCKey, CCKeyCombo } from "CCKit2/CCTypes";
+import CCImage from "CCKit2/CCImage";
 
 /**
  * The CCWindowManagerFramebuffer interface represents the underlying framebuffer
@@ -146,4 +147,11 @@ export default interface CCWindowManagerConnection {
      * If the app is not waiting for an event, this function should do nothing.
      */
     wakeUp(): void;
+
+    /**
+     * Sets the application name and icon, for use in a task manager.
+     * @param title The title of the app
+     * @param icon The icon for the app, which should be exactly 2x1
+     */
+    setAppMetadata?(title: string, icon: CCImage): void;
 }

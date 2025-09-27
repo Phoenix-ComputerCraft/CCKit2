@@ -211,6 +211,10 @@ class AppDelegate implements CCApplicationDelegate {
     applicationWindowManagerConnection(app: CCApplication): CCWindowManagerConnection {
         return CCDefaultWindowManagerConnection(app);
     }
+
+    applicationDidFinishLaunching(app: CCApplication, launchOptions: CCApplication.LaunchOptions): void {
+        if (app.wmConnection.setAppMetadata) app.wmConnection.setAppMetadata("BasicApp", CCImage.createFromBlitImage([[[string.char(1, 2), "22", "00"]]]));
+    }
 }
 
 CCApplicationMain(ViewController, new AppDelegate(), ...$vararg);

@@ -19,6 +19,7 @@ export default interface CCTableViewDataSource {
 
     /**
      * Returns the number of columns in the table at the specified row.
+     * The size of row 0 is used for header sizing.
      * @param table The table requesting data
      * @param row The 0-based row being queried
      * @return The number of columns in the row
@@ -28,6 +29,7 @@ export default interface CCTableViewDataSource {
     /**
      * Returns the width of a column in a row, overriding the width of the view.
      * If not implemented, the width is determined from the content.
+     * The size of row 0 is used for header sizing.
      * @param table The table requesting data
      * @param row The 0-based row to query
      * @param column The 0-based column to query
@@ -43,4 +45,23 @@ export default interface CCTableViewDataSource {
      * @return The view to display in the table; its position will be modified
      */
     contentsOfCell(table: CCTableView, row: number, column: number): CCView;
+
+    /**
+     * Returns the title for the specified column. If unimplemented, the table
+     * will not have a header row.
+     * @param table The table requesting data
+     * @param column The 0-based column to query
+     * @return The text showed in the header for the column
+     */
+    titleForColumn?(table: CCTableView, column: number): string;
+
+    /**
+     * Returns whether the specified column is valid for sorting. The
+     * application must implement sorting columns on its own, using `sortColumn`
+     * on the table view.
+     * @param table The table requesting data
+     * @param column The 0-based column to query
+     * @return Whether the column can be used for sort order in the table
+     */
+    columnIsSortable?(table: CCTableView, column: number): boolean;
 }

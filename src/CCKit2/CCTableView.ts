@@ -3,6 +3,8 @@ import CCView from "CCKit2/CCView";
 import { CCColor, CCRect } from "CCKit2/CCTypes";
 import CCTableViewDataSource from "CCKit2/CCTableViewDataSource";
 import CCEvent from "CCKit2/CCEvent";
+import CCGraphicsContext from "CCKit2/CCGraphicsContext";
+import CCControl from "CCKit2/CCControl";
 
 class RowView extends CCView {
     private table: CCTableView;
@@ -27,6 +29,40 @@ class RowView extends CCView {
         this.lastClick = os.time();
         if (dbl) this.table.onRowDoubleClicked!(this.table, this.row);
         if (single) this.table.onRowSelected!(this.table, this.row);
+    }
+}
+
+class HeaderCellView extends CCControl {
+    private table: CCTableView;
+    private column: number;
+    private text: string;
+    private sortable: boolean;
+    public selected: boolean = false;
+    public direction: boolean = false;
+
+    public constructor(frame: CCRect, table: CCTableView, column: number, text: string, sortable: boolean) {
+        super(frame, () => this.click());
+        this.table = table;
+        this.column = column;
+        this.text = text;
+        this.sortable = sortable;
+    }
+
+    public draw(rect: CCRect): void {
+        let ctx = CCGraphicsContext.current!;
+        ctx.color = this.selected ? this.table.selectedRowColor : this.table.rowColorB;
+        ctx.drawFilledRectangle(rect);
+        ctx.color = this.selected ? CCColor.white : CCColor.black;
+        ctx.drawText({x: 2, y: 1}, this.text);
+        if (this.sortable) ctx.drawText({x: this.frame.width - 1, y: 1}, string.char(this.direction ? 24 : 25));
+    }
+
+    public click(): void {
+        if (this.sortable) {
+            if (this.selected) this.direction = !this.direction;
+            else this.table.sortColumn = this.column;
+            this.table.sortDirection = this.direction;
+        }
     }
 }
 
@@ -75,18 +111,56 @@ export default class CCTableView extends CCScrollView {
             this.rowViews[row].backgroundColor = this._selectedRowColor;
     }
     private _selectedRows: number[] = [];
-
+    /** The primary color for alternating rows. */
+    public get rowColorA(): CCColor {return this._rowColorA;}
+    public set rowColorA(value: CCColor) {
+        this._rowColorA = value;
+        this.update();
+    }
     private _rowColorA: CCColor = CCColor.white;
-
+    /** The secondary color for alternating rows. */
+    public get rowColorB(): CCColor {return this._rowColorB;}
+    public set rowColorB(value: CCColor) {
+        this._rowColorB = value;
+        this.update();
+    }
     private _rowColorB: CCColor = CCColor.lightGray;
-
+    /** The color for selected rows. */
+    public get selectedRowColor(): CCColor {return this._selectedRowColor;}
+    public set selectedRowColor(value: CCColor) {
+        this._selectedRowColor = value;
+        this.update();
+    }
     private _selectedRowColor: CCColor = CCColor.blue;
     /** Called when a row is selected. */
     public onRowSelected?: (this: void, table: CCTableView, row: number) => void;
     /** Called when a row is double-clicked. */
     public onRowDoubleClicked?: (this: void, table: CCTableView, row: number) => void;
+    /** Stores the 0-based index of the column determining sort order. */
+    public get sortColumn(): number | undefined {return this._sortColumn;}
+    public set sortColumn(value: number | undefined) {
+        this._sortColumn = value;
+        for (let [i, view] of ipairs(this.headerViews)) {
+            view.selected = (i-1) === value;
+            view.setNeedsDisplay();
+        }
+        this.update();
+    }
+    private _sortColumn?: number;
+    /** Stores the direction of sorting. Typically, false = A-Z, and true = Z-A. */
+    public get sortDirection(): boolean {return this._sortDirection;}
+    public set sortDirection(value: boolean) {
+        this._sortDirection = value;
+        if (this._sortColumn !== undefined && this._sortColumn >= 0 && this._sortColumn < this.headerViews.length) {
+            this.headerViews[this._sortColumn].direction = value;
+            this.headerViews[this._sortColumn].setNeedsDisplay();
+        }
+        this.update();
+    }
+    private _sortDirection: boolean = false;
 
     private rowViews: CCView[] = [];
+    private headerViews: HeaderCellView[] = [];
 
     /**
      * Creates a new table view.
@@ -107,7 +181,10 @@ export default class CCTableView extends CCScrollView {
         this.rowViews = [];
         this._selectedRows = [];
         const rowCount = this._dataSource.numberOfRows(this);
-        let totalWidth = 0, totalHeight = 0;
+        let totalWidth = 0, totalHeight = 0, offset = 1;
+        let headerWidths: number[] = [];
+        if (this._dataSource.titleForColumn !== undefined) {totalHeight = 1; offset = 2;}
+        else for (let view of this.headerViews) view.removeFromSuperview();
         for (let row = 0; row < rowCount; row++) {
             const colCount = this._dataSource.numberOfColumns(this, row);
             let views: CCView[] = [];
@@ -125,7 +202,7 @@ export default class CCTableView extends CCScrollView {
             }
             totalWidth = Math.max(totalWidth, width);
             totalHeight += height;
-            let rowView = new RowView({x: 1, y: row + 1, width: width, height: height}, this, row);
+            let rowView = new RowView({x: 1, y: row + offset, width: width, height: height}, this, row);
             rowView.backgroundColor = row % 2 == 1 ? this._rowColorB : this._rowColorA;
             for (let col = 0, x = 1; col < colCount; col++) {
                 views[col].frame.x = x;
@@ -133,12 +210,30 @@ export default class CCTableView extends CCScrollView {
                 rowView.addSubview(views[col]);
                 x += widths[col];
             }
+            if (row === 0) headerWidths = widths;
             this.subviews[0].addSubview(rowView);
             this.rowViews.push(rowView);
         }
         this.resizeContentView({width: totalWidth, height: totalHeight});
+        if (this._dataSource.titleForColumn !== undefined) {
+            if (this.subviews.length === 1) {
+                CCView.prototype.addSubview.apply(this, [new CCView({x: 1, y: 1, width: totalWidth, height: 1})]);
+            }
+            if (this.headerViews.length < headerWidths.length) {
+                let x = 1;
+                for (let i = 0; i < this.headerViews.length; i++) x += headerWidths[i];
+                for (let i = this.headerViews.length; i < headerWidths.length; i++) {
+                    let sortable = this._dataSource.columnIsSortable ? this._dataSource.columnIsSortable(this, i) : false;
+                    let view = new HeaderCellView({x: x, y: 1, width: headerWidths[i], height: 1}, this, i, this._dataSource.titleForColumn!(this, i), sortable);
+                    this.subviews[1].addSubview(view);
+                    this.headerViews.push(view);
+                    x += headerWidths[i];
+                }
+            }
+        }
         for (let row = 0; row < rowCount; row++)
             this.rowViews[row].frame.width = totalWidth;
+        this.setNeedsDisplay();
     }
 
     /**

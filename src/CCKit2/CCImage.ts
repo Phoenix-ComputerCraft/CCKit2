@@ -39,7 +39,7 @@ export default class CCImage {
      */
     public static createFromBlitImage(image: object, frame: number = 0): CCImage {
         let bimg = image as BIMG;
-        if (typeof bimg.version !== "string") throw "Not BIMG data";
+        //if (typeof bimg.version !== "string") throw "Not BIMG data";
         if (typeof bimg[frame] !== "object") throw "Invalid frame number";
         let retval = new CCImage();
         if (bimg.width !== undefined && bimg.height !== undefined)

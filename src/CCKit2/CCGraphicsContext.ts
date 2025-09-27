@@ -448,7 +448,7 @@ export default class CCGraphicsContext {
                         bg = bg.substring(startReal.offsetX);
                     }
                     this.target.setCursorPos(startReal.x, startReal.y);
-                    this.target.blit(text, fg, bg);
+                    this.target.blit(string.gsub(text, "\0", string.char(160))[0], string.gsub(string.gsub(fg, " ", "\0")[0], "!", "~")[0], string.gsub(string.gsub(bg, " ", "\0")[0], "!", "~")[0]);
                 }
             }
             this.target.setBackgroundColor(this.state.color);
