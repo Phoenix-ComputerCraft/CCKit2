@@ -48,9 +48,15 @@ if fs and term then
     print("Installing...")
     fs.makeDir("CCKit2")
     for _, f in ipairs(retval) do
-        local handle = assert(fs.open("CCKit2/" .. f.name, "w"))
-        handle.write(f.data)
-        handle.close()
+        if f.name == "typescript.lua" then
+            local handle = assert(fs.open(f.name, "w"))
+            handle.write(f.data)
+            handle.close()
+        else
+            local handle = assert(fs.open("CCKit2/" .. f.name, "w"))
+            handle.write(f.data)
+            handle.close()
+        end
     end
     fs.makeDir("system")
     local handle = assert(fs.open("system/expect.lua", "w"))

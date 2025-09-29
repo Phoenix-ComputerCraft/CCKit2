@@ -33,9 +33,26 @@ export default class CCMenu {
      * @param keyEquivalent A key combo to trigger the action with
      */
     public addItem(title: string, action: () => void, keyEquivalent?: CCKeyCombo): void;
-    public addItem(first: string | CCMenuItem, action?: () => void, keyEquivalent?: CCKeyCombo): void {
+    /**
+     * Constructs and adds a new menu item for a radio action.
+     * @param title The title for the action
+     * @param action The function to call when the action is triggered
+     * @param keyCombo A key combo that will trigger the action, if desired
+     * @param radioGroup The ID of the group the item is in
+     */
+    public addItem(title: string, action: () => void, keyCombo: CCKeyCombo | undefined, radioGroup: string): void;
+    /**
+     * Constructs and adds a new menu item for a checkbox action.
+     * @param title The title for the action
+     * @param action The function to call when the action is triggered
+     * @param keyCombo A key combo that will trigger the action, if desired
+     * @param checked Whether the checkbox is initially checked
+     */
+    public addItem(title: string, action: (checked?: boolean) => void, keyCombo: CCKeyCombo | undefined, checked: boolean): void;
+    public addItem(first: string | CCMenuItem, action?: () => void, keyEquivalent?: CCKeyCombo, extra?: string | boolean): void {
         if (typeof first === "string") {
-            first = new CCMenuItem(first, action!, keyEquivalent);
+            // @ts-expect-error
+            first = new CCMenuItem(first, action!, keyEquivalent, extra);
         }
         if (first.supermenu !== undefined) throw "Item already attached to menu";
         first.supermenu = this;

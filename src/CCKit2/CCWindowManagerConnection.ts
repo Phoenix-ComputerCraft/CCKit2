@@ -93,6 +93,10 @@ export type CCMenuItemDescription = {
     subitems?: CCMenuItemDescription[];
     /** A key for an action to send when the item is triggered (if null, the item will be disabled) */
     action?: string;
+    /** If set, renders a checkbox on the item, which will be checked based on this value. */
+    checkbox?: boolean;
+    /** If set, renders a radio button on the item, which is grouped with any other item in the menu with the same group name. */
+    radioGroup?: string;
 }
 
 /**

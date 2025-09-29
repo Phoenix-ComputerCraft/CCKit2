@@ -38,6 +38,15 @@ export default class CCScrollView extends CCView {
         this.setNeedsDisplay();
     }
     private _showHorizontalScrollBar: boolean;
+    /** The current position of scrolling. */
+    public get scrollPosition(): CCPoint {
+        return {x: 1 + this.scrollPos.x, y: 1 + this.scrollPos.y};
+    }
+    public set scrollPosition(value: CCPoint) {
+        this.scrollPos.x = Math.min(Math.max(value.x - 1, 0), Math.max(this.subviews[0].frame.width - this.frame.width - 1, 0));
+        this.scrollPos.y = Math.min(Math.max(value.y - 1, 0), Math.max(this.subviews[0].frame.height - this.frame.height - 1, 0));
+        this.setNeedsDisplay();
+    }
 
     private scrollPos: CCPoint = {x: 0, y: 0};
     private horizontalClicked = false;
