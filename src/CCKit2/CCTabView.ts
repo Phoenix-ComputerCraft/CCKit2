@@ -5,7 +5,8 @@ import CCGraphicsContext from "CCKit2/CCGraphicsContext";
 
 /**
  * A tab view allows switching between multiple tabbed views in a single parent
- * view, using a segmented button to select each tab.
+ * view, using a segmented button to select each tab.  
+ * ![Example image](../../images/CCTabView.png)
  * @category Views
  */
 export default class CCTabView extends CCView {

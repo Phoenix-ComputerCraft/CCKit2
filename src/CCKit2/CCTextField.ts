@@ -6,7 +6,9 @@ import CCMenu from "CCKit2/CCMenu";
 import CCMenuItem from "CCKit2/CCMenuItem";
 
 /**
- * A text field allows inputting text in a single line.
+ * A text field allows inputting text in a single line.  
+ * ![Example image](../../images/CCTextField-1.png)  
+ * ![Example image](../../images/CCTextField-2.png)
  * @category Views
  */
 export default class CCTextField extends CCView {

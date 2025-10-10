@@ -3,7 +3,8 @@ import CCGraphicsContext from "CCKit2/CCGraphicsContext";
 import CCButton from "CCKit2/CCButton";
 
 /**
- * A checkbox is a type of button that is either on or off.
+ * A checkbox is a type of button that is either on or off.  
+ * ![Example image](../../images/CCCheckbox.png)
  * @category Views
  */
 export default class CCCheckbox extends CCButton {

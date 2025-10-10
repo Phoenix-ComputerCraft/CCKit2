@@ -83,7 +83,8 @@ class HeaderCellView extends CCControl {
  * to select one or more rows. Data is sourced from an external object
  * (`CCTableViewDataSource`), which is used to precisely set up the configuration
  * of each row, column and cell. The view is kept in a scroll view, which allows
- * automatic overflow control.
+ * automatic overflow control.  
+ * ![Example image](../../images/CCTableView.png)
  * @see CCTableViewDataSource
  * @category Views
  */

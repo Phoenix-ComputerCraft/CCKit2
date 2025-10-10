@@ -238,4 +238,8 @@ export enum CCKey {
     Underscore = 0xCB,
 }
 
+/**
+ * Defines a key combination with modifiers.
+ * @category Types
+ */
 export type CCKeyCombo = {key: CCKey, ctrl: boolean, alt: boolean, shift: boolean};

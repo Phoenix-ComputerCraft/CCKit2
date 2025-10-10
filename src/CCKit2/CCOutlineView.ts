@@ -97,7 +97,8 @@ class OutlineDataSource<Item extends AnyNotNil> implements CCTableViewDataSource
 
 /**
  * An outline view is a type of table which displays hierarchical data in groups
- * which can be expanded and collapsed.
+ * which can be expanded and collapsed.  
+ * ![Example image](../../images/CCOutlineView.png)
  * @typeParam Item - Type of object that the data source provides
  * @category Views
  */

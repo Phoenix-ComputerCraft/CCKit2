@@ -10,7 +10,8 @@ function indexCheck(index: number): number | undefined {
 
 /**
  * Holds information about a single menu in the menu bar, either as a top-level
- * menu or a submenu.
+ * menu or a submenu.  
+ * ![Example image](../../images/CCMenu.png)
  * @category Application
  */
 export default class CCMenu {

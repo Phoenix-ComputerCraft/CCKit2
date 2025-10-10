@@ -3,7 +3,10 @@ import { CCColor, CCRect } from "CCKit2/CCTypes";
 import CCView from "CCKit2/CCView";
 
 /**
- * A CCProgressIndicator displays a progress bar or wheel.
+ * A CCProgressIndicator displays a progress bar or wheel.  
+ * ![Example image](../../images/CCProgressIndicator-1.png)  
+ * ![Example image](../../images/CCProgressIndicator-2.png)  
+ * ![Example image](../../images/CCProgressIndicator-3.png)
  * @category Views
  */
 export class CCProgressIndicator extends CCView {

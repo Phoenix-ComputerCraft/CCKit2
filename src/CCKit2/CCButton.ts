@@ -5,7 +5,8 @@ import CCGraphicsContext from "CCKit2/CCGraphicsContext";
 
 /**
  * A button implements a simple clickable region with text, which triggers a
- * function when clicked.
+ * function when clicked.  
+ * ![Example image](../../images/CCButton.png)
  * @category Views
  */
 export default class CCButton extends CCControl {

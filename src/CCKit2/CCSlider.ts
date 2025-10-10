@@ -4,7 +4,8 @@ import CCEvent from "CCKit2/CCEvent";
 import CCGraphicsContext from "CCKit2/CCGraphicsContext";
 
 /**
- * A slider allows input of a progressive value.
+ * A slider allows input of a progressive value.  
+ * ![Example image](../../images/CCSlider.png)
  * @category Views
  */
 export default class CCSlider extends CCView {

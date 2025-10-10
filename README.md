@@ -280,5 +280,10 @@ To pick the right `CCWindowManagerConnection` instance, CCKit2 asks the app to s
 
 The application delegate class in the skeleton above is appropriate for most applications, but it can be extended to receive those events too.
 
+## Next Steps
+Full documentation on all of the classes available in CCKit2 is available [on the website](https://phoenix-computercraft.github.io/CCKit2/). The classes are categorized by their type, with the Views category containing all visual elements and related classes. Look through the fields and methods of each class to discover how to use them.
+
+An example program displaying most view types is available in [`src/example`](https://github.com/Phoenix-ComputerCraft/CCKit2/tree/master/src/example) in the repo, in both TypeScript and Lua. Use this as an example of how to build a full app using CCKit2.
+
 ## License
 The core CCKit2 framework and CraftOS window manager are licensed under the GNU General Public License, version 2 or later. The `CCWindowManagerConnection` implementations for Phoenix are licensed under the same license as Phoenix, which is the Phoenix EULA at this time.

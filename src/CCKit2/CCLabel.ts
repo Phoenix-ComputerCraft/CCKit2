@@ -3,7 +3,8 @@ import CCView from "CCKit2/CCView";
 import CCGraphicsContext from "CCKit2/CCGraphicsContext";
 
 /**
- * A label displays a single line of text without wrapping.
+ * A label displays a single line of text without wrapping.  
+ * ![Example image](../../images/CCLabel.png)
  * @category Views
  */
 export default class CCLabel extends CCView {

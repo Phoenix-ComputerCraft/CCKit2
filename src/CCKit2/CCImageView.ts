@@ -4,7 +4,8 @@ import { CCPoint, CCRect } from "CCKit2/CCTypes";
 import CCGraphicsContext from "CCKit2/CCGraphicsContext";
 
 /**
- * A CCImageView displays images on the screen.
+ * A CCImageView displays images on the screen.  
+ * ![Example image](../../images/CCImageView.png)
  * @category Views
  */
 export default class CCImageView extends CCView {

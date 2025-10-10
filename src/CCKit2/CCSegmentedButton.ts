@@ -5,7 +5,8 @@ import CCGraphicsContext from "CCKit2/CCGraphicsContext";
 
 /**
  * A segmented button displays multiple buttons in a single view, with only one
- * selected at a time.
+ * selected at a time.  
+ * ![Example image](../../images/CCSegmentedButton.png)
  * @category Views
  */
 export default class CCSegmentedButton extends CCView {

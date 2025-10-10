@@ -5,7 +5,8 @@ import CCButton from "CCKit2/CCButton";
 /**
  * A radio button is a type of button that can only have one button active in
  * a group. Groups are established when radio buttons share superviews and 
- * state change actions.
+ * state change actions.  
+ * ![Example image](../../images/CCRadioButton.png)
  * @category Views
  */
 export default class CCRadioButton extends CCButton {

@@ -43,7 +43,8 @@ class CCDialogViewController extends CCViewController {
 }
 
 /**
- * A dialog displays a new window on the screen with the specified message.
+ * A dialog displays a new window on the screen with the specified message.  
+ * ![Example image](../../images/CCDialog.png)
  * @category Windows
  */
 export default class CCDialog {

@@ -56,7 +56,8 @@ function wrap(text: string, width: number): string[] {
 }
 
 /**
- * A text view displays multiple lines of text with wrapping.
+ * A text view displays multiple lines of text with wrapping.  
+ * ![Example image](../../images/CCTextView.png)
  * @category Views
  */
 export class CCTextView extends CCView {

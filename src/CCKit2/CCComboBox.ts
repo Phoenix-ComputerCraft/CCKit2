@@ -15,7 +15,9 @@ class ComboWindow extends CCWindow {
 }
 
 /**
- * A combo box allows selection from multiple items in a compact button view.
+ * A combo box allows selection from multiple items in a compact button view.  
+ * ![Example image](../../images/CCComboBox-1.png)  
+ * ![Example image](../../images/CCComboBox-2.png)
  * @category Views
  */
 export default class CCComboBox extends CCControl {

@@ -17,7 +17,8 @@ class InnerView extends CCView {
 
 /**
  * A scroll view displays larger content inside a smaller view, which can be
- * scrolled to see the whole content.
+ * scrolled to see the whole content.  
+ * ![Example image](../../images/CCScrollView.png)
  * @category Views
  */
 export default class CCScrollView extends CCView {
