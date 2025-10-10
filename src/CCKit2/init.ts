@@ -40,3 +40,5 @@ export {default as CCScrollTextView} from "CCKit2/CCScrollTextView";
 export {default as CCBoxView} from "CCKit2/CCBoxView";
 export {default as CCOutlineView} from "CCKit2/CCOutlineView";
 export {default as CCOutlineViewDataSource} from "CCKit2/CCOutlineViewDataSource";
+export {default as CCTableViewDelegate} from "CCKit2/CCTableViewDelegate";
+export {default as CCOutlineViewDelegate} from "CCKit2/CCOutlineViewDelegate";

@@ -88,6 +88,14 @@ export class CCTextView extends CCView {
         this.setNeedsDisplay();
     }
     private _wrapMode: CCTextView.WrapMode = CCTextView.WrapMode.ByWord;
+    /** The alignment of text. */
+    public get alignment(): CCTextView.Alignment {return this._alignment;}
+    public set alignment(value: CCTextView.Alignment) {
+        this._alignment = value;
+        this.updateLines();
+        this.setNeedsDisplay();
+    }
+    private _alignment: CCTextView.Alignment = CCTextView.Alignment.Left;
     /** The number of lines visible in the current width. */
     public get lineCount(): number {return this.lines.length;}
     /** Whether to automatically resize the height of the view via constraints. */
@@ -142,6 +150,30 @@ export class CCTextView extends CCView {
                 this.lines = wrap(this._text, width);
                 break;
         }
+        for (let [i, l] of ipairs(this.lines)) {
+            if (l.length < width) {
+                switch (this._alignment) {
+                    case CCTextView.Alignment.Center:
+                        l = string.rep(" ", (width - l.length) / 2) + l;
+                        break;
+                    case CCTextView.Alignment.Right:
+                        l = string.rep(" ", width - l.length) + l;
+                        break;
+                    case CCTextView.Alignment.Justified:
+                        const count = string.gsub(l, " ", " ")[1];
+                        const expand = (width - l.length) / count;
+                        let n = 0;
+                        l = string.gsub(l, " ", () => {
+                            const nn = n + expand;
+                            const c = math.floor(nn) - math.floor(n) + 1;
+                            n = nn;
+                            return string.rep(" ", c);
+                        })[0];
+                        break;
+                }
+                this.lines[i-1] = l;
+            }
+        }
         if (this.autoresizingConstraint !== undefined && this.autoresizingConstraint.constant !== this.lines.length) {
             this.autoresizingConstraint.constant = this.lines.length;
             this.setNeedsLayout(this, this);
@@ -162,6 +194,18 @@ export namespace CCTextView {
         /** Wrap automatically by word. */
         ByWord
     };
+
+    /** The way to align text in a text view. */
+    export enum Alignment {
+        /** Align text to the left edge (default). */
+        Left,
+        /** Align text in the center. */
+        Center,
+        /** Align text to the right edge. */
+        Right,
+        /** Justify text to the left and right edges. */
+        Justified
+    }
 }
 
 export default CCTextView;

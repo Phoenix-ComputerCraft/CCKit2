@@ -49,7 +49,13 @@ export default class CCMenu {
      * @param checked Whether the checkbox is initially checked
      */
     public addItem(title: string, action: (checked?: boolean) => void, keyCombo: CCKeyCombo | undefined, checked: boolean): void;
-    public addItem(first: string | CCMenuItem, action?: () => void, keyEquivalent?: CCKeyCombo, extra?: string | boolean): void {
+    /**
+     * Constructs and adds a new menu item for a submenu.
+     * @param title The title for the submenu
+     * @param menu The menu to display under this item
+     */
+    public addItem(title: string, menu: CCMenu): void;
+    public addItem(first: string | CCMenuItem, action?: (() => void) | CCMenu, keyEquivalent?: CCKeyCombo, extra?: string | boolean): void {
         if (typeof first === "string") {
             // @ts-expect-error
             first = new CCMenuItem(first, action!, keyEquivalent, extra);
@@ -58,6 +64,16 @@ export default class CCMenu {
         first.supermenu = this;
         this.items.push(first);
         this.itemChanged(first);
+    }
+
+    /**
+     * Adds an empty spacer item.
+     */
+    public addSpacer(): void {
+        let item = new CCMenuItem();
+        item.supermenu = this;
+        this.items.push(item);
+        this.itemChanged(item);
     }
 
     /**

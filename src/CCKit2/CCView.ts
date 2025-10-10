@@ -3,6 +3,8 @@ import { CCColor, CCPoint, CCRect, CCRectIntersection } from "CCKit2/CCTypes";
 import CCWindow from "CCKit2/CCWindow";
 import CCGraphicsContext from "CCKit2/CCGraphicsContext";
 import CCLayoutConstraint from "CCKit2/CCLayoutConstraint";
+import CCEvent from "CCKit2/CCEvent";
+import CCMenu from "CCKit2/CCMenu";
 
 function addLayoutRow(rows: CCRect[][], constants: number[], size: number, firstOffset: number, firstValues: CCRect, secondOffset: number|undefined, secondValues: CCRect|undefined, constant: number): void {
     let row: CCRect[] = [];
@@ -772,5 +774,21 @@ export default class CCView extends CCResponder {
             view.needsLayout = false;
             view.setNeedsDisplay();
         }
+    }
+
+    /**
+     * Returns a context menu to display on a (usually right-click) event.
+     * @param event The event that triggered the menu
+     * @returns A context menu, or `nil` to not display a menu
+     */
+    public menuForEvent(event: CCEvent): CCMenu | undefined {
+        return undefined;
+    }
+
+    public rightMouseDown(event: CCEvent): void {
+        let menu = this.menuForEvent(event);
+        if (menu !== undefined && this.window !== undefined) {
+            this.window.showMenu(event.locationInWindow!, menu);
+        } else return super.rightMouseDown(event);
     }
 }

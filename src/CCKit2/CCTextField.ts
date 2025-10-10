@@ -2,6 +2,8 @@ import CCView from "CCKit2/CCView";
 import { CCColor, CCKey, CCPoint, CCRect } from "CCKit2/CCTypes";
 import CCGraphicsContext from "CCKit2/CCGraphicsContext";
 import CCEvent from "CCKit2/CCEvent";
+import CCMenu from "CCKit2/CCMenu";
+import CCMenuItem from "CCKit2/CCMenuItem";
 
 /**
  * A text field allows inputting text in a single line.
@@ -88,6 +90,21 @@ export default class CCTextField extends CCView {
     public cursorPos(): [CCPoint, CCColor] | undefined {
         if (!this.isActive) return undefined;
         return [this.convertToWindowSpace({x: this._cursorPos - this.scrollPos + 1, y: 1}), this._textColor];
+    }
+
+    public menuForEvent(event: CCEvent): CCMenu | undefined {
+        if (event.type !== CCEvent.Type.RightMouseDown) return undefined;
+        let menu = new CCMenu();
+        let cut = new CCMenuItem("Cut", () => {});
+        cut.isEnabled = false;
+        menu.addItem(cut);
+        let copy = new CCMenuItem("Copy", () => {});
+        copy.isEnabled = false;
+        menu.addItem(copy);
+        menu.addItem("Paste", () => {});
+        menu.addSpacer();
+        menu.addItem("Spellcheck", () => {}, undefined, false);
+        return menu;
     }
 
     public mouseDown(event: CCEvent): void {

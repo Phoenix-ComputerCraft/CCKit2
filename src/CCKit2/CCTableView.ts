@@ -5,6 +5,8 @@ import CCTableViewDataSource from "CCKit2/CCTableViewDataSource";
 import CCEvent from "CCKit2/CCEvent";
 import CCGraphicsContext from "CCKit2/CCGraphicsContext";
 import CCControl from "CCKit2/CCControl";
+import CCTableViewDelegate from "CCKit2/CCTableViewDelegate";
+import CCMenu from "./CCMenu";
 
 class RowView extends CCView {
     private table: CCTableView;
@@ -17,18 +19,28 @@ class RowView extends CCView {
         this.row = row;
     }
 
+    public menuForEvent(event: CCEvent): CCMenu | undefined {
+        if (this.table.delegate !== undefined && this.table.delegate.menuForRow !== undefined)
+            return this.table.delegate.menuForRow(this.table, this.row);
+        return undefined;
+    }
+
     public mouseDown(event: CCEvent): void {
+        if (this.table.delegate !== undefined && this.table.delegate.canSelectRow !== undefined && !this.table.delegate.canSelectRow(this.table, this.row)) {
+            this.table.selectedRow = null;
+            return;
+        }
         let dbl = false, single = false;
-        if (os.time() - this.lastClick < 0.5 && this.table.isRowSelected(this.row) && this.table.onRowDoubleClicked) {
+        if (os.time() - this.lastClick < 0.5 && this.table.isRowSelected(this.row) && this.table.delegate !== undefined && this.table.delegate.onRowDoubleClicked) {
             dbl = true;
         }
-        if (!this.table.isRowSelected(this.row) && this.table.onRowSelected) {
+        if (!this.table.isRowSelected(this.row) && this.table.delegate !== undefined && this.table.delegate.onRowSelected) {
             single = true;
         }
         this.table.selectedRow = this.row;
         this.lastClick = os.time();
-        if (dbl) this.table.onRowDoubleClicked!(this.table, this.row);
-        if (single) this.table.onRowSelected!(this.table, this.row);
+        if (dbl) this.table.delegate!.onRowDoubleClicked!(this.table, this.row);
+        if (single) this.table.delegate!.onRowSelected!(this.table, this.row);
     }
 }
 
@@ -78,6 +90,8 @@ class HeaderCellView extends CCControl {
 export default class CCTableView extends CCScrollView {
     /** @deprecated Do not use this field on a table view. */
     public get contentView(): CCView {throw "Cannot access content view of table";}
+    /** The object which receives events such as selections. */
+    public delegate?: CCTableViewDelegate;
     /** The data source being used for the table. */
     public get dataSource(): CCTableViewDataSource {return this._dataSource;}
     public set dataSource(value: CCTableViewDataSource) {
@@ -132,10 +146,6 @@ export default class CCTableView extends CCScrollView {
         this.update();
     }
     private _selectedRowColor: CCColor = CCColor.blue;
-    /** Called when a row is selected. */
-    public onRowSelected?: (this: void, table: CCTableView, row: number) => void;
-    /** Called when a row is double-clicked. */
-    public onRowDoubleClicked?: (this: void, table: CCTableView, row: number) => void;
     /** Stores the 0-based index of the column determining sort order. */
     public get sortColumn(): number | undefined {return this._sortColumn;}
     public set sortColumn(value: number | undefined) {

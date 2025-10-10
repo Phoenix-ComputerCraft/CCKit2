@@ -5,6 +5,9 @@ import CCView from "CCKit2/CCView";
 import { CCColor, CCRect } from "CCKit2/CCTypes";
 import CCControl from "CCKit2/CCControl";
 import CCGraphicsContext from "CCKit2/CCGraphicsContext";
+import CCOutlineViewDelegate from "CCKit2/CCOutlineViewDelegate";
+import CCTableViewDelegate from "CCKit2/CCTableViewDelegate";
+import CCMenu from "CCKit2/CCMenu";
 
 type ItemInfo = {expanded: boolean, row: number, level: number};
 
@@ -102,6 +105,32 @@ export default class CCOutlineView<Item extends AnyNotNil> extends CCTableView {
     /** @deprecated Do not use this field on an outline view. */
     public get dataSource(): CCTableViewDataSource {throw "Cannot access raw data source";}
     public set dataSource(value: CCTableViewDataSource) {throw "Cannot access raw data source";}
+    /** The object which receives events such as selections. Do not use original `delegate` field. */
+    public get outlineDelegate(): CCOutlineViewDelegate<Item> | undefined {return this._outlineDelegate;}
+    public set outlineDelegate(value: CCOutlineViewDelegate<Item> | undefined) {
+        this._outlineDelegate = value;
+        if (value !== undefined) {
+            let obj: CCTableViewDelegate = {};
+            if (value.canSelectItem !== undefined) obj.canSelectRow = function(table: CCTableView, row: number): boolean {
+                let t = table as CCOutlineView<Item>;
+                return value.canSelectItem!(t, t.getItemByRow(row));
+            }
+            if (value.onItemSelected !== undefined) obj.onRowSelected = function(table: CCTableView, row: number): void {
+                let t = table as CCOutlineView<Item>;
+                return value.onItemSelected!(t, t.getItemByRow(row));
+            }
+            if (value.onItemDoubleClicked !== undefined) obj.onRowDoubleClicked = function(table: CCTableView, row: number): void {
+                let t = table as CCOutlineView<Item>;
+                return value.onItemDoubleClicked!(t, t.getItemByRow(row));
+            }
+            if (value.menuForItem !== undefined) obj.menuForRow = function(table: CCTableView, row: number): CCMenu | undefined {
+                let t = table as CCOutlineView<Item>;
+                return value.menuForItem!(t, t.getItemByRow(row));
+            }
+            this.delegate = obj;
+        } else this.delegate = undefined;
+    }
+    private _outlineDelegate?: CCOutlineViewDelegate<Item>;
     /** The data source for the view. */
     public get outlineDataSource(): CCOutlineViewDataSource<Item> {return (super.dataSource as OutlineDataSource<Item>).source;}
     public set outlineDataSource(value: CCOutlineViewDataSource<Item>) {
@@ -109,10 +138,6 @@ export default class CCOutlineView<Item extends AnyNotNil> extends CCTableView {
         source.update(this);
         super.dataSource = source;
     }
-    /** Called when an item is selected. */
-    public onItemSelected?: (this: void, table: CCOutlineView<Item>, item: Item) => void;
-    /** Called when an item is double-clicked. */
-    public onItemDoubleClicked?: (this: void, table: CCOutlineView<Item>, item: Item) => void;
     /** The currently selected item or items. */
     public get selectedItem(): Item | Item[] | null {
         let rows = super.selectedRow;
@@ -135,14 +160,6 @@ export default class CCOutlineView<Item extends AnyNotNil> extends CCTableView {
         let source = new OutlineDataSource(data);
         super(frame, source);
         source.update(this);
-        this.onRowSelected = (table, row) => {
-            if (!this.onItemSelected) return;
-            return this.onItemSelected(table as CCOutlineView<Item>, this.getItemByRow(row));
-        };
-        this.onRowDoubleClicked = (table, row) => {
-            if (!this.onItemDoubleClicked) return;
-            return this.onItemDoubleClicked(table as CCOutlineView<Item>, this.getItemByRow(row));
-        };
     }
 
     public update(): void {

@@ -1,6 +1,7 @@
 import CCResponder from "CCKit2/CCResponder";
-import { CCSize } from "CCKit2/CCTypes";
+import { CCSize, CCPoint } from "CCKit2/CCTypes";
 import CCView from "CCKit2/CCView";
+import CCWindow from "CCKit2/CCWindow";
 
 /**
  * The CCViewController class is the primary way to design behavior for a view
@@ -21,6 +22,20 @@ export default class CCViewController extends CCResponder {
      */
     public get preferredContentSize(): CCSize {
         return {width: 30, height: 10};
+    }
+
+    /**
+     * Returns the preferred options for the window.
+     */
+    public get preferredStyle(): CCWindow.StyleMask {
+        return 0x1C as CCWindow.StyleMask; // needs to be constant to avoid dependency cycles
+    }
+
+    /**
+     * Returns the initial position of the window.
+     */
+    public get initialPosition(): CCPoint | undefined {
+        return undefined;
     }
 
     /**

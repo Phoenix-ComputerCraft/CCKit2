@@ -9,6 +9,8 @@ import CCWindowDelegate from "CCKit2/CCWindowDelegate";
 import { CCWindowManagerFramebuffer } from "CCKit2/CCWindowManagerConnection";
 import CCApplication from "CCKit2/CCApplication";
 import CCGraphicsContext from "CCKit2/CCGraphicsContext";
+import CCMenu from "CCKit2/CCMenu";
+let MenuWindow!: typeof import("CCKit2/MenuWindow").default;
 
 const mouseResponders: {[key: number]: string} = {
     [CCEvent.Type.LeftMouseDown]: "mouseDown",
@@ -63,6 +65,8 @@ export class CCWindow extends CCResponder {
         } else if (this.contentView) {
             this.contentView.frame = {x: 1, y: 1, width: rect.width, height: rect.height};
         }
+        let [x, y] = this.framebuffer.getPosition();
+        if (rect.x !== x || rect.y !== y) this.framebuffer.reposition(x, y);
     }
     private _frame: CCRect;
     /** The position of the window on screen. */
@@ -159,11 +163,21 @@ export class CCWindow extends CCResponder {
     public constructor(contentRect: CCRect, styleMask: CCWindow.StyleMask, defer: boolean, screen?: CCScreen);
     public constructor(first: CCViewController | CCRect, styleMask?: CCWindow.StyleMask, defer?: boolean, screen?: CCScreen) {
         super();
+        this._firstResponder = this;
         if (first instanceof CCViewController) {
             this.contentViewController = first;
             first.nextResponder = this;
             const size = first.preferredContentSize;
-            let fb = CCApplication.shared.wmConnection.createWindow(this, undefined, undefined, size.width, size.height, first.title || "Window", {closable: true, minimizable: true, resizable: true}); // TODO: options
+            const styleMask = first.preferredStyle;
+            const pos = first.initialPosition;
+            let fb = CCApplication.shared.wmConnection.createWindow(this, pos && pos.x, pos && pos.y, size.width, size.height, first.title || "Window", {
+                utility: (styleMask & CCWindow.StyleMask.UtilityWindow) != 0,
+                borderless: (styleMask & CCWindow.StyleMask.Borderless) != 0,
+                closable: (styleMask & CCWindow.StyleMask.Closable) != 0,
+                minimizable: (styleMask & CCWindow.StyleMask.Miniaturizable) != 0,
+                resizable: (styleMask & CCWindow.StyleMask.Resizable) != 0,
+                z: (styleMask & CCWindow.StyleMask.AboveOthers) != 0 ? 1 : 0,
+            }); // TODO: options
             if (fb === undefined) throw "Could not create window";
             this.framebuffer = fb;
             first.loadViewIfNeeded();
@@ -417,8 +431,12 @@ export class CCWindow extends CCResponder {
                     case CCEvent.SubType.ScreenChanged:
                     case CCEvent.SubType.WindowExposed:
                     case CCEvent.SubType.WindowMoved:
+                        break;
                     case CCEvent.SubType.WindowActivated:
+                        this.makeKey();
+                        break;
                     case CCEvent.SubType.WindowDeactivated:
+                        this._resignKey();
                         break;
                     case CCEvent.SubType.WindowClosed:
                         this.close();
@@ -604,7 +622,8 @@ export class CCWindow extends CCResponder {
      * @returns The point converted to screen coordinates
      */
     public convertPointToScreen(point: CCPoint): CCPoint {
-        throw "Not implemented";
+        const [x, y] = this.framebuffer.getPosition();
+        return {x: x + point.x - 1, y: y + point.y - 1};
     }
 
     /**
@@ -635,6 +654,19 @@ export class CCWindow extends CCResponder {
         if (CCApplication.shared.windows.length === 0) CCApplication.shared.terminate();
         // @ts-ignore
         this.framebuffer = undefined; // TODO: UGLY!!!
+    }
+
+    /**
+     * Shows a context menu at the specified point.
+     * @param point The point to display at, relative to the window
+     * @param menu The menu to display
+     */
+    public showMenu(point: CCPoint, menu: CCMenu): void {
+        const pt = this.convertPointToScreen(point);
+        if (MenuWindow === undefined) MenuWindow = require("CCKit2/MenuWindow").default;
+        let win = new MenuWindow(pt, menu);
+        win.makeKeyAndOrderFront();
+        win.display();
     }
 }
 
