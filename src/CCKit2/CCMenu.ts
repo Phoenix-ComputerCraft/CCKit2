@@ -9,9 +9,36 @@ function indexCheck(index: number): number | undefined {
 }
 
 /**
- * Holds information about a single menu in the menu bar, either as a top-level
- * menu or a submenu.  
+ * Holds information about a single menu in the menu bar or context menu, either
+ * as a top-level menu or a submenu.  
  * ![Example image](../../images/CCMenu.png)
+ * 
+ * @example Create a menu.
+ * ```ts
+ * let menu = new CCMenu();
+ * menu.addItem("New", () => this.newItem(), {key: CCKey.N, ctrl: true});
+ * menu.addItem("Open", () => this.openItem(), {key: CCKey.O, ctrl: true});
+ * menu.addSpacer();
+ * menu.addItem("Auto Save", state => this.setAutosave(state), undefined, false);
+ * let submenu = new CCMenu();
+ * submenu.addItem("Top", () => this.setPosition("top"), undefined, "position");
+ * submenu.addItem("Center", () => this.setPosition("center"), undefined, "position");
+ * submenu.addItem("Bottom", () => this.setPosition("bottom"), undefined, "position");
+ * menu.addItem("Position", submenu);
+ * ```
+ * ```lua
+ * local menu = LuaWrappers.new(CCMenu)
+ * menu:addItem("New", function() self:newItem() end, {key = CCKey.N, ctrl = true})
+ * menu:addItem("Open", function() self:openItem() end, {key = CCKey.O, ctrl = true})
+ * menu:addSpacer()
+ * menu:addItem("Auto Save", function(state) self:setAutosave(state) end, nil, false)
+ * local submenu = LuaWrappers.new(CCMenu)
+ * submenu:addItem("Top", function() self:setPosition("top") end, nil, "position")
+ * submenu:addItem("Center", function() self:setPosition("center") end, nil, "position")
+ * submenu:addItem("Bottom", function() self:setPosition("bottom") end, nil, "position")
+ * menu:addItem("Position", submenu)
+ * ```
+ * 
  * @category Application
  */
 export default class CCMenu {

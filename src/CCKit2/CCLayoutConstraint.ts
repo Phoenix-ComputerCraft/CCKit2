@@ -4,6 +4,25 @@ import CCView from "CCKit2/CCView";
  * The CCLayoutConstraint class defines a rule that constrains a value of one
  * view's geometry to another view, following a linear equation.
  * Use constraints to make a UI that automatically handles resizing.
+ * 
+ * @example Add constraints to make a view cover the top half of its superview with left and right margins.
+ * ```ts
+ * innerView.addConstraints([
+ *     new CCLayoutConstraint(innerView, CCLayoutConstraint.Attribute.Top, CCLayoutConstraint.Relation.Equal, this.view, CCLayoutConstraint.Attribute.Top, 1, 0),
+ *     new CCLayoutConstraint(innerView, CCLayoutConstraint.Attribute.Left, CCLayoutConstraint.Relation.Equal, this.view, CCLayoutConstraint.Attribute.Left, 1, 1),
+ *     new CCLayoutConstraint(innerView, CCLayoutConstraint.Attribute.Right, CCLayoutConstraint.Relation.Equal, this.view, CCLayoutConstraint.Attribute.Right, 1, 1),
+ *     new CCLayoutConstraint(innerView, CCLayoutConstraint.Attribute.Height, CCLayoutConstraint.Relation.Equal, this.view, CCLayoutConstraint.Attribute.Height, 0.5, 0)
+ * ]);
+ * ```
+ * ```lua
+ * innerView:addConstraints({
+ *     LuaWrappers.new(CCLayoutConstraint, innerView, CCLayoutConstraint.Attribute.Top, CCLayoutConstraint.Relation.Equal, self.view, CCLayoutConstraint.Attribute.Top, 1, 0),
+ *     LuaWrappers.new(CCLayoutConstraint, innerView, CCLayoutConstraint.Attribute.Left, CCLayoutConstraint.Relation.Equal, self.view, CCLayoutConstraint.Attribute.Left, 1, 1),
+ *     LuaWrappers.new(CCLayoutConstraint, innerView, CCLayoutConstraint.Attribute.Right, CCLayoutConstraint.Relation.Equal, self.view, CCLayoutConstraint.Attribute.Right, 1, 1),
+ *     LuaWrappers.new(CCLayoutConstraint, innerView, CCLayoutConstraint.Attribute.Height, CCLayoutConstraint.Relation.Equal, self.view, CCLayoutConstraint.Attribute.Height, 0.5, 0)
+ * })
+ * ```
+ * 
  * @category Core
  */
 export class CCLayoutConstraint {

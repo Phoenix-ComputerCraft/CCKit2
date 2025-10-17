@@ -5,6 +5,19 @@ import CCButton from "CCKit2/CCButton";
 /**
  * A checkbox is a type of button that is either on or off.  
  * ![Example image](../../images/CCCheckbox.png)
+ * 
+ * @example Create a checkbox that runs a function when clicked.
+ * ```ts
+ * let checkbox = new CCCheckbox({x: 5, y: 3}, "Enabled");
+ * checkbox.onStateChange = (_, state) => this.setStatus(state);
+ * this.view.addSubview(checkbox);
+ * ```
+ * ```lua
+ * local checkbox = LuaWrappers.new(CCCheckbox, {x = 5, y = 3}, "Enabled")
+ * checkbox.onStateChange = function(_, state) self:setStatus(state) end
+ * self.view:addSubview(checkbox)
+ * ```
+ * 
  * @category Views
  */
 export default class CCCheckbox extends CCButton {

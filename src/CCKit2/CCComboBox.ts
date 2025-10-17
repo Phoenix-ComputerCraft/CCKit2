@@ -18,6 +18,19 @@ class ComboWindow extends CCWindow {
  * A combo box allows selection from multiple items in a compact button view.  
  * ![Example image](../../images/CCComboBox-1.png)  
  * ![Example image](../../images/CCComboBox-2.png)
+ * 
+ * @example Create a combo box to pick between elements.
+ * ```ts
+ * let comboBox = new CCComboBox({x: 5, y: 3, width: 10, height: 1}, ["Apples", "Oranges", "Pears"]);
+ * comboBox.onChange = () => this.setFruit(comboBox.selectedValue);
+ * this.view.addSubview(comboBox);
+ * ```
+ * ```lua
+ * local comboBox = LuaWrappers.new(CCComboBox, {x = 5, y = 3, width = 10, height = 1}, {"Apples", "Oranges", "Pears"})
+ * comboBox.onChange = function() self:setFruit(comboBox.selectedValue) end
+ * self.view:addSubview(comboBox)
+ * ```
+ * 
  * @category Views
  */
 export default class CCComboBox extends CCControl {

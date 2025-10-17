@@ -99,6 +99,82 @@ class OutlineDataSource<Item extends AnyNotNil> implements CCTableViewDataSource
  * An outline view is a type of table which displays hierarchical data in groups
  * which can be expanded and collapsed.  
  * ![Example image](../../images/CCOutlineView.png)
+ * 
+ * @example Implement a simple Lua value viewer.
+ * ```ts
+ * class DataSource implements CCOutlineViewDataSource<[any, any]> {
+ *     private root: any;
+ *     constructor(root: any) {
+ *         this.root = root;
+ *     }
+ *     numberOfColumns(outlineView: CCOutlineView<[any, any]>): number {
+ *         return 1;
+ *     }
+ *     numberOfChildrenOfItem(outlineView: CCOutlineView<[any, any]>, item?: [any, any]): number {
+ *         let value: any;
+ *         if (item === undefined) item = this.root;
+ *         else value = item[1];
+ *         if (type(value) !== "table") return -1;
+ *         let count = 0;
+ *         for (let [k, v] of pairs(value as LuaTable)) count++;
+ *         return count;
+ *     }
+ *     childOfItem(outlineView: CCOutlineView<[any, any]>, index: number, parent?: [any, any]): [any, any] {
+ *         let value: any;
+ *         if (parent === undefined) value = this.root;
+ *         else value = parent[1];
+ *         let [k, v] = next(value);
+ *         while (index > 0) {
+ *             index--;
+ *             [k, v] = next(value, k);
+ *         }
+ *         return [k, v];
+ *     }
+ *     viewForItemAtColumn(outlineView: CCOutlineView<[any, any]>, item: [any, any], column: number): CCView {
+ *         return new CCLabel({x: 1, y: 1}, tostring(item[0]));
+ *     }
+ * }
+ * 
+ * let outlineView = new CCOutlineView({x: 1, y: 1, width: 40, height: 15}, new DataSource(someTable));
+ * this.view.addSubview(outlineView);
+ * ```
+ * ```lua
+ * local DataSource = {}
+ * function DataSource:____constructor(root)
+ *     self.root = root
+ * end
+ * function DataSource:numberOfColumns(outlineView)
+ *     return 1
+ * end
+ * function DataSource:numberOfChildrenOfItem(outlineView, item)
+ *     local value
+ *     if item == nil then item = self.root
+ *     else value = item[2] end
+ *     if type(value) ~= "table" then return -1 end
+ *     local count = 0
+ *     for k, v of pairs(value) do count = count + 1 end
+ *     return count
+ * end
+ * function DataSource:childOfItem(outlineView, index, parent)
+ *     local value
+ *     if parent == nil then value = self.root
+ *     else value = parent[2] end
+ *     local k, v = next(value);
+ *     while index > 0 do
+ *         index = index - 1
+ *         k, v = next(value, k)
+ *     end
+ *     return {k, v}
+ * end
+ * function DataSource:viewForItemAtColumn(outlineView, item, column)
+ *     return LuaWrappers.new(CCLabel, {x = 1, y = 1}, tostring(item[1]))
+ * end
+ * DataSource = LuaWrappers.class("DataSource", nil, DataSource)
+ * 
+ * local outlineView = LuaWrappers.new(CCOutlineView, {x = 1, y = 1, width = 40, height = 15}, LuaWrappers.new(DataSource, someTable))
+ * self.view:addSubview(outlineView)
+ * ```
+ * 
  * @typeParam Item - Type of object that the data source provides
  * @category Views
  */

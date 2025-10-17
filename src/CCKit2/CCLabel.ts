@@ -5,6 +5,17 @@ import CCGraphicsContext from "CCKit2/CCGraphicsContext";
 /**
  * A label displays a single line of text without wrapping.  
  * ![Example image](../../images/CCLabel.png)
+ * 
+ * @example Create a label that shows text.
+ * ```ts
+ * let label = new CCLabel({x: 5, y: 3}, "Hello World!");
+ * this.view.addSubview(label);
+ * ```
+ * ```lua
+ * local label = LuaWrappers.new(CCLabel, {x = 5, y = 3}, "Hello World!")
+ * self.view:addSubview(label)
+ * ```
+ * 
  * @category Views
  */
 export default class CCLabel extends CCView {

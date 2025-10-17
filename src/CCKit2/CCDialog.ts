@@ -45,6 +45,39 @@ class CCDialogViewController extends CCViewController {
 /**
  * A dialog displays a new window on the screen with the specified message.  
  * ![Example image](../../images/CCDialog.png)
+ * 
+ * @example Display a simple alert box and call a function when it finishes.
+ * ```ts
+ * CCDialog.messageWithOneButton(undefined, "Hello", "Hello World!", () => doSomething());
+ * ```
+ * ```lua
+ * CCDialog:messageWithOneButton(nil, "Hello", "Hello World!", function() doSomething() end)
+ * ```
+ * 
+ * @example Display a dialog with multiple buttons and do something based on the button pressed.
+ * ```ts
+ * let dialog = new CCDialog();
+ * dialog.title = "Confirm";
+ * dialog.message = "Are you sure you want to do this?";
+ * dialog.buttons = ["No", "Yes"];
+ * dialog.defaultButton = 0;
+ * dialog.completionHandler = (_, selection) => {
+ *     if (selection === 1) this.doThing();
+ * };
+ * dialog.display(this.view.window);
+ * ```
+ * ```lua
+ * local dialog = LuaWrappers.new(CCDialog)
+ * dialog.title = "Confirm"
+ * dialog.message = "Are you sure you want to do this?"
+ * dialog.buttons = {"No", "Yes"}
+ * dialog.defaultButton = 0
+ * dialog.completionHandler = function(_, selection)
+ *     if selection == 1 then self:doThing() end
+ * end
+ * dialog:display(self.view.window)
+ * ```
+ * 
  * @category Windows
  */
 export default class CCDialog {
@@ -60,7 +93,7 @@ export default class CCDialog {
     public completionHandler?: (this: void, sender: CCDialog, selection: number) => void;
 
     /**
-     * Displays the dialog on screen.
+     * Displays the dialog on screen. This returns after creating the window.
      * @param parent The parent window of the dialog, if available
      */
     public display(parent?: CCWindow): void {
@@ -72,7 +105,7 @@ export default class CCDialog {
     }
 
     /**
-     * Displays a single-use dialog with a single "OK" button.
+     * Displays a single-use dialog with a single "OK" button. This returns after creating the window.
      * @param parent The parent window to place the dialog under
      * @param title The title for the dialog
      * @param message The message to show

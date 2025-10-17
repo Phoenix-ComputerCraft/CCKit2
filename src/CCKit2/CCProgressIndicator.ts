@@ -7,6 +7,19 @@ import CCView from "CCKit2/CCView";
  * ![Example image](../../images/CCProgressIndicator-1.png)  
  * ![Example image](../../images/CCProgressIndicator-2.png)  
  * ![Example image](../../images/CCProgressIndicator-3.png)
+ * 
+ * @example Create a progress bar and set its progress.
+ * ```ts
+ * let progressBar = new CCProgressIndicator({x: 5, y: 3, width: 10, height: 1}, CCProgressIndicator.Style.ThinBar);
+ * progressBar.progress = 1 / 10;
+ * this.view.addSubview(progressBar);
+ * ```
+ * ```lua
+ * local progressBar = LuaWrappers.new(CCProgressIndicator, {x = 5, y = 3, width = 10, height = 1}, CCProgressIndicator.Style.ThinBar)
+ * progressBar.progress = 1 / 10
+ * self.view:addSubview(progressBar)
+ * ```
+ * 
  * @category Views
  */
 export class CCProgressIndicator extends CCView {

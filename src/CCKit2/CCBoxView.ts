@@ -4,6 +4,19 @@ import CCView from "./CCView";
 
 /**
  * A box view displays its contents inset inside a rectangular box.
+ * 
+ * @example Create a box view with a text view inside.
+ * ```ts
+ * let boxView = new CCBoxView({x: 1, y: 1, width: 20, height: 10});
+ * boxView.addSubview(new CCTextView({x: 1, y: 1, width: 18, height: 8}));
+ * this.view.addSubview(boxView);
+ * ```
+ * ```lua
+ * local boxView = LuaWrappers.new(CCBoxView, {x = 1, y = 1, width = 20, height = 10})
+ * boxView:addSubview(LuaWrappers.new(CCTextView, {x = 1, y = 1, width = 18, height = 8}))
+ * self.view:addSubview(boxView)
+ * ```
+ * 
  * @category Views
  */
 export default class CCBoxView extends CCView {

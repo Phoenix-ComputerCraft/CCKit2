@@ -7,6 +7,17 @@ import CCGraphicsContext from "CCKit2/CCGraphicsContext";
  * A button implements a simple clickable region with text, which triggers a
  * function when clicked.  
  * ![Example image](../../images/CCButton.png)
+ * 
+ * @example Create a button that shows an alert when clicked.
+ * ```ts
+ * let button = new CCButton({x: 5, y: 3}, "Hello!", () => CCDialog.messageWithOneButton(this.view.window, "Hello!", "Hello World!"));
+ * this.view.addSubview(button);
+ * ```
+ * ```lua
+ * local button = LuaWrappers.new(CCButton, {x = 5, y = 3}, "Hello!", function() CCDialog:messageWithOneButton(self.view.window, "Hello!", "Hello World!") end)
+ * self.view:addSubview(button)
+ * ```
+ * 
  * @category Views
  */
 export default class CCButton extends CCControl {
