@@ -21,12 +21,13 @@
   "homepage": "https://github.com/Phoenix-ComputerCraft/CCKit2#readme",
   "devDependencies": {
     "@jackmacwindows/lua-types": "^2.13.2",
-    "@jackmacwindows/typescript-to-lua": "^1.28.0",
+    "@jackmacwindows/typescript-to-lua": "^1.32.0",
     "@phoenix-cc/libsystem": "^0.1.4",
     "luamin": "^1.0.4",
     "ts-node": "^10.9.1",
-    "typedoc": "^0.27.5",
-    "typedoc-plugin-merge-modules": "^6.1.0",
+    "typedoc": "^0.28.5",
+    "typedoc-plugin-language-switcher": "^1.0.2",
+    "typedoc-plugin-merge-modules": "^7.0.0",
     "typedoc-plugin-rename-defaults": "^0.7.2"
   },
   "readme": "README.md"

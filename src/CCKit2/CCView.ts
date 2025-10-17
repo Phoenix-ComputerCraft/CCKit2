@@ -190,6 +190,7 @@ export default class CCView extends CCResponder {
      * @package
      */
     public display(rect: CCRect): void {
+        if (this.isHidden) return;
         const needsDraw = this.needsDraw;
         if (needsDraw) {
             this.needsDraw = false;
@@ -484,7 +485,7 @@ export default class CCView extends CCResponder {
     }
 
     private layoutConstraints(views: LuaTable<CCView, number>, rows: CCRect[][], constants: number[], visited: LuaTable<CCView, boolean>, nextOffset: number): number {
-        if (visited.has(this)) return nextOffset;
+        if (visited.has(this) || this.isHidden) return nextOffset;
         visited.set(this, true);
         let offset: number;
         if (views.has(this)) {

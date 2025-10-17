@@ -57,7 +57,8 @@
         "@noSelfInFile"
     ],
     "projectDocuments": [],
-    "plugin": ["typedoc-plugin-merge-modules"],
+    "plugin": ["typedoc-plugin-merge-modules", "typedoc-plugin-language-switcher"],
+    "languages": ["ts", "lua"],
     "highlightLanguages": [
         "bash",
         "console",
@@ -108,5 +109,6 @@
         "IndexSignature",
         "GetSignature",
         "SetSignature"
-    ]
+    ],
+    "useFirstParagraphOfCommentAsSummary": true
 }

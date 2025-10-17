@@ -12,7 +12,7 @@ These steps only apply to users who installed the "minimal" OS without a desktop
 
 Install the `cckit2` package through `apt`:
 
-```bash
+```sh
 sudo apt install cckit2
 ```
 
@@ -118,6 +118,8 @@ This will ensure the methods and fields are assigned to the class properly.
 To construct an instance of a class, call `LuaWrappers.new` with the class + any arguments to pass to the constructor. If you want to check if an object is an instance of a class, call `LuaWrappers.instanceOf(obj, class)`.
 
 Lua Language Server meta files are provided in the SDK ZIP, under the `Typings/Lua` subdirectory. These can be loaded in your IDE to provide autocompletion for CCKit2 types in Lua. Be aware that the typing provided in LLS is much weaker than the type guarantees in TypeScript, so accuracy may vary.
+
+While reading this documentation, you can use the language selector in the sidebar (under Settings) to show Lua examples instead of TypeScript.
 
 ### 3. Basic Template
 Here's a barebones template program to demonstrate the structure of a CCKit2 application.

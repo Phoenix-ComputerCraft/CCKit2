@@ -165,7 +165,7 @@ export default class MenuWindow extends CCWindow {
 
     public _resignKey(): void {
         super._resignKey();
-        print("Resign", this);
+        //print("Resign", this);
         (this.contentViewController! as MenuController).prepareClose(true, true);
         // TODO: The event fires before _becomeKey is triggered! Need to fix with timers I think. Argh...
         let ev = new CCEvent();
@@ -177,12 +177,12 @@ export default class MenuWindow extends CCWindow {
 
     public _becomeKey(): void {
         super._becomeKey();
-        print("Key again", this);
+        //print("Key again", this);
         (this.contentViewController! as MenuController).preventClose();
     }
 
     public customEvent(event: CCEvent): void {
-        print("Closing", this);
+        //print("Closing", this);
         if (event.type === CCEvent.Type.CCKitDefined && event.subtype === 0x1001 as CCEvent.SubType)
             (this.contentViewController! as MenuController).close(true, true);
         else super.customEvent(event);

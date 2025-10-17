@@ -48,6 +48,8 @@ export default class CCScrollView extends CCView {
         this.scrollPos.y = Math.min(Math.max(value.y - 1, 0), Math.max(this.subviews[0].frame.height - this.frame.height - 1, 0));
         this.setNeedsDisplay();
     }
+    public get backgroundColor(): CCColor | undefined {return this.subviews[0].backgroundColor;}
+    public set backgroundColor(value: CCColor | undefined) {this.subviews[0].backgroundColor = value;}
 
     private scrollPos: CCPoint = {x: 0, y: 0};
     private horizontalClicked = false;
@@ -94,7 +96,7 @@ export default class CCScrollView extends CCView {
             ctx.color = CCColor.lightGray;
             ctx.drawLine({x: this.frame.width, y: 1}, {x: this.frame.width, y: height});
             ctx.color = CCColor.gray;
-            ctx.drawLine({x: this.frame.width, y: Math.floor(this.scrollPos.y / this.subviews[0].frame.height * height) + 1}, {x: this.frame.width, y: Math.ceil((this.scrollPos.y + this.frame.height) / this.subviews[0].frame.height * height)});
+            ctx.drawLine({x: this.frame.width, y: Math.floor(this.scrollPos.y / this.subviews[0].frame.height * height + 0.5) + 1}, {x: this.frame.width, y: Math.floor((this.scrollPos.y + this.frame.height - 1) / this.subviews[0].frame.height * height + 0.5)});
         }
         if (this._showHorizontalScrollBar) {
             const width = this._showVerticalScrollBar ? this.frame.width - 1 : this.frame.width;
@@ -106,6 +108,7 @@ export default class CCScrollView extends CCView {
     }
 
     public display(rect: CCRect): void {
+        if (this.isHidden) return;
         let ctx = CCGraphicsContext.current!;
         ctx.pushState();
         if (this._showVerticalScrollBar) ctx.setSize({width: ctx.size.width - 1, height: ctx.size.height});

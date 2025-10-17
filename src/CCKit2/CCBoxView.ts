@@ -16,6 +16,7 @@ export default class CCBoxView extends CCView {
     private _borderColor: CCColor = CCColor.lightGray;
 
     public display(rect: CCRect): void {
+        if (this.isHidden) return;
         const needsDraw = this.needsDraw;
         if (needsDraw) {
             this.needsDraw = false;
