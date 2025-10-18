@@ -7,6 +7,21 @@ import CCGraphicsContext from "CCKit2/CCGraphicsContext";
  * A tab view allows switching between multiple tabbed views in a single parent
  * view, using a segmented button to select each tab.  
  * ![Example image](../../images/CCTabView.png)
+ * 
+ * @example Create a tab view with two text views inside.
+ * ```ts
+ * let tabView = new CCTabView({x: 1, y: 1, width: 30, height: 15}, ["First", "Second"]);
+ * this.view.addSubview(tabView);
+ * tabView.contentViewAt(0).addSubview(new CCTextView({x: 1, y: 1, width: 28, height: 13}, firstText));
+ * tabView.contentViewAt(1).addSubview(new CCTextView({x: 1, y: 1, width: 28, height: 13}, secondText));
+ * ```
+ * ```lua
+ * local tabView = LuaWrappers.new(CCTabView, {x = 1, y = 1, width = 30, height = 15}, {"First", "Second"})
+ * self.view:addSubview(tabView)
+ * tabView:contentViewAt(0):addSubview(LuaWrappers.new(CCTextView, {x = 1, y = 1, width = 28, height = 13}, firstText))
+ * tabView:contentViewAt(1):addSubview(LuaWrappers.new(CCTextView, {x = 1, y = 1, width = 28, height = 13}, secondText))
+ * ```
+ * 
  * @category Views
  */
 export default class CCTabView extends CCView {
@@ -66,7 +81,7 @@ export default class CCTabView extends CCView {
     }
 
     /**
-     * Returns the content view at the specified index.
+     * Returns the content view at the specified (0-based) index.
      * @param index The index to get
      * @returns The view for the index
      * @throws If the index is out of range

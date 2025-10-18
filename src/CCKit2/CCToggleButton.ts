@@ -5,6 +5,17 @@ import CCGraphicsContext from "./CCGraphicsContext";
 /**
  * A toggle button is a version of a regular button which toggles between on and
  * off when clicked.
+ * 
+ * @example Create a toggle button that shows an alert when clicked on.
+ * ```ts
+ * let button = new CCToggleButton({x: 5, y: 3}, "Hello!", (_, state) => {if (state) CCDialog.messageWithOneButton(this.view.window, "Hello!", "Hello World!");});
+ * this.view.addSubview(button);
+ * ```
+ * ```lua
+ * local button = LuaWrappers.new(CCToggleButton, {x = 5, y = 3}, "Hello!", function(_ state) if state then CCDialog:messageWithOneButton(self.view.window, "Hello!", "Hello World!") end end)
+ * self.view:addSubview(button)
+ * ```
+ * 
  * @see CCCheckbox For an alternate toggling control which is more explicitly boolean
  * @category Views
  */

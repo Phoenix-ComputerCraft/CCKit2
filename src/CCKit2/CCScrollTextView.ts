@@ -4,6 +4,17 @@ import { CCColor, CCRect } from "CCKit2/CCTypes";
 
 /**
  * A scrolling text view displays long text in a vertically scrolling view.
+ * 
+ * @example Create a scrolling text view.
+ * ```ts
+ * let textView = new CCScrollTextView({x: 1, y: 1, width: 30, height: 15}, "This is a very long string of text which will need to be wrapped in the view.");
+ * this.view.addSubview(textView);
+ * ```
+ * ```lua
+ * local textView = LuaWrappers.new(CCScrollTextView, {x = 1, y = 1, width = 30, height = 15}, "This is a very long string of text which will need to be wrapped in the view.")
+ * self.view:addSubview(textView)
+ * ```
+ * 
  * @category Views
  */
 export default class CCScrollTextView extends CCScrollView {

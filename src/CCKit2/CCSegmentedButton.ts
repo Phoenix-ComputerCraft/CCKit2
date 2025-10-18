@@ -7,6 +7,17 @@ import CCGraphicsContext from "CCKit2/CCGraphicsContext";
  * A segmented button displays multiple buttons in a single view, with only one
  * selected at a time.  
  * ![Example image](../../images/CCSegmentedButton.png)
+ * 
+ * @example Create a segmented button with three choices.
+ * ```ts
+ * let segmentedButton = new CCSegmentedButton({x: 1, y: 1, width: 25, height: 1}, ["Main", "Browse", "Options"], (_, id) => this.selectTab(id));
+ * this.view.addSubview(segmentedButton);
+ * ```
+ * ```lua
+ * local segmentedButton = LuaWrappers.new(CCSegmentedButton, {x = 1, y = 1, width = 25, height = 1}, {"Main", "Browse", "Options"}, function(_, id) self:selectTab(id) end)
+ * self.view:addSubview(segmentedButton)
+ * ```
+ * 
  * @category Views
  */
 export default class CCSegmentedButton extends CCView {

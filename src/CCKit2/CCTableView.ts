@@ -85,6 +85,43 @@ class HeaderCellView extends CCControl {
  * of each row, column and cell. The view is kept in a scroll view, which allows
  * automatic overflow control.  
  * ![Example image](../../images/CCTableView.png)
+ * 
+ * @example Create a table based on a static set of tabular data, using CCTableViewStaticDataSource.
+ * ```ts
+ * const titleRow = ["Name", "Address", "Phone", "Age"];
+ * const tableData = [
+ *     ["John Doe", "123 Apple Way", "555-1234", 49],
+ *     ["Phillip Gonzalez", "2568 Weekley Street", "302-9163", 23],
+ *     ["Herbert Rodriguez", "3208 Hood Avenue", "755-6449", 71],
+ *     ["Johnnie Wooding", "159 Heavens Way", "241-7892", 76],
+ *     ["Mary McDonald", "802 Star Route", "590-2842", 27],
+ *     ["Donna Cook", "320 Westfall Avenue", "954-0272", 43],
+ *     ["Alberto Powers", "4826 Stone Lane", "350-1833", 22],
+ *     ["Minnie Cortez", "2230 Comfort Court", "255-9970", 59],
+ *     ["Shane Moore", "4258 Ocello Street", "893-5070", 76],
+ * ];
+ * let dataSource = new CCTableViewStaticDataSource(tableData, titleRow);
+ * let tableView = new CCTableView({x: 1, y: 1, width: 30, height: 15}, dataSource);
+ * this.view.addSubview(tableView);
+ * ```
+ * ```lua
+ * local titleRow = {"Name", "Address", "Phone", "Age"}
+ * local tableData = {
+ *     {"John Doe", "123 Apple Way", "555-1234", 49},
+ *     {"Phillip Gonzalez", "2568 Weekley Street", "302-9163", 23},
+ *     {"Herbert Rodriguez", "3208 Hood Avenue", "755-6449", 71},
+ *     {"Johnnie Wooding", "159 Heavens Way", "241-7892", 76},
+ *     {"Mary McDonald", "802 Star Route", "590-2842", 27},
+ *     {"Donna Cook", "320 Westfall Avenue", "954-0272", 43},
+ *     {"Alberto Powers", "4826 Stone Lane", "350-1833", 22},
+ *     {"Minnie Cortez", "2230 Comfort Court", "255-9970", 59},
+ *     {"Shane Moore", "4258 Ocello Street", "893-5070", 76},
+ * }
+ * local dataSource = LuaWrappers.new(CCTableViewStaticDataSource, tableData, titleRow)
+ * local tableView = LuaWrappers.new(CCTableView, {x = 1, y = 1, width = 30, height = 15}, dataSource)
+ * self.view:addSubview(tableView)
+ * ```
+ * 
  * @see CCTableViewDataSource
  * @category Views
  */

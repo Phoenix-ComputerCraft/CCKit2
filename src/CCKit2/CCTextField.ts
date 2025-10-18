@@ -9,6 +9,19 @@ import CCMenuItem from "CCKit2/CCMenuItem";
  * A text field allows inputting text in a single line.  
  * ![Example image](../../images/CCTextField-1.png)  
  * ![Example image](../../images/CCTextField-2.png)
+ * 
+ * @example Create a text field with placeholder text.
+ * ```ts
+ * let textField = new CCTextField({x: 5, y: 3, width: 10, height: 1});
+ * textField.placeholder = "Enter text";
+ * this.view.addSubview(textField);
+ * ```
+ * ```lua
+ * local textField = LuaWrappers.new(CCTextField, {x = 5, y = 3, width = 10, height = 1})
+ * textField.placeholder = "Enter text"
+ * self.view:addSubview(textField)
+ * ```
+ * 
  * @category Views
  */
 export default class CCTextField extends CCView {

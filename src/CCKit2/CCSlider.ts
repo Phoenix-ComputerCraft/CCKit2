@@ -6,6 +6,21 @@ import CCGraphicsContext from "CCKit2/CCGraphicsContext";
 /**
  * A slider allows input of a progressive value.  
  * ![Example image](../../images/CCSlider.png)
+ * 
+ * @example Create a slider and calls an action when changed.
+ * ```ts
+ * let slider = new CCSlider({x: 5, y: 3, width: 10, height: 1});
+ * slider.position = 0.5;
+ * slider.action = (_, value) => this.setSlider(value);
+ * this.view.addSubview(slider);
+ * ```
+ * ```lua
+ * local slider = LuaWrappers.new(CCSlider, {x = 5, y = 3, width = 10, height = 1})
+ * slider.position = 0.5
+ * slider.action = function(_, value) self:setSlider(value) end
+ * self.view:addSubview(slider)
+ * ```
+ * 
  * @category Views
  */
 export default class CCSlider extends CCView {
@@ -18,7 +33,7 @@ export default class CCSlider extends CCView {
     protected _isEnabled: boolean = true;
     /** The function to call when the slider moves. */
     public action?: (this: void, sender: CCView, position: number) => void;
-    /** The position of the slider. */
+    /** The position of the slider, from 0.0 to 1.0. */
     public get position(): number {
         return this._position * this.frame.width / (this.frame.width - 1);
     }

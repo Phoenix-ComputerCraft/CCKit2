@@ -58,6 +58,17 @@ function wrap(text: string, width: number): string[] {
 /**
  * A text view displays multiple lines of text with wrapping.  
  * ![Example image](../../images/CCTextView.png)
+ * 
+ * @example Create a text view.
+ * ```ts
+ * let textView = new CCTextView({x: 1, y: 1, width: 30, height: 15}, "This is a very long string of text which will need to be wrapped in the view.");
+ * this.view.addSubview(textView);
+ * ```
+ * ```lua
+ * local textView = LuaWrappers.new(CCTextView, {x = 1, y = 1, width = 30, height = 15}, "This is a very long string of text which will need to be wrapped in the view.")
+ * self.view:addSubview(textView)
+ * ```
+ * 
  * @category Views
  */
 export class CCTextView extends CCView {

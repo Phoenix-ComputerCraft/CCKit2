@@ -6,6 +6,21 @@ import CCLayoutConstraint from "CCKit2/CCLayoutConstraint";
  * A stack view arranges child views in an either vertical or horizontal fashion,
  * automatically resizing each view to fit, with optional weighting.  
  * ![Example image](../../images/CCStackView.png)
+ * 
+ * @example Create a stack view with two text views covering a third and two thirds of the view.
+ * ```ts
+ * let stackView = new CCStackView({x: 1, y: 1, width: 30, height: 15});
+ * this.view.addSubview(stackView);
+ * stackView.addSubview(new CCTextView({x: 1, y: 1, width: 100, height: 1}, myText), 1);
+ * stackView.addSubview(new CCTextView({x: 1, y: 1, width: 100, height: 1}, myText2), 2);
+ * ```
+ * ```lua
+ * local stackView = LuaWrappers.new(CCStackView, {x = 1, y = 1, width = 30, height = 15})
+ * self.view:addSubview(stackView)
+ * stackView:addSubview(LuaWrappers.new(CCTextView, {x = 1, y = 1, width = 100, height = 1}, myText), 1)
+ * stackView:addSubview(LuaWrappers.new(CCTextView, {x = 1, y = 1, width = 100, height = 1}, myText2), 2)
+ * ```
+ * 
  * @category Views
  */
 export default class CCStackView extends CCView {

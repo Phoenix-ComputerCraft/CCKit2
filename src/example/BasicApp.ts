@@ -27,7 +27,6 @@ import CCViewController from "CCKit2/CCViewController";
 import CCWindowManagerConnection from "CCKit2/CCWindowManagerConnection";
 
 const tableData: (string | number)[][] = [
-    ["Name", "Address", "Phone", "Age"],
     ["John Doe", "123 Apple Way", "555-1234", 49],
     ["Phillip Gonzalez", "2568 Weekley Street", "302-9163", 23],
     ["Herbert Rodriguez", "3208 Hood Avenue", "755-6449", 71],
@@ -167,7 +166,7 @@ bbbbcdef`);
         });*/
 
         let tableContainer = tabView.contentViewAt(1);
-        let tableView = new CCTableView({x: 1, y: 1, width: tableContainer.frame.width, height: tableContainer.frame.height}, new CCTableViewStaticDataSource(tableData));
+        let tableView = new CCTableView({x: 1, y: 1, width: tableContainer.frame.width, height: tableContainer.frame.height}, new CCTableViewStaticDataSource(tableData, ["Name", "Address", "Phone", "Age"]));
         tableView.canSelectRow = true;
         tableContainer.addSubview(tableView);
 

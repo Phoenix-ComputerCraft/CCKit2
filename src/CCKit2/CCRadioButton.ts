@@ -7,6 +7,33 @@ import CCButton from "CCKit2/CCButton";
  * a group. Groups are established when radio buttons share superviews and 
  * state change actions.  
  * ![Example image](../../images/CCRadioButton.png)
+ * 
+ * @example Create a group of radio buttons and call a function when it changes.
+ * ```ts
+ * const callback = sender => this.select(sender.buttonKey as number);
+ * const addButton = (text: string, id: number): void => {
+ *     let button = new CCRadioButton({x: 1, y: id}, text);
+ *     button.onStateChange = callback;
+ *     button.buttonKey = id;
+ *     this.view.addSubview(button);
+ * }
+ * addButton("Apple", 1);
+ * addButton("Banana", 2);
+ * addButton("Pear", 3);
+ * ```
+ * ```lua
+ * local callback = function(sender) self:select(sender.buttonKey) end
+ * local function addButton(text, id)
+ *     local button = LuaWrappers.new(CCRadioButton, {x = 1, y = id}, text)
+ *     button.onStateChange = callback
+ *     button.buttonKey = id
+ *     self.view:addSubview(button)
+ * end
+ * addButton("Apple", 1)
+ * addButton("Banana", 2)
+ * addButton("Pear", 3)
+ * ```
+ * 
  * @category Views
  */
 export default class CCRadioButton extends CCButton {
@@ -23,6 +50,8 @@ export default class CCRadioButton extends CCButton {
     private _checked: boolean = false;
     /** The function called when a button is clicked. */
     public onStateChange?: (this: void, sender: CCRadioButton) => void;
+    /** A designated key for applications to use to identify the button. */
+    public buttonKey: any;
 
     /**
      * Create a new radio button.

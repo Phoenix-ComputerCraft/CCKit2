@@ -23,10 +23,16 @@ export default class CCTableViewStaticDataSource implements CCTableViewDataSourc
     /**
      * Creates a new data source.
      * @param data The data array to provide, in data[row][column] format
+     * @param titleRow An optional row of titles to provide to the table
      */
-    public constructor(data: (string | number)[][]) {
+    public constructor(data: (string | number)[][], titleRow?: string[]) {
         this._data = data;
         setmetatable(this.tables, {__mode: "k"});
+        if (titleRow !== undefined) {
+            this.titleForColumn = function(table: CCTableView, column: number): string {
+                return titleRow[column];
+            }
+        }
         this.update();
     }
 
@@ -68,4 +74,6 @@ export default class CCTableViewStaticDataSource implements CCTableViewDataSourc
         this.tables.set(table, true);
         return new CCLabel({x: 1, y: 1}, tostring(this._data[row][column]));
     }
+
+    public titleForColumn?(table: CCTableView, column: number): string;
 }

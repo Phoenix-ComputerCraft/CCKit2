@@ -19,6 +19,23 @@ class InnerView extends CCView {
  * A scroll view displays larger content inside a smaller view, which can be
  * scrolled to see the whole content.  
  * ![Example image](../../images/CCScrollView.png)
+ * 
+ * @example Create a scroll view with multiple views inside.
+ * ```ts
+ * let scrollView = new CCScrollView({x: 1, y: 1, width: 15, height: 10}, {width: 30, height: 40});
+ * this.view.addSubview(scrollView);
+ * scrollView.addSubview(new CCLabel({x: 1, y: 1}, "There is an image below this."));
+ * scrollView.addSubview(new CCImageView({x: 1, y: 2}, myImage));
+ * scrollView.addSubview(new CCButton({x: 10, y: 40}, "Select New Image", () => this.selectImage()));
+ * ```
+ * ```lua
+ * local scrollView = LuaWrappers.new(CCScrollView, {x = 1, y = 1, width = 15, height = 10}, {width = 30, height = 40})
+ * self.view:addSubview(scrollView)
+ * scrollView:addSubview(LuaWrappers.new(CCLabel, {x = 1, y = 1}, "There is an image below this."))
+ * scrollView:addSubview(LuaWrappers.new(CCImageView, {x = 1, y = 2}, myImage))
+ * scrollView:addSubview(LuaWrappers.new(CCButton, {x = 10, y = 40}, "Select New Image", function() self:selectImage() end))
+ * ```
+ * 
  * @category Views
  */
 export default class CCScrollView extends CCView {
