@@ -49,8 +49,8 @@ const plugin: tstl.Plugin = {
                         headerText += `---@field ${n.name.getText()} ${fixType(n.type)} ${doc}\n`;
                     }
                 } else if (ts.isMethodDeclaration(n)) {
-                    if (n.modifiers && n.modifiers.find(m => m.getText() === "public")) {
-                        const doc = n.getChildAt(0);
+                    if (n.modifiers && n.modifiers.find(m => m.getText() === "public") && n.getChildCount(context.sourceFile) > 0) {
+                        const doc = n.getChildAt(0, context.sourceFile);
                         let paramMap: {[name: string]: string} = {};
                         let returnDoc = "";
                         if (ts.isJSDoc(doc)) {
@@ -109,7 +109,7 @@ const plugin: tstl.Plugin = {
                         headerText += `---@field ${n.name.getText()} ${fixType(n.type)} ${doc}\n`;
                     }
                 } else if (ts.isMethodDeclaration(n)) {
-                    if (n.modifiers && n.modifiers.find(m => m.getText() === "public")) {
+                    if (n.modifiers && n.modifiers.find(m => m.getText() === "public") && n.getChildCount() > 0) {
                         const doc = n.getChildAt(0);
                         let paramMap: {[name: string]: string} = {};
                         let returnDoc = "";
@@ -153,7 +153,7 @@ const plugin: tstl.Plugin = {
                                 if (ts.isJSDoc(c)) headerText += "--- " + (c.comment?.toString() ?? "") + "\n";
                             });
                             headerText += `---@type ${fixType(n.type)}\n${namespaceName}.${n.name.getText()} = _\n\n`;
-                        } else if (ts.isFunctionDeclaration(n)) {
+                        } else if (ts.isFunctionDeclaration(n) && n.getChildCount() > 0) {
                             const doc = n.getChildAt(0);
                             let paramMap: {[name: string]: string} = {};
                             let returnDoc = "";

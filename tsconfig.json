@@ -14,7 +14,9 @@
         "rootDir": "src",
         "outDir": "bin",
         "declaration": true,
-        "removeComments": false
+        "removeComments": false,
+        "jsx": "react",
+        "jsxFactory": "CCJSX.createElement"
     },
     "tstl": {
         "luaTarget": "CC",
@@ -27,6 +29,7 @@
     },
     "include": [
         "./src/CCKit2/*.ts",
-        "./src/example/*.ts"
+        "./src/example/*.ts",
+        "./src/example/*.tsx"
     ]
 }

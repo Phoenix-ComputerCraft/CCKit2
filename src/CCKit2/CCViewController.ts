@@ -2,6 +2,7 @@ import CCResponder from "CCKit2/CCResponder";
 import { CCSize, CCPoint } from "CCKit2/CCTypes";
 import CCView from "CCKit2/CCView";
 import CCWindow from "CCKit2/CCWindow";
+import { JSX } from "CCKit2/CCJSX";
 
 /**
  * The CCViewController class is the primary way to design behavior for a view
@@ -39,11 +40,47 @@ export default class CCViewController extends CCResponder {
     }
 
     /**
+     * Constructs the root view from a JSX element.
+     */
+    public get constructedView(): JSX.Element | undefined {return undefined;};
+
+    /**
+     * Creates a JSX outlet to a public property on this view controller.
+     * @param key The name of the property to connect to
+     * @returns An outlet object for use with the `outlet` attribute
+     * @example Connect a JSX element to the view controller's property.
+     * ```tsx
+     * <CCLabel pos="1 1" outlet={this.outlet("label")}>Text</CCLabel>
+     * ```
+     */
+    public outlet<K extends keyof this & string, T extends Exclude<this[K], undefined>>(key: K): JSX.Outlet<T> {
+        return {object: this, key};
+    }
+
+    /**
+     * Binds a JSX action to a method on this view controller.
+     * @param method The method to bind to
+     * @returns An action for use with any JSX action attribute
+     * @example Bind a button's action to a method on the view controller.
+     * ```tsx
+     * <CCButton pos="1 2" action={this.action(this.pressed)}>Press Me</CCButton>
+     * ```
+     */
+    public action<A extends any[], R>(method: (this: this, ...args: A) => R): (this: void, ...args: A) => R {
+        return (...args: A) => method.apply(this, args);
+    }
+
+    /**
      * Loads the root view into memory.
      */
     public loadView(): void {
         const size = this.preferredContentSize;
-        this.view = new CCView({x: 1, y: 1, width: size.width, height: size.height});
+        const element = this.constructedView;
+        if (element !== undefined) {
+            if (!(element instanceof CCView)) throw "constructedView return value must be a view element";
+            element.frame = {x: 1, y: 1, width: size.width, height: size.height};
+            this.view = element;
+        } else this.view = new CCView({x: 1, y: 1, width: size.width, height: size.height});
         this.view.nextResponder = this;
         this.viewDidLoad();
     }

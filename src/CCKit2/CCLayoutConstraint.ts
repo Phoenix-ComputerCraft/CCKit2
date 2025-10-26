@@ -33,7 +33,7 @@ export class CCLayoutConstraint {
     /** The relation between the two attributes. */
     public relation: CCLayoutConstraint.Relation;
     /** The second item to constrain to. */
-    public secondItem: CCView|undefined;
+    public secondItem: CCView|"superview"|undefined;
     /** The attribute of the second item to use. */
     public secondAttribute: CCLayoutConstraint.Attribute;
     /** The multiplier to apply to the second attribute. */

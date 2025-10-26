@@ -2,6 +2,7 @@ import CCView from "CCKit2/CCView";
 import { CCColor, CCPoint, CCRect } from "CCKit2/CCTypes";
 import CCControl from "CCKit2/CCControl";
 import CCGraphicsContext from "CCKit2/CCGraphicsContext";
+import { JSX } from "CCKit2/CCJSX";
 
 /**
  * A button implements a simple clickable region with text, which triggers a
@@ -71,9 +72,34 @@ export default class CCButton extends CCControl {
      * @param text The text for the button
      * @param action The function to call when the button is pressed
      */
-    constructor(position: CCPoint, text: string, action: (this: void, button: CCView) => void) {
-        super({x: position.x, y: position.y, width: text.length + 2, height: 1}, action);
-        this._text = text;
+    constructor(position: CCPoint, text: string, action: (this: void, button: CCView) => void);
+    /**
+     * JSX constructor.
+     * @param attrs The attributes for the element
+     * @param text The text inside the element
+     * @internal
+     */
+    constructor(attrs: JSX.AttributesFor<CCButton, {pos: JSX.AttributeValues<CCPoint>, action: CCButton["action"]}>, text: string | undefined);
+    constructor(position: CCPoint | (JSX.AttributesFor<CCButton, {pos: JSX.AttributeValues<CCPoint>, action: CCButton["action"]}>), text: string | undefined, action?: ((this: void, button: CCView) => void)) {
+        if ("pos" in position) {
+            const pos: number[] = position.pos.split(" ").map(n => tonumber(n)) as number[];
+            if (pos.length < 2) throw "Bad pos attribute in JSX code";
+            super({x: pos[0], y: pos[1], width: (text !== undefined ? text.length : 0) + 2, height: 1}, position.action);
+            this._text = text ?? "";
+            this.loadJSXAttributes(position as JSX.AttributesFor<CCButton, {pos: JSX.AttributeValues<CCPoint>, action: string}>);
+        } else {
+            super({x: position.x, y: position.y, width: text!.length + 2, height: 1}, action!);
+            this._text = text!;
+        }
+    }
+
+    public loadJSXAttributes(attrs: JSX.AttributesFor<CCButton, {pos: JSX.AttributeValues<CCPoint>, action: string}>): void {
+        super.loadJSXAttributes(attrs);
+        if (attrs.buttonColor !== undefined) this.buttonColor = typeof attrs.buttonColor === "number" ? attrs.buttonColor : CCColor[attrs.buttonColor];
+        if (attrs.buttonActiveColor !== undefined) this.buttonActiveColor = typeof attrs.buttonActiveColor === "number" ? attrs.buttonActiveColor : CCColor[attrs.buttonActiveColor];
+        if (attrs.buttonDefaultColor !== undefined) this.buttonDefaultColor = typeof attrs.buttonDefaultColor === "number" ? attrs.buttonDefaultColor : CCColor[attrs.buttonDefaultColor];
+        if (attrs.textColor !== undefined) this.textColor = typeof attrs.textColor === "number" ? attrs.textColor : CCColor[attrs.textColor];
+        if (attrs.textDisabledColor !== undefined) this.textDisabledColor = typeof attrs.textDisabledColor === "number" ? attrs.textDisabledColor : CCColor[attrs.textDisabledColor];
     }
 
     public draw(rect: CCRect): void {

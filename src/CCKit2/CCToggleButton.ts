@@ -20,6 +20,7 @@ import CCGraphicsContext from "./CCGraphicsContext";
  * @category Views
  */
 export default class CCToggleButton extends CCButton {
+    /** The current state of the button. */
     public get state(): boolean {return this._state;}
     public set state(value: boolean) {
         this._state = value;

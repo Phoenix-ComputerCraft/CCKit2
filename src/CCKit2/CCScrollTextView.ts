@@ -41,10 +41,15 @@ export default class CCScrollTextView extends CCScrollView {
         this.textView.wrapMode = value;
         this.updateSize();
     }
+    /** The alignment of text. */
+    public get alignment(): CCTextView.Alignment {return this.textView.alignment;}
+    public set alignment(value: CCTextView.Alignment) {
+        this.textView.alignment = value;
+    }
     /** The number of lines visible in the current frame. */
     public get lineCount(): number {return this.textView.lineCount;}
 
-    private textView: CCTextView
+    private textView: CCTextView;
 
     /**
      * Creates a new scrolling text view.

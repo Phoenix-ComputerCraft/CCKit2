@@ -1,6 +1,7 @@
 import { CCColor, CCPoint, CCRect } from "CCKit2/CCTypes";
 import CCView from "CCKit2/CCView";
 import CCGraphicsContext from "CCKit2/CCGraphicsContext";
+import { JSX } from "CCKit2/CCJSX";
 
 /**
  * A label displays a single line of text without wrapping.  
@@ -41,9 +42,30 @@ export default class CCLabel extends CCView {
      * @param position The position of the label
      * @param text The text to show in the label
      */
-    constructor(position: CCPoint, text: string) {
-        super({x: position.x, y: position.y, width: text.length, height: 1})
-        this._text = text;
+    public constructor(position: CCPoint, text: string);
+    /**
+     * JSX constructor.
+     * @param attrs The attributes for the element
+     * @param text The text inside the element
+     * @internal
+     */
+    public constructor(attrs: JSX.AttributesFor<CCLabel> & {pos: JSX.AttributeValues<CCPoint>}, text?: string);
+    public constructor(position: CCPoint | JSX.AttributesFor<CCLabel> & {pos: JSX.AttributeValues<CCPoint>}, text?: string) {
+        if ("pos" in position) {
+            const pos: number[] = position.pos.split(" ").map(n => tonumber(n)) as number[];
+            if (pos.length < 2) throw "Bad pos attribute in JSX code";
+            super({x: pos[0], y: pos[1], width: text !== undefined ? text.length : 0, height: 1});
+            this._text = text ?? "";
+            this.loadJSXAttributes(position);
+        } else {
+            super({x: position.x, y: position.y, width: text!.length, height: 1});
+            this._text = text!;
+        }
+    }
+
+    public loadJSXAttributes(attrs: JSX.AttributesFor<CCLabel>): void {
+        super.loadJSXAttributes(attrs);
+        if (attrs.textColor !== undefined) this.textColor = typeof attrs.textColor === "number" ? attrs.textColor : CCColor[attrs.textColor];
     }
 
     public draw(rect: CCRect): void {
