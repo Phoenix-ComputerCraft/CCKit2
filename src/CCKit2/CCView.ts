@@ -89,21 +89,8 @@ export default class CCView extends CCResponder {
      * @param frame The view rectangle for the frame
      * @typecheck
      */
-    public constructor(frame: CCRect);
-    /**
-     * JSX constructor.
-     * @param attrs The attributes for the element
-     * @internal
-     */
-    public constructor(attrs: JSX.AttributesFor<CCView> & {frame: JSX.AttributeValues<CCRect>});
-    public constructor(frame: CCRect | JSX.AttributesFor<CCView> & {frame: JSX.AttributeValues<CCRect>}) {
+    public constructor(frame: CCRect) {
         super();
-        if ("frame" in frame) {
-            const f: number[] = frame.frame.split(" ").map(n => tonumber(n)) as number[];
-            if (f.length < 4) throw "Bad frame attribute in JSX code";
-            this.loadJSXAttributes(frame);
-            frame = {x: f[0], y: f[1], width: f[2], height: f[3]};
-        }
         this._frame = frame;
     }
 
@@ -111,13 +98,14 @@ export default class CCView extends CCResponder {
      * Loads properties from a JSX attribute map. Override this to implement
      * attributes in JSX elements. Remember to call the super implementation!
      * @param attrs The attributes given in the element
+     * @internal
      */
-    public loadJSXAttributes(attrs: JSX.AttributesFor<CCView>): void {
-        if (attrs.acceptsFirstResponder !== undefined) this.acceptsFirstResponder = attrs.acceptsFirstResponder === "true";
-        if (attrs.backgroundColor !== undefined && attrs.backgroundColor !== "") this.backgroundColor = typeof attrs.backgroundColor === "number" ? attrs.backgroundColor : CCColor[attrs.backgroundColor];
-        if (attrs.isFocused !== undefined) this.isFocused = attrs.isFocused === "true";
-        if (attrs.isHidden !== undefined) this.isHidden = attrs.isHidden === "true";
-        if (attrs.userInteractionEnabled !== undefined) this.userInteractionEnabled = attrs.userInteractionEnabled === "true";
+    public loadJSXAttributes(attrs: JSX.AttributesFor<CCView, {frame?: any, outlet?: any}>): void {
+        if (attrs.acceptsFirstResponder !== undefined) this.acceptsFirstResponder = attrs.acceptsFirstResponder === "true" || attrs.acceptsFirstResponder === true;
+        if (attrs.backgroundColor !== undefined && attrs.backgroundColor !== "") this._backgroundColor = typeof attrs.backgroundColor === "number" ? attrs.backgroundColor : CCColor[attrs.backgroundColor];
+        if (attrs.isFocused !== undefined) this.isFocused = attrs.isFocused === "true" || attrs.isFocused === true;
+        if (attrs.isHidden !== undefined) this.isHidden = attrs.isHidden === "true" || attrs.isHidden === true;
+        if (attrs.userInteractionEnabled !== undefined) this.userInteractionEnabled = attrs.userInteractionEnabled === "true" || attrs.userInteractionEnabled === true;
     }
 
     /**
@@ -821,4 +809,16 @@ export default class CCView extends CCResponder {
             this.window.showMenu(event.locationInWindow!, menu);
         } else return super.rightMouseDown(event);
     }
+}
+
+/**
+ * Creates a new JSX element.
+ * @param attrs The attributes for the element
+ */
+export function JSX(attrs: JSX.AttributesFor<CCView, {frame: JSX.AttributeValues<CCRect>}>, text: string | undefined, parameters: JSX.ParameterElements[]): CCView {
+    const f: number[] = attrs.frame.split(" ").map(n => tonumber(n)) as number[];
+    if (f.length < 4) throw "Bad frame attribute in JSX code";
+    let retval = new CCView({x: f[0], y: f[1], width: f[2], height: f[3]});
+    retval.loadJSXAttributes(attrs);
+    return retval;
 }

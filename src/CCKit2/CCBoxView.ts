@@ -1,4 +1,5 @@
 import CCGraphicsContext from "./CCGraphicsContext";
+import { JSX } from "./CCJSX";
 import { CCColor, CCPoint, CCRect, CCRectIntersection } from "./CCTypes";
 import CCView from "./CCView";
 
@@ -27,6 +28,11 @@ export default class CCBoxView extends CCView {
         this.setNeedsDisplay();
     }
     private _borderColor: CCColor = CCColor.lightGray;
+
+    public loadJSXAttributes(attrs: JSX.AttributesFor<CCBoxView>): void {
+        super.loadJSXAttributes(attrs);
+        if (attrs.borderColor !== undefined) this._borderColor = typeof attrs.borderColor === "number" ? attrs.borderColor : CCColor[attrs.borderColor];
+    }
 
     public display(rect: CCRect): void {
         if (this.isHidden) return;
@@ -79,4 +85,17 @@ export default class CCBoxView extends CCView {
             return undefined;
         return super.hitTest({x: point.x - 1, y: point.y - 1});
     }
+}
+
+/**
+ * Creates a new JSX element.
+ * @param attrs The attributes for the element
+ * @returns The new element
+ */
+export function JSX(attrs: JSX.AttributesFor<CCBoxView, {frame: JSX.AttributeValues<CCRect>}>, text: string | undefined, parameters: JSX.ParameterElements[]): CCView {
+    const f: number[] = attrs.frame.split(" ").map(n => tonumber(n)) as number[];
+    if (f.length < 4) throw "Bad frame attribute in JSX code";
+    let retval = new CCBoxView({x: f[0], y: f[1], width: f[2], height: f[3]});
+    retval.loadJSXAttributes(attrs);
+    return retval;
 }

@@ -5,6 +5,7 @@ import CCWindow from "CCKit2/CCWindow";
 import CCButton from "CCKit2/CCButton";
 import CCView from "CCKit2/CCView";
 import CCEvent from "CCKit2/CCEvent";
+import { JSX } from "CCKit2/CCJSX";
 
 class ComboWindow extends CCWindow {
     public sendEvent(event: CCEvent): void {
@@ -101,6 +102,11 @@ export default class CCComboBox extends CCControl {
         this._selections = selections;
     }
 
+    public loadJSXAttributes(attrs: JSX.AttributesFor<CCView, { frame?: any; outlet?: any; }>): void {
+        super.loadJSXAttributes(attrs);
+        // TODO
+    }
+
     private open(): void {
         // TODO: screen geometry
         let start = this.convertToWindowSpace({x: 1, y: 1})
@@ -137,4 +143,14 @@ export default class CCComboBox extends CCControl {
             context.drawTextWithBackground({x: this.frame.width, y: 1}, string.char(0x1F), this._buttonDefaultColor);
         }
     }
+}
+
+/**
+ * JSX constructor.
+ * @param attrs The attributes for the element
+ * @param text The text inside the element
+ */
+export function JSX(attrs: JSX.AttributesFor<CCComboBox, {rect: JSX.AttributeValues<CCRect>}>, text: string | undefined, parameters: JSX.ParameterElement<"selection">[]): CCView {
+    if (parameters!.length === 0) throw "There must be at least one <selection> tag";
+    throw "Unimplemented!";
 }

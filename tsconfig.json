@@ -3,13 +3,13 @@
     "compilerOptions": {
         "target": "ESNext",
         "lib": ["ESNext"],
-        "moduleResolution": "node",
+        "moduleResolution": "nodenext",
+        "module": "nodenext",
         "strict": true,
         "typeRoots": ["./types", "./node_modules"],
         "types": ["@jackmacwindows/lua-types/cc"],
-        "baseUrl": "./src",
         "paths": {
-            "CCKit2/*": ["CCKit2/*"]
+            "CCKit2/*": ["./src/CCKit2/*"]
         },
         "rootDir": "src",
         "outDir": "bin",
