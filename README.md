@@ -303,6 +303,22 @@ Add the following options to your `tsconfig.json` to enable JSX:
 
 Then rename any file which will have JSX elements to have the `tsx` extension, and add `import * as CCJSX from "CCKit2/CCJSX";` to the top of each of those files.
 
+### Imports
+Due to limitations in TSX and the CCKit2 codebase, it is not possible to use the class as a component type directly. This is worked around through a separately exported function component in each class module.
+
+For each view type used in the JSX hierarchy, import its `JSX` exported component and name it something familiar (for example, the view type name suffixed with `JSX`). If you also need the class itself, use the `default as` syntax.
+
+For example:
+
+```ts
+// imports the CCButton JSX component
+import {JSX as CCButtonJSX} from "CCKit2/CCButton";
+// imports both CCView and its JSX component
+import {JSX as CCViewJSX, default as CCView} from "CCKit2/CCView";
+```
+
+Then use the JSX component for all views in place of the class.
+
 ### View Construction
 To implement JSX in your view controller, instead of creating the view hierarchy with code in `viewDidLoad`, you implement the `constructedView` getter which returns a JSX-constructed root view.
 
@@ -319,9 +335,9 @@ public viewDidLoad(): void {
 could be transformed into a JSX view like this:
 ```tsx
 public get constructedView(): CCView {
-    return <CCView frame="1 1 20 10">
-        <CCLabel pos="1 1" textColor="blue">text</CCLabel>
-    </CCView>
+    return <CCViewJSX frame="1 1 20 10">
+        <CCLabelJSX pos="1 1" textColor="blue">text</CCLabelJSX>
+    </CCViewJSX>
 }
 ```
 
@@ -332,7 +348,7 @@ Attributes on elements are used for both construction parameters and other setta
 
 As described in JSX's syntax, attribute values and children may include TypeScript code in `{}` brackets, which will be evaluated and inserted at runtime. For convenience, values of attributes inserted this way may return their original type instead of a string.
 
-The text property of views that have one are usually a special case: these elements expect the value to be in the body of the element instead of an attribute. This also means that these views cannot have subviews - the body is only for text. For example, a label will look like `<CCLabel pos="1 1">Text</CCLabel>` instead of `<CCLabel pos="1 1" text="Text" />`.
+The text property of views that have one are usually a special case: these elements expect the value to be in the body of the element instead of an attribute. This also means that these views cannot have subviews - the body is only for text. For example, a label will look like `<CCLabelJSX pos="1 1">Text</CCLabelJSX>` instead of `<CCLabelJSX pos="1 1" text="Text" />`.
 
 Other elements may have any number of subviews as children, as well as `constraint` elements for declaring constraints (described below). Empty elements may be terminated with the standard XML `/>` self-termination syntax.
 
@@ -347,7 +363,7 @@ To connect a view to the view controller, define a public property on the class 
 ```tsx
 public label!: CCLabel; // will be connected to the label below
 // ...
-<CCLabel pos="1 1" outlet={this.outlet("label")}>Text</CCLabel>
+<CCLabelJSX pos="1 1" outlet={this.outlet("label")}>Text</CCLabelJSX>
 ```
 
 Once the root view is loaded, the property will be assigned with the view with the outlet. Future methods (including `viewDidLoad`) can use the property as normal.
@@ -363,7 +379,7 @@ public pressed(sender: CCView): void { // sender is optional
     // do thing...
 }
 // ...
-<CCButton pos="1 1" action={this.action(this.pressed)}>Button</CCButton>
+<CCButtonJSX pos="1 1" action={this.action(this.pressed)}>Button</CCButtonJSX>
 ```
 
 ## Next Steps
