@@ -1,5 +1,6 @@
 import CCView from "CCKit2/CCView";
-import { CCColor, CCKey, CCRect } from "CCKit2/CCTypes";
+import { CCColor, CCKey, CCPoint, CCRect } from "CCKit2/CCTypes";
+import { JSX } from "CCKit2/CCJSX";
 import CCEvent from "CCKit2/CCEvent";
 import CCGraphicsContext from "CCKit2/CCGraphicsContext";
 
@@ -65,6 +66,15 @@ export default class CCSlider extends CCView {
         super(frame);
     }
 
+    public loadJSXAttributes(attrs: JSX.AttributesFor<CCSlider, {frame: JSX.AttributeValues<CCRect>}>): void {
+        super.loadJSXAttributes(attrs);
+        if (attrs.isEnabled !== undefined) this._isEnabled = attrs.isEnabled === "true" || attrs.isEnabled === true;
+        if (attrs.action !== undefined && attrs.action !== "") this.action = attrs.action;
+        if (attrs.position !== undefined) this._position = typeof attrs.position === "number" ? attrs.position : parseInt(attrs.position);
+        if (attrs.activeColor !== undefined) this._activeColor = typeof attrs.activeColor === "number" ? attrs.activeColor : CCColor[attrs.activeColor];
+        if (attrs.inactiveColor !== undefined) this._inactiveColor = typeof attrs.inactiveColor === "number" ? attrs.inactiveColor : CCColor[attrs.inactiveColor];
+    }
+
     protected isPressed: boolean = false;
 
     public draw(frame: CCRect): void {
@@ -111,4 +121,17 @@ export default class CCSlider extends CCView {
             if (this.action) this.action(this, this.position);
         }
     }
+}
+
+/**
+ * Creates a new JSX element.
+ * @param attrs The attributes for the element
+ * @returns The new element
+ */
+export function JSX(attrs: JSX.AttributesFor<CCSlider, {frame: JSX.AttributeValues<CCRect>}>, text: string | undefined, parameters: JSX.ParameterElements[]): CCView {
+    const f: number[] = attrs.frame.split(" ").map(n => tonumber(n)) as number[];
+    if (f.length < 4) throw "Bad frame attribute in JSX code";
+    let retval = new CCSlider({x: f[0], y: f[1], width: f[2], height: f[3]});
+    retval.loadJSXAttributes(attrs);
+    return retval;
 }

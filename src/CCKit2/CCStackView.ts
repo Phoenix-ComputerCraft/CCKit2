@@ -1,5 +1,6 @@
 import CCView from "CCKit2/CCView";
 import { CCRect } from "CCKit2/CCTypes";
+import { JSX } from "CCKit2/CCJSX";
 import CCLayoutConstraint from "CCKit2/CCLayoutConstraint";
 
 /**
@@ -47,6 +48,13 @@ export default class CCStackView extends CCView {
             super.addSubview(views[i]);
             this.containedViews.push({view: views[i], weight: weights[i] || 1, constraints: []});
         }
+        this.updateConstraints();
+    }
+
+    public loadJSXAttributes(attrs: JSX.AttributesFor<CCStackView, {frame: JSX.AttributeValues<CCRect>}>): void {
+        super.loadJSXAttributes(attrs);
+        if (attrs.spacing !== undefined) this._spacing = parseInt(String(attrs.spacing));
+        if (attrs.arrangedHorizontally !== undefined) this._horizontal = attrs.arrangedHorizontally === "true" || attrs.arrangedHorizontally === true;
         this.updateConstraints();
     }
 
@@ -116,4 +124,17 @@ export default class CCStackView extends CCView {
         this.setNeedsDisplay();
         this.setNeedsLayout(this, this);
     }
+}
+
+/**
+ * Creates a new JSX element.
+ * @param attrs The attributes for the element
+ * @returns The new element
+ */
+export function JSX(attrs: JSX.AttributesFor<CCStackView, {frame: JSX.AttributeValues<CCRect>}>, text: string | undefined, parameters: JSX.ParameterElements[]): CCView {
+    const f: number[] = attrs.frame.split(" ").map(n => tonumber(n)) as number[];
+    if (f.length < 4) throw "Bad frame attribute in JSX code";
+    let retval = new CCStackView({x: f[0], y: f[1], width: f[2], height: f[3]});
+    retval.loadJSXAttributes(attrs);
+    return retval;
 }

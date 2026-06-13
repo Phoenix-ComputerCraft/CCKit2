@@ -2,6 +2,7 @@ import CCView from "CCKit2/CCView";
 import { CCColor, CCKey, CCPoint, CCRect, CCSize } from "CCKit2/CCTypes";
 import CCGraphicsContext from "CCKit2/CCGraphicsContext";
 import CCEvent from "CCKit2/CCEvent";
+import { JSX } from "CCKit2/CCJSX";
 
 class InnerView extends CCView {
     private scrollPos: CCPoint;
@@ -84,6 +85,16 @@ export default class CCScrollView extends CCView {
         super.addSubview(inner);
         this._showVerticalScrollBar = innerSize.height > frame.height;
         this._showHorizontalScrollBar = innerSize.width > frame.width;
+    }
+
+    public loadJSXAttributes(attrs: JSX.AttributesFor<CCScrollView, {}>): void {
+        super.loadJSXAttributes(attrs);
+        if (attrs.showVerticalScrollBar !== undefined) this._showVerticalScrollBar = attrs.showVerticalScrollBar === "true" || attrs.showVerticalScrollBar === true;
+        if (attrs.showHorizontalScrollBar !== undefined) this._showHorizontalScrollBar = attrs.showHorizontalScrollBar === "true" || attrs.showHorizontalScrollBar === true;
+        if (attrs.backgroundColor !== undefined && attrs.backgroundColor !== "") {
+            this.backgroundColor = undefined;
+            this.subviews[0].backgroundColor = typeof attrs.backgroundColor === "number" ? attrs.backgroundColor : CCColor[attrs.backgroundColor];
+        }
     }
 
     /**
@@ -172,4 +183,19 @@ export default class CCScrollView extends CCView {
         this.scrollPos.x = Math.min(Math.max(this.scrollPos.x + event.scrollDirection!, 0), Math.max(this.subviews[0].frame.width - this.frame.width + (this._showVerticalScrollBar ? 1 : 0), 0));
         this.setNeedsDisplay();
     }
+}
+
+/**
+ * Creates a new JSX element.
+ * @param attrs The attributes for the element
+ * @returns The new element
+ */
+export function JSX(attrs: JSX.AttributesFor<CCScrollView, {frame: JSX.AttributeValues<CCRect>, innerSize: JSX.AttributeValues<CCSize>}>, text: string | undefined, parameters: JSX.ParameterElements[]): CCView {
+    const f: number[] = attrs.frame.split(" ").map(n => tonumber(n)) as number[];
+    if (f.length < 4) throw "Bad frame attribute in JSX code";
+    const s: number[] = attrs.innerSize.split(" ").map(n => tonumber(n)) as number[];
+    if (s.length < 2) throw "Bad frame innerSize in JSX code";
+    let retval = new CCScrollView({x: f[0], y: f[1], width: f[2], height: f[3]}, {width: s[0], height: s[1]});
+    retval.loadJSXAttributes(attrs);
+    return retval;
 }

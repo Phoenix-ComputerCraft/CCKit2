@@ -2,6 +2,7 @@ import CCTableView from "CCKit2/CCTableView";
 import CCOutlineViewDataSource from "CCKit2/CCOutlineViewDataSource";
 import CCTableViewDataSource from "CCKit2/CCTableViewDataSource";
 import CCView from "CCKit2/CCView";
+import { JSX } from "CCKit2/CCJSX";
 import { CCColor, CCRect } from "CCKit2/CCTypes";
 import CCControl from "CCKit2/CCControl";
 import CCGraphicsContext from "CCKit2/CCGraphicsContext";
@@ -239,6 +240,11 @@ export default class CCOutlineView<Item extends AnyNotNil> extends CCTableView {
         source.update(this);
     }
 
+    public loadJSXAttributes(attrs: JSX.AttributesFor<CCOutlineView<Item>, {frame: JSX.AttributeValues<CCRect>, delegate?: CCOutlineViewDelegate<Item>}>): void {
+        super.loadJSXAttributes(attrs);
+        if (attrs.delegate !== undefined) this._outlineDelegate = attrs.delegate;
+    }
+
     public update(): void {
         (super.dataSource as OutlineDataSource<Item>).update(this);
         super.update();
@@ -258,4 +264,17 @@ export default class CCOutlineView<Item extends AnyNotNil> extends CCTableView {
     private getRowByItem(item: Item): number {
         return (super.dataSource as OutlineDataSource<Item>).items.get(item).row;
     }
+}
+
+/**
+ * Creates a new JSX element.
+ * @param attrs The attributes for the element
+ * @returns The new element
+ */
+export function JSX<Item extends AnyNotNil>(attrs: JSX.AttributesFor<CCOutlineView<Item>, {frame: JSX.AttributeValues<CCRect>, dataSource: CCOutlineViewDataSource<Item>, delegate?: CCOutlineViewDelegate<Item>}>, text: string | undefined, parameters: JSX.ParameterElements[]): CCView {
+    const f: number[] = attrs.frame.split(" ").map(n => tonumber(n)) as number[];
+    if (f.length < 4) throw "Bad frame attribute in JSX code";
+    let retval = new CCOutlineView({x: f[0], y: f[1], width: f[2], height: f[3]}, attrs.dataSource);
+    retval.loadJSXAttributes(attrs);
+    return retval;
 }

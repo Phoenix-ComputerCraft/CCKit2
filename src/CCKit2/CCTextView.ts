@@ -1,4 +1,5 @@
 import CCView from "CCKit2/CCView";
+import { JSX } from "CCKit2/CCJSX";
 import { CCColor, CCRect } from "CCKit2/CCTypes";
 import CCGraphicsContext from "CCKit2/CCGraphicsContext";
 import CCLayoutConstraint from "CCKit2/CCLayoutConstraint";
@@ -136,6 +137,15 @@ export class CCTextView extends CCView {
         super(frame);
     }
 
+    public loadJSXAttributes(attrs: JSX.AttributesFor<CCTextView, {wrapMode?: keyof typeof CCTextView.WrapMode, alignment?: keyof typeof CCTextView.Alignment}>): void {
+        super.loadJSXAttributes(attrs);
+        if (attrs.textColor !== undefined) this._textColor = typeof attrs.textColor === "number" ? attrs.textColor : CCColor[attrs.textColor];
+        if (attrs.wrapMode !== undefined) this._wrapMode = tonumber(attrs.wrapMode) ?? CCTextView.WrapMode[attrs.wrapMode];
+        if (attrs.alignment !== undefined) this._alignment = CCTextView.Alignment[attrs.alignment];
+        if (attrs.autoResizing !== undefined) this.autoResizing = attrs.autoResizing === "true" || attrs.autoResizing === true;
+        this.updateLines();
+    }
+
     public draw(rect: CCRect): void {
         super.draw(rect);
         CCGraphicsContext.current!.color = this._textColor;
@@ -221,3 +231,17 @@ export namespace CCTextView {
 }
 
 export default CCTextView;
+
+/**
+ * Creates a new JSX element.
+ * @param attrs The attributes for the element
+ * @returns The new element
+ */
+export function JSX(attrs: JSX.AttributesFor<CCTextView, {frame: JSX.AttributeValues<CCRect>, wrapMode?: keyof typeof CCTextView.WrapMode, alignment?: keyof typeof CCTextView.Alignment}>, text: string | undefined, parameters: JSX.ParameterElements[]): CCView {
+    const f: number[] = attrs.frame.split(" ").map(n => tonumber(n)) as number[];
+    if (f.length < 4) throw "Bad frame attribute in JSX code";
+    let retval = new CCTextView({x: f[0], y: f[1], width: f[2], height: f[3]});
+    if (text !== undefined) retval.text = text;
+    retval.loadJSXAttributes(attrs);
+    return retval;
+}

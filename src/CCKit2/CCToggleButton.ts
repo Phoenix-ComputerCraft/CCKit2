@@ -1,5 +1,7 @@
 import CCButton from "CCKit2/CCButton";
+import CCView from "CCKit2/CCView";
 import { CCColor, CCPoint, CCRect } from "CCKit2/CCTypes";
+import { JSX } from "CCKit2/CCJSX";
 import CCGraphicsContext from "./CCGraphicsContext";
 
 /**
@@ -35,6 +37,11 @@ export default class CCToggleButton extends CCButton {
         });
     }
 
+    public loadJSXAttributes(attrs: JSX.AttributesFor<CCToggleButton, {pos: JSX.AttributeValues<CCPoint>}>): void {
+        super.loadJSXAttributes(attrs);
+        if (attrs.state !== undefined) this._state = attrs.state === "true" || attrs.state === true;
+    }
+
     public draw(rect: CCRect): void {
         if (this.window === undefined) return;
         const context = CCGraphicsContext.current!;
@@ -43,4 +50,17 @@ export default class CCToggleButton extends CCButton {
         const str = " " + this.text + " ";
         context.drawTextWithBackground(rect, str.substring(rect.x - 1, rect.x - 1 + rect.width), bgColor);
     }
+}
+
+/**
+ * Creates a new JSX element.
+ * @param attrs The attributes for the element
+ * @returns The new element
+ */
+export function JSX(attrs: JSX.AttributesFor<CCToggleButton, {pos: JSX.AttributeValues<CCPoint>, action: CCToggleButton["action"]}>, text: string | undefined, parameters: JSX.ParameterElements[]): CCView {
+    const pos: number[] = attrs.pos.split(" ").map(n => tonumber(n)) as number[];
+    if (pos.length < 2) throw "Bad pos attribute in JSX code";
+    let retval = new CCToggleButton({x: pos[0], y: pos[1]}, text ?? "", attrs.action);
+    retval.loadJSXAttributes(attrs);
+    return retval;
 }

@@ -77,7 +77,7 @@ export default class CCButton extends CCControl {
         this._text = text!;
     }
 
-    public loadJSXAttributes(attrs: JSX.AttributesFor<CCButton>): void {
+    public loadJSXAttributes(attrs: JSX.AttributesFor<CCButton, {}>): void {
         super.loadJSXAttributes(attrs);
         if (attrs.buttonColor !== undefined) this._buttonColor = typeof attrs.buttonColor === "number" ? attrs.buttonColor : CCColor[attrs.buttonColor];
         if (attrs.buttonActiveColor !== undefined) this._buttonActiveColor = typeof attrs.buttonActiveColor === "number" ? attrs.buttonActiveColor : CCColor[attrs.buttonActiveColor];

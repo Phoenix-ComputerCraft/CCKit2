@@ -19,6 +19,7 @@ class ViewController extends CCViewController {
     }
 
     public get constructedView(): CCJSX.JSX.Element {
+        let v = <constraint firstAttribute="Top" relation="Equal" secondItem="superview" secondAttribute="Top" />
         return <CCViewJSX frame="1 1 30 15" backgroundColor="white">
             <CCLabelJSX pos="1 1" outlet={this.outlet("label")}>
                 Text

@@ -1,6 +1,8 @@
 import { CCColor, CCPoint, CCRect } from "CCKit2/CCTypes";
+import { JSX } from "CCKit2/CCJSX";
 import CCGraphicsContext from "CCKit2/CCGraphicsContext";
 import CCButton from "CCKit2/CCButton";
+import CCView from "CCKit2/CCView";
 
 /**
  * A radio button is a type of button that can only have one button active in
@@ -64,6 +66,13 @@ export default class CCRadioButton extends CCButton {
         this.action = () => self.onClick();
     }
 
+    public loadJSXAttributes(attrs: JSX.AttributesFor<CCRadioButton, {pos: JSX.AttributeValues<CCPoint>}>): void {
+        super.loadJSXAttributes(attrs);
+        if (attrs.checked !== undefined) this._checked = attrs.checked === "true" || attrs.checked === true;
+        if (attrs.onStateChange !== undefined && attrs.onStateChange !== "") this.onStateChange = attrs.onStateChange;
+        this.buttonKey = attrs.buttonKey;
+    }
+
     public draw(rect: CCRect): void {
         if (this.window === undefined) return;
         const context = CCGraphicsContext.current!;
@@ -85,4 +94,17 @@ export default class CCRadioButton extends CCButton {
                     view.checked = false;
         if (this.onStateChange) this.onStateChange(this);
     }
+}
+
+/**
+ * Creates a new JSX element.
+ * @param attrs The attributes for the element
+ * @returns The new element
+ */
+export function JSX(attrs: JSX.AttributesFor<CCRadioButton, {pos: JSX.AttributeValues<CCPoint>}>, text: string | undefined, parameters: JSX.ParameterElements[]): CCView {
+    const pos: number[] = attrs.pos.split(" ").map(n => tonumber(n)) as number[];
+    if (pos.length < 2) throw "Bad pos attribute in JSX code";
+    let retval = new CCRadioButton({x: pos[0], y: pos[1]}, text ?? "");
+    retval.loadJSXAttributes(attrs);
+    return retval;
 }
