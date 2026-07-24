@@ -2,6 +2,7 @@ import CCSegmentedButton from "CCKit2/CCSegmentedButton";
 import CCView from "CCKit2/CCView";
 import { CCColor, CCPoint, CCRect, CCRectIntersection } from "CCKit2/CCTypes";
 import CCGraphicsContext from "CCKit2/CCGraphicsContext";
+import { JSX } from "CCKit2/CCJSX";
 
 /**
  * A tab view allows switching between multiple tabbed views in a single parent
@@ -74,6 +75,12 @@ export default class CCTabView extends CCView {
         this.subviews = [this.selector, this.contentViews[0]];
     }
 
+    public loadJSXAttributes(attrs: JSX.AttributesFor<CCTabView>): void {
+        super.loadJSXAttributes(attrs);
+        if (attrs.selectedView !== undefined) this.selectedView = typeof attrs.selectedView === "number" ? attrs.selectedView : parseInt(attrs.selectedView);
+        if (attrs.borderColor !== undefined) this._borderColor = typeof attrs.borderColor === "number" ? attrs.borderColor : CCColor[attrs.borderColor];
+    }
+
     private selectView(index: number): void {
         this._selectedView = index;
         this.subviews = [this.selector, this.contentViews[index]];
@@ -136,4 +143,28 @@ export default class CCTabView extends CCView {
             ctx.drawTextInverted({x: this.frame.width, y: y}, string.char(0x95));
         }
     }
+}
+
+/**
+ * Creates a new JSX element.
+ * @param attrs The attributes for the element
+ * @returns The new element
+ */
+export function JSX(attrs: JSX.AttributesFor<CCTabView, {frame: JSX.AttributeValues<CCRect>}>, text: string | undefined, parameters: JSX.ParameterElements[]): CCView {
+    const f: number[] = attrs.frame.split(" ").map(n => tonumber(n)) as number[];
+    if (f.length < 4) throw "Bad frame attribute in JSX code";
+    const tabParameters = parameters.filter(p => p.customElement === "tab");
+    const tabs = tabParameters.map(p => p.attrs.name);
+    let retval = new CCTabView({x: f[0], y: f[1], width: f[2], height: f[3]}, tabs);
+    retval.loadJSXAttributes(attrs);
+    for (const [i, p] of ipairs(tabParameters)) {
+        const view = retval.contentViewAt(i-1);
+        view.loadJSXAttributes(p.attrs);
+        for (const v of p.children) {
+            if (v instanceof CCView) {
+                view.addSubview(v);
+            }
+        }
+    }
+    return retval;
 }

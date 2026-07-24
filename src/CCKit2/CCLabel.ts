@@ -1,6 +1,7 @@
 import { CCColor, CCPoint, CCRect } from "CCKit2/CCTypes";
 import CCView from "CCKit2/CCView";
 import CCGraphicsContext from "CCKit2/CCGraphicsContext";
+import { JSX } from "CCKit2/CCJSX";
 
 /**
  * A label displays a single line of text without wrapping.  
@@ -41,9 +42,19 @@ export default class CCLabel extends CCView {
      * @param position The position of the label
      * @param text The text to show in the label
      */
-    constructor(position: CCPoint, text: string) {
-        super({x: position.x, y: position.y, width: text.length, height: 1})
-        this._text = text;
+    public constructor(position: CCPoint, text: string) {
+        super({x: position.x, y: position.y, width: text.length, height: 1});
+        this._text = text!;
+    }
+
+    /**
+     * Initializes a new JSX element.
+     * @param attrs The attributes for the element
+     * @internal
+     */
+    public loadJSXAttributes(attrs: JSX.AttributesFor<CCLabel, {pos?: any, outlet?: any}>): void {
+        super.loadJSXAttributes(attrs);
+        if (attrs.textColor !== undefined) this._textColor = typeof attrs.textColor === "number" ? attrs.textColor : CCColor[attrs.textColor];
     }
 
     public draw(rect: CCRect): void {
@@ -51,4 +62,17 @@ export default class CCLabel extends CCView {
         CCGraphicsContext.current!.color = this._textColor;
         CCGraphicsContext.current!.drawText({x: 1, y: 1}, this._text);
     }
+}
+
+/**
+ * Creates a new JSX element.
+ * @param attrs The attributes for the element
+ * @returns The new element
+ */
+export function JSX(attrs: JSX.AttributesFor<CCLabel, {pos: JSX.AttributeValues<CCPoint>}>, text: string | undefined, parameters: JSX.ParameterElements[]): CCView {
+    const pos: number[] = attrs.pos.split(" ").map(n => tonumber(n)) as number[];
+    if (pos.length < 2) throw "Bad pos attribute in JSX code";
+    let retval = new CCLabel({x: pos[0], y: pos[1]}, text ?? "");
+    retval.loadJSXAttributes(attrs);
+    return retval;
 }

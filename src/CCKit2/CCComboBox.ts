@@ -5,6 +5,7 @@ import CCWindow from "CCKit2/CCWindow";
 import CCButton from "CCKit2/CCButton";
 import CCView from "CCKit2/CCView";
 import CCEvent from "CCKit2/CCEvent";
+import { JSX } from "CCKit2/CCJSX";
 
 class ComboWindow extends CCWindow {
     public sendEvent(event: CCEvent): void {
@@ -101,6 +102,15 @@ export default class CCComboBox extends CCControl {
         this._selections = selections;
     }
 
+    public loadJSXAttributes(attrs: JSX.AttributesFor<CCComboBox>): void {
+        super.loadJSXAttributes(attrs);
+        if (attrs.buttonColor !== undefined) this._buttonColor = typeof attrs.buttonColor === "number" ? attrs.buttonColor : CCColor[attrs.buttonColor];
+        if (attrs.buttonActiveColor !== undefined) this._buttonActiveColor = typeof attrs.buttonActiveColor === "number" ? attrs.buttonActiveColor : CCColor[attrs.buttonActiveColor];
+        if (attrs.buttonDefaultColor !== undefined) this._buttonDefaultColor = typeof attrs.buttonDefaultColor === "number" ? attrs.buttonDefaultColor : CCColor[attrs.buttonDefaultColor];
+        if (attrs.textColor !== undefined) this._textColor = typeof attrs.textColor === "number" ? attrs.textColor : CCColor[attrs.textColor];
+        if (attrs.textDisabledColor !== undefined) this._textDisabledColor = typeof attrs.textDisabledColor === "number" ? attrs.textDisabledColor : CCColor[attrs.textDisabledColor];
+    }
+
     private open(): void {
         // TODO: screen geometry
         let start = this.convertToWindowSpace({x: 1, y: 1})
@@ -137,4 +147,19 @@ export default class CCComboBox extends CCControl {
             context.drawTextWithBackground({x: this.frame.width, y: 1}, string.char(0x1F), this._buttonDefaultColor);
         }
     }
+}
+
+/**
+ * JSX constructor.
+ * @param attrs The attributes for the element
+ * @param text The text inside the element
+ */
+export function JSX(attrs: JSX.AttributesFor<CCComboBox, {frame: JSX.AttributeValues<CCRect>}>, text: string | undefined, parameters: JSX.ParameterElements[]): CCView {
+    if (!parameters || parameters.length === 0) throw "There must be at least one <selection> tag";
+    const f: number[] = attrs.frame.split(" ").map(n => tonumber(n)) as number[];
+    if (f.length < 4) throw "Bad frame attribute in JSX code";
+    const selections = parameters.filter(p => p.customElement === "selection").map(p => p.body ?? "");
+    let retval = new CCComboBox({x: f[0], y: f[1], width: f[2], height: f[3]}, selections);
+    retval.loadJSXAttributes(attrs);
+    return retval;
 }

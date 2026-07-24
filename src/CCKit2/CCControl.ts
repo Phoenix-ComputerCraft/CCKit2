@@ -1,4 +1,5 @@
 import CCView from "CCKit2/CCView";
+import { JSX } from "CCKit2/CCJSX";
 import { CCColor, CCKey, CCRect } from "CCKit2/CCTypes";
 import CCEvent from "CCKit2/CCEvent";
 
@@ -33,6 +34,12 @@ export default class CCControl extends CCView {
     constructor(frame: CCRect, action: (this: void, sender: CCView) => void) {
         super(frame);
         this.action = action;
+    }
+
+    public loadJSXAttributes(attrs: JSX.AttributesFor<CCControl, {}>): void {
+        super.loadJSXAttributes(attrs);
+        if (attrs.isDefault !== undefined) this._isDefault = attrs.isDefault === "true" || attrs.isDefault === true;
+        if (attrs.isEnabled !== undefined) this._isEnabled = attrs.isEnabled === "true" || attrs.isEnabled === true;
     }
 
     protected isPressed: boolean = false;

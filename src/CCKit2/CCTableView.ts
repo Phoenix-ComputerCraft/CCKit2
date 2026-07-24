@@ -1,6 +1,7 @@
 import CCScrollView from "CCKit2/CCScrollView";
 import CCView from "CCKit2/CCView";
 import { CCColor, CCRect } from "CCKit2/CCTypes";
+import { JSX } from "CCKit2/CCJSX";
 import CCTableViewDataSource from "CCKit2/CCTableViewDataSource";
 import CCEvent from "CCKit2/CCEvent";
 import CCGraphicsContext from "CCKit2/CCGraphicsContext";
@@ -221,6 +222,19 @@ export default class CCTableView extends CCScrollView {
         this.update();
     }
 
+    public loadJSXAttributes(attrs: JSX.AttributesFor<CCTableView, {frame: JSX.AttributeValues<CCRect>, delegate?: CCTableViewDelegate}>): void {
+        super.loadJSXAttributes(attrs);
+        if (attrs.delegate !== undefined) this.delegate = attrs.delegate;
+        if (attrs.canSelectRow !== undefined) this.canSelectRow = attrs.canSelectRow === "true" || attrs.canSelectRow === true;
+        if (attrs.canSelectMultipleRows !== undefined) this.canSelectMultipleRows = attrs.canSelectMultipleRows === "true" || attrs.canSelectMultipleRows === true;
+        if (attrs.rowColorA !== undefined) this._rowColorA = typeof attrs.rowColorA === "number" ? attrs.rowColorA : CCColor[attrs.rowColorA];
+        if (attrs.rowColorB !== undefined) this._rowColorB = typeof attrs.rowColorB === "number" ? attrs.rowColorB : CCColor[attrs.rowColorB];
+        if (attrs.selectedRowColor !== undefined) this._selectedRowColor = typeof attrs.selectedRowColor === "number" ? attrs.selectedRowColor : CCColor[attrs.selectedRowColor];
+        if (attrs.sortColumn !== undefined) this.sortColumn = typeof attrs.sortColumn === "number" ? attrs.sortColumn : parseInt(attrs.sortColumn);
+        if (attrs.sortDirection !== undefined) this.sortDirection = attrs.sortDirection === "true" || attrs.sortDirection === true;
+        this.update();
+    }
+
     /**
      * Updates the displayed data from the data source.
      */
@@ -294,4 +308,17 @@ export default class CCTableView extends CCScrollView {
             if (r == row) return true;
         return false;
     }
+}
+
+/**
+ * Creates a new JSX element.
+ * @param attrs The attributes for the element
+ * @returns The new element
+ */
+export function JSX(attrs: JSX.AttributesFor<CCTableView, {frame: JSX.AttributeValues<CCRect>, dataSource: CCTableViewDataSource, delegate?: CCTableViewDelegate}>, text: string | undefined, parameters: JSX.ParameterElements[]): CCView {
+    const f: number[] = attrs.frame.split(" ").map(n => tonumber(n)) as number[];
+    if (f.length < 4) throw "Bad frame attribute in JSX code";
+    let retval = new CCTableView({x: f[0], y: f[1], width: f[2], height: f[3]}, attrs.dataSource);
+    retval.loadJSXAttributes(attrs);
+    return retval;
 }

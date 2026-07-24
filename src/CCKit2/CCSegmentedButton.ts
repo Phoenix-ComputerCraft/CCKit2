@@ -1,5 +1,6 @@
 import CCView from "CCKit2/CCView";
 import { CCColor, CCRect } from "CCKit2/CCTypes";
+import { JSX } from "CCKit2/CCJSX";
 import CCEvent from "CCKit2/CCEvent";
 import CCGraphicsContext from "CCKit2/CCGraphicsContext";
 
@@ -108,6 +109,18 @@ export default class CCSegmentedButton extends CCView {
         this._buttonCount = buttons.length;
         this.action = action;
         this.calculateButtons();
+    }
+
+    public loadJSXAttributes(attrs: JSX.AttributesFor<CCSegmentedButton, {frame: JSX.AttributeValues<CCRect>}>): void {
+        super.loadJSXAttributes(attrs);
+        if (attrs.isEnabled !== undefined) this._isEnabled = attrs.isEnabled === "true" || attrs.isEnabled === true;
+        if (attrs.buttonColor !== undefined) this._buttonColor = typeof attrs.buttonColor === "number" ? attrs.buttonColor : CCColor[attrs.buttonColor];
+        if (attrs.buttonActiveColor !== undefined) this._buttonActiveColor = typeof attrs.buttonActiveColor === "number" ? attrs.buttonActiveColor : CCColor[attrs.buttonActiveColor];
+        if (attrs.buttonSelectedColor !== undefined) this._buttonSelectedColor = typeof attrs.buttonSelectedColor === "number" ? attrs.buttonSelectedColor : CCColor[attrs.buttonSelectedColor];
+        if (attrs.textColor !== undefined) this._textColor = typeof attrs.textColor === "number" ? attrs.textColor : CCColor[attrs.textColor];
+        if (attrs.textDisabledColor !== undefined) this._textDisabledColor = typeof attrs.textDisabledColor === "number" ? attrs.textDisabledColor : CCColor[attrs.textDisabledColor];
+        if (attrs.textSelectedColor !== undefined) this._textSelectedColor = typeof attrs.textSelectedColor === "number" ? attrs.textSelectedColor : CCColor[attrs.textSelectedColor];
+        if (attrs.selectedButton !== undefined) this.selectedButton = typeof attrs.selectedButton === "number" ? attrs.selectedButton : parseInt(attrs.selectedButton);
     }
 
     /**
@@ -252,4 +265,18 @@ export default class CCSegmentedButton extends CCView {
         this.setNeedsDisplay();
         this.action(this, this._selectedButton);
     }
+}
+
+/**
+ * Creates a new JSX element.
+ * @param attrs The attributes for the element
+ * @returns The new element
+ */
+export function JSX(attrs: JSX.AttributesFor<CCSegmentedButton, {frame: JSX.AttributeValues<CCRect>, action: CCSegmentedButton["action"]}>, text: string | undefined, parameters: JSX.ParameterElements[]): CCView {
+    const f: number[] = attrs.frame.split(" ").map(n => tonumber(n)) as number[];
+    if (f.length < 4) throw "Bad frame attribute in JSX code";
+    const buttons = parameters.filter(p => p.customElement === "button").map(p => p.body ?? "");
+    let retval = new CCSegmentedButton({x: f[0], y: f[1], width: f[2], height: f[3]}, buttons, attrs.action);
+    retval.loadJSXAttributes(attrs);
+    return retval;
 }

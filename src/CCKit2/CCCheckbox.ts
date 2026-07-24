@@ -1,6 +1,8 @@
 import { CCColor, CCPoint, CCRect } from "CCKit2/CCTypes";
 import CCGraphicsContext from "CCKit2/CCGraphicsContext";
 import CCButton from "CCKit2/CCButton";
+import { JSX } from "CCKit2/CCJSX";
+import CCView from "CCKit2/CCView";
 
 /**
  * A checkbox is a type of button that is either on or off.  
@@ -37,9 +39,15 @@ export default class CCCheckbox extends CCButton {
      * @param text The text for the button
      */
     constructor(position: CCPoint, text: string) {
-        super(position, text, () => {});
+        super(position, text!, () => {});
         let self = this;
         this.action = () => self.onClick();
+    }
+
+    public loadJSXAttributes(attrs: JSX.AttributesFor<CCCheckbox, {pos: JSX.AttributeValues<CCPoint>, onStateChange?: CCCheckbox["onStateChange"]}>): void {
+        super.loadJSXAttributes(attrs);
+        if (attrs.checked !== undefined) this._checked = attrs.checked === "true" || attrs.checked === true;
+        if (attrs.onStateChange !== undefined) this.onStateChange = attrs.onStateChange;
     }
 
     public draw(rect: CCRect): void {
@@ -59,4 +67,17 @@ export default class CCCheckbox extends CCButton {
         this.checked = !this.checked;
         if (this.onStateChange) this.onStateChange(this, this.checked);
     }
+}
+
+/**
+ * JSX constructor.
+ * @param attrs The attributes for the element
+ * @param text The text inside the element
+ */
+export function JSX(attrs: JSX.AttributesFor<CCCheckbox, {pos: JSX.AttributeValues<CCPoint>, onStateChange?: CCCheckbox["onStateChange"]}>, text: string | undefined): CCView {
+    const pos: number[] = attrs.pos.split(" ").map(n => tonumber(n)) as number[];
+    if (pos.length < 2) throw "Bad pos attribute in JSX code";
+    let retval = new CCCheckbox({x: pos[0], y: pos[1]}, text ?? "");
+    retval.loadJSXAttributes(attrs);
+    return retval;
 }

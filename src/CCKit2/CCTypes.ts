@@ -26,41 +26,31 @@ export type CCRect = CCPoint & CCSize;
  * Represents a color on screen, which can be modified with palettes.
  * @category Types
  */
-export type CCColor = number;
-/**
- * Represents a color on screen, which can be modified with palettes.
- * @category Types
- */
-export const CCColor: {[name: string]: CCColor} = {
-    white: 0,
-    orange: 1,
-    magenta: 2,
-    lightBlue: 3,
-    yellow: 4,
-    lime: 5,
-    pink: 6,
-    gray: 7,
-    grey: 7,
-    lightGray: 8,
-    lightGrey: 8,
-    cyan: 9,
-    purple: 10,
-    blue: 11,
-    brown: 12,
-    green: 13,
-    red: 14,
-    black: 15
+export enum CCColor {
+    white = 0,
+    orange = 1,
+    magenta = 2,
+    lightBlue = 3,
+    yellow = 4,
+    lime = 5,
+    pink = 6,
+    gray = 7,
+    grey = 7,
+    lightGray = 8,
+    lightGrey = 8,
+    cyan = 9,
+    purple = 10,
+    blue = 11,
+    brown = 12,
+    green = 13,
+    red = 14,
+    black = 15
 }
 /**
- * Represents a color on screen, which can be modified with palettes.
+ * Represents a colour on screen, which can be modified with palettes.
  * @category Types
  */
 export type CCColour = CCColor;
-/**
- * Represents a color on screen, which can be modified with palettes.
- * @category Types
- */
-export const CCColour = CCColor;
 
 /**
  * Holds a weak reference to an object.

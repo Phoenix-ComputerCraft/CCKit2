@@ -1,6 +1,7 @@
 import CCGraphicsContext from "CCKit2/CCGraphicsContext";
 import { CCColor, CCRect } from "CCKit2/CCTypes";
 import CCView from "CCKit2/CCView";
+import { JSX } from "CCKit2/CCJSX";
 
 /**
  * A CCProgressIndicator displays a progress bar or wheel.  
@@ -60,6 +61,14 @@ export class CCProgressIndicator extends CCView {
     public constructor(frame: CCRect, style: CCProgressIndicator.Style) {
         super(frame)
         this._style = style;
+    }
+
+    public loadJSXAttributes(attrs: JSX.AttributesFor<CCProgressIndicator, {style?: keyof typeof CCProgressIndicator.Style}>): void {
+        super.loadJSXAttributes(attrs);
+        if (attrs.activeColor !== undefined) this._activeColor = typeof attrs.activeColor === "number" ? attrs.activeColor : CCColor[attrs.activeColor];
+        if (attrs.inactiveColor !== undefined) this._inactiveColor = typeof attrs.inactiveColor === "number" ? attrs.inactiveColor : CCColor[attrs.inactiveColor];
+        if (attrs.progress !== undefined) this._progress = typeof attrs.progress === "number" ? attrs.progress : parseInt(attrs.progress);
+        if (attrs.style !== undefined) this._style = CCProgressIndicator.Style[attrs.style];
     }
 
     public draw(frame: CCRect): void {
@@ -127,3 +136,16 @@ export namespace CCProgressIndicator {
 }
 
 export default CCProgressIndicator;
+
+/**
+ * Creates a new JSX element.
+ * @param attrs The attributes for the element
+ * @returns The new element
+ */
+export function JSX(attrs: JSX.AttributesFor<CCProgressIndicator, {frame: JSX.AttributeValues<CCRect>, style: keyof typeof CCProgressIndicator.Style}>, text: string | undefined, parameters: JSX.ParameterElements[]): CCView {
+    const f: number[] = attrs.frame.split(" ").map(n => tonumber(n)) as number[];
+    if (f.length < 4) throw "Bad frame attribute in JSX code";
+    let retval = new CCProgressIndicator({x: f[0], y: f[1], width: f[2], height: f[3]}, CCProgressIndicator.Style[attrs.style]);
+    retval.loadJSXAttributes(attrs);
+    return retval;
+}

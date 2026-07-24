@@ -282,6 +282,106 @@ To pick the right `CCWindowManagerConnection` instance, CCKit2 asks the app to s
 
 The application delegate class in the skeleton above is appropriate for most applications, but it can be extended to receive those events too.
 
+## JSX
+CCKit2 includes support for defining views declaratively using JSX, which is an XML-derived syntax for creating elements directly in code. This syntax makes it much easier to see the view hierarchy at a glance.
+
+JSX is only available when using TypeScript.
+
+### Configuration
+Add the following options to your `tsconfig.json` to enable JSX:
+```json
+{
+    "configurationOptions": {
+        "jsx": "react",
+        "jsxFactory": "CCJSX.createElement"
+    },
+    "include": [
+        "./src/*.tsx"
+    ]
+}
+```
+
+Then rename any file which will have JSX elements to have the `tsx` extension, and add `import * as CCJSX from "CCKit2/CCJSX";` to the top of each of those files.
+
+### Imports
+Due to limitations in TSX and the CCKit2 codebase, it is not possible to use the class as a component type directly. This is worked around through a separately exported function component in each class module.
+
+For each view type used in the JSX hierarchy, import its `JSX` exported component and name it something familiar (for example, the view type name suffixed with `JSX`). If you also need the class itself, use the `default as` syntax.
+
+For example:
+
+```ts
+// imports the CCButton JSX component
+import {JSX as CCButtonJSX} from "CCKit2/CCButton";
+// imports both CCView and its JSX component
+import {JSX as CCViewJSX, default as CCView} from "CCKit2/CCView";
+```
+
+Then use the JSX component for all views in place of the class.
+
+### View Construction
+To implement JSX in your view controller, instead of creating the view hierarchy with code in `viewDidLoad`, you implement the `constructedView` getter which returns a JSX-constructed root view.
+
+For example, an existing application with the following code:
+```ts
+public viewDidLoad(): void {
+    super.viewDidLoad();
+    let label = new CCLabel({x: 1, y: 1}, "text");
+    label.textColor = CCColor.blue;
+    this.view.addSubview(label);
+}
+```
+
+could be transformed into a JSX view like this:
+```tsx
+public get constructedView(): CCView {
+    return <CCViewJSX frame="1 1 20 10">
+        <CCLabelJSX pos="1 1" textColor="blue">text</CCLabelJSX>
+    </CCViewJSX>
+}
+```
+
+The frame for the root view isn't important, as it's overwritten with the window's dimensions on load. Implement `preferredContentSize` to set the root view's default size.
+
+### Attributes and Children
+Attributes on elements are used for both construction parameters and other settable properties. All views require at least a position or frame, which is encoded as a string with numbers separated by spaces - XML parameters must be strings (unless imported from TS code as described below), so structures such as `CCRect` and `CCPoint` are encoded this way. Some views may require additional attributes for construction. The rest of the attributes are optional, and are fetched from the public fields on the interface that can be represented as a string.
+
+As described in JSX's syntax, attribute values and children may include TypeScript code in `{}` brackets, which will be evaluated and inserted at runtime. For convenience, values of attributes inserted this way may return their original type instead of a string.
+
+The text property of views that have one are usually a special case: these elements expect the value to be in the body of the element instead of an attribute. This also means that these views cannot have subviews - the body is only for text. For example, a label will look like `<CCLabelJSX pos="1 1">Text</CCLabelJSX>` instead of `<CCLabelJSX pos="1 1" text="Text" />`.
+
+Other elements may have any number of subviews as children, as well as `constraint` elements for declaring constraints (described below). Empty elements may be terminated with the standard XML `/>` self-termination syntax.
+
+### Constraints
+Constraints may be defined as `constraint` tag children of an element, using the same attributes as are available on `CCLayoutConstraint` objects. Each constraint has its first item implicitly set to its parent. The second item may be declared using either a view directly, an outlet to a view, or the special key `"superview"`. If using an outlet, the target element must be declared above the current view, as outlets are evaluated just-in-time in order.
+
+### Outlets and Actions
+Outlets allow you to connect created views to properties in the containing view controller. The `outlet` attribute is available on every view element, and takes the result of `CCViewController.outlet(key: string)` as a value.
+
+To connect a view to the view controller, define a public property on the class with an optional type of the view's class (`!` recommended). Then assign the `outlet` attribute to the result of `this.outlet` called with the name of the property as a string. For example:
+
+```tsx
+public label!: CCLabel; // will be connected to the label below
+// ...
+<CCLabelJSX pos="1 1" outlet={this.outlet("label")}>Text</CCLabelJSX>
+```
+
+Once the root view is loaded, the property will be assigned with the view with the outlet. Future methods (including `viewDidLoad`) can use the property as normal.
+
+CCKit2's JSX implementation includes strong typing to enforce outlet connections. The `outlet` attribute will cause an error if the property name doesn't exist on the view controller, or if the property is the wrong type.
+
+Actions function similarly, but in reverse: actions are bindings to methods in the view controller which you can pass to a view. Views may define one or more action attributes, which take the result of `CCViewController.action(method: Function)`. Unlike outlets, the action method takes the method to call directly, not the name - this allows enforcing the type of the method the same way that outlets do.
+
+This example demonstrates connecting an action to a button (which is required by `CCButton`'s attribute list):
+
+```tsx
+public pressed(sender: CCView): void { // sender is optional
+    // do thing...
+}
+// ...
+<CCButtonJSX pos="1 1" action={this.action(this.pressed)}>Button</CCButtonJSX>
+```
+
 ## Next Steps
 Full documentation on all of the classes available in CCKit2 is available [on the website](https://phoenix-computercraft.github.io/CCKit2/). The classes are categorized by their type, with the Views category containing all visual elements and related classes. Look through the fields and methods of each class to discover how to use them.
 

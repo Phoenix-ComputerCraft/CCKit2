@@ -6,7 +6,7 @@
     "./CCKit2/*": "./src/CCKit2/*.ts"
   },
   "scripts": {
-    "build": "tstl; node mklib.js",
+    "build": "tstl && node mklib.js",
     "doc": "typedoc"
   },
   "repository": {

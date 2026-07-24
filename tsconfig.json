@@ -3,7 +3,8 @@
     "compilerOptions": {
         "target": "ESNext",
         "lib": ["ESNext"],
-        "moduleResolution": "node",
+        "moduleResolution": "nodenext",
+        "module": "nodenext",
         "strict": true,
         "typeRoots": ["./types", "./node_modules"],
         "types": ["@jackmacwindows/lua-types/cc"],
@@ -14,7 +15,9 @@
         "rootDir": "src",
         "outDir": "bin",
         "declaration": true,
-        "removeComments": false
+        "removeComments": false,
+        "jsx": "react",
+        "jsxFactory": "CCJSX.createElement"
     },
     "tstl": {
         "luaTarget": "CC",
@@ -27,6 +30,7 @@
     },
     "include": [
         "./src/CCKit2/*.ts",
-        "./src/example/*.ts"
+        "./src/example/*.ts",
+        "./src/example/*.tsx"
     ]
 }

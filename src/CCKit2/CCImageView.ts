@@ -1,6 +1,7 @@
 import CCView from "CCKit2/CCView";
 import CCImage from "CCKit2/CCImage";
 import { CCPoint, CCRect } from "CCKit2/CCTypes";
+import { JSX } from "CCKit2/CCJSX";
 import CCGraphicsContext from "CCKit2/CCGraphicsContext";
 
 /**
@@ -30,4 +31,17 @@ export default class CCImageView extends CCView {
     public draw(rect: CCRect): void {
         CCGraphicsContext.current!.drawImage(this._image, {x: 1, y: 1});
     }
+}
+
+/**
+ * Creates a new JSX element.
+ * @param attrs The attributes for the element
+ * @returns The new element
+ */
+export function JSX(attrs: JSX.AttributesFor<CCImageView, {pos: JSX.AttributeValues<CCPoint>, image: CCImage}>, text: string | undefined, parameters: JSX.ParameterElements[]): CCView {
+    const pos: number[] = attrs.pos.split(" ").map(n => tonumber(n)) as number[];
+    if (pos.length < 2) throw "Bad pos attribute in JSX code";
+    let retval = new CCImageView({x: pos[0], y: pos[1]}, attrs.image);
+    retval.loadJSXAttributes(attrs);
+    return retval;
 }

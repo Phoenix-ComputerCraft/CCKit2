@@ -5,6 +5,7 @@ import CCGraphicsContext from "CCKit2/CCGraphicsContext";
 import CCLayoutConstraint from "CCKit2/CCLayoutConstraint";
 import CCEvent from "CCKit2/CCEvent";
 import CCMenu from "CCKit2/CCMenu";
+import { JSX, getColor } from "CCKit2/CCJSX";
 
 function addLayoutRow(rows: CCRect[][], constants: number[], size: number, firstOffset: number, firstValues: CCRect, secondOffset: number|undefined, secondValues: CCRect|undefined, constant: number): void {
     let row: CCRect[] = [];
@@ -91,6 +92,20 @@ export default class CCView extends CCResponder {
     public constructor(frame: CCRect) {
         super();
         this._frame = frame;
+    }
+
+    /**
+     * Loads properties from a JSX attribute map. Override this to implement
+     * attributes in JSX elements. Remember to call the super implementation!
+     * @param attrs The attributes given in the element
+     * @internal
+     */
+    public loadJSXAttributes(attrs: JSX.AttributesFor<CCView, {frame?: any, outlet?: any}>): void {
+        if (attrs.acceptsFirstResponder !== undefined) this.acceptsFirstResponder = attrs.acceptsFirstResponder === "true" || attrs.acceptsFirstResponder === true;
+        if (attrs.backgroundColor !== undefined && attrs.backgroundColor !== "") this._backgroundColor = getColor(attrs.backgroundColor);
+        if (attrs.isFocused !== undefined) this.isFocused = attrs.isFocused === "true" || attrs.isFocused === true;
+        if (attrs.isHidden !== undefined) this.isHidden = attrs.isHidden === "true" || attrs.isHidden === true;
+        if (attrs.userInteractionEnabled !== undefined) this.userInteractionEnabled = attrs.userInteractionEnabled === "true" || attrs.userInteractionEnabled === true;
     }
 
     /**
@@ -467,7 +482,7 @@ export default class CCView extends CCResponder {
      */
     public setNeedsLayout(sender: CCView, previous: CCView): void {
         for (const constraint of this.constraints) {
-            if (constraint.firstItem === sender || constraint.secondItem === sender) {
+            if (constraint.firstItem === sender || constraint.secondItem === sender || (constraint.secondItem === "superview" && sender === this.superview)) {
                 this.needsLayout = true;
                 break;
             }
@@ -545,18 +560,20 @@ export default class CCView extends CCResponder {
                     let offset2: number|undefined = undefined;
                     let value2: CCRect|undefined = undefined;
                     let constantModifier: number = 0;
-                    if (constraint.secondItem !== undefined && constraint.secondAttribute !== CCLayoutConstraint.Attribute.NotAnAttribute) {
-                        if (views.has(constraint.secondItem)) {
-                            offset2 = views.get(constraint.secondItem);
+                    let secondItem = constraint.secondItem;
+                    if (secondItem === "superview") secondItem = this.superview;
+                    if (secondItem !== undefined && constraint.secondAttribute !== CCLayoutConstraint.Attribute.NotAnAttribute) {
+                        if (views.has(secondItem)) {
+                            offset2 = views.get(secondItem);
                         } else {
                             offset2 = nextOffset;
                             nextOffset = nextOffset + 1;
-                            views.set(constraint.secondItem, offset2);
+                            views.set(secondItem, offset2);
                             for (let row of rows) row.push({x: 0, y: 0, width: 0, height: 0});
                         }
                         let isSuperview: boolean = false;
-                        if (constraint.firstItem.superview === constraint.secondItem) isSuperview = true;
-                        else if (constraint.firstItem.superview !== constraint.secondItem.superview)
+                        if (constraint.firstItem.superview === secondItem) isSuperview = true;
+                        else if (constraint.firstItem.superview !== secondItem.superview)
                             throw "Found invalid constraint, constraints only valid between a view and its parent or siblings";
                         value2 = {x: 0, y: 0, width: 0, height: 0};
                         switch (constraint.secondAttribute) {
@@ -610,7 +627,7 @@ export default class CCView extends CCResponder {
                         }
                     }
                     addLayoutRow(rows, constants, nextOffset, offset, value1, offset2, value2, constraint.constant + constantModifier);
-                    if (constraint.secondItem !== undefined) nextOffset = constraint.secondItem.layoutConstraints(views, rows, constants, visited, nextOffset);
+                    if (secondItem !== undefined) nextOffset = secondItem.layoutConstraints(views, rows, constants, visited, nextOffset);
                 } else {
                     // TODO: implement inequalities
                 }
@@ -792,4 +809,30 @@ export default class CCView extends CCResponder {
             this.window.showMenu(event.locationInWindow!, menu);
         } else return super.rightMouseDown(event);
     }
+}
+
+/**
+ * Creates a new JSX element.
+ * @param attrs The attributes for the element
+ */
+export function JSX(attrs: JSX.AttributesFor<CCView, {frame: JSX.AttributeValues<CCRect>}>, text: string | undefined, parameters: JSX.ParameterElements[]): CCView {
+    const f: number[] = attrs.frame.split(" ").map(n => tonumber(n)) as number[];
+    if (f.length < 4) throw "Bad frame attribute in JSX code";
+    let retval = new CCView({x: f[0], y: f[1], width: f[2], height: f[3]});
+    retval.loadJSXAttributes(attrs);
+    return retval;
+}
+
+/**
+ * Creates a new JSX element based on a generic CCView subclass.
+ * This subclass must be constructed with a single frame parameter.
+ * For custom attributes to be recognized, implement the `loadJSXAttributes` method.
+ * @param attrs The attributes for the element - `type` attribute holds class
+ */
+export function GenericJSX<T extends CCView>(attrs: JSX.AttributesFor<T, {frame: JSX.AttributeValues<CCRect>, type: new (frame: CCRect) => T}>, text: string | undefined, parameters: JSX.ParameterElements[]): T {
+    const f: number[] = attrs.frame.split(" ").map(n => tonumber(n)) as number[];
+    if (f.length < 4) throw "Bad frame attribute in JSX code";
+    let retval = new attrs.type({x: f[0], y: f[1], width: f[2], height: f[3]});
+    retval.loadJSXAttributes(attrs);
+    return retval;
 }

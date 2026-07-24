@@ -1,5 +1,6 @@
 import CCView from "CCKit2/CCView";
 import { CCColor, CCKey, CCPoint, CCRect } from "CCKit2/CCTypes";
+import { JSX } from "CCKit2/CCJSX";
 import CCGraphicsContext from "CCKit2/CCGraphicsContext";
 import CCEvent from "CCKit2/CCEvent";
 import CCMenu from "CCKit2/CCMenu";
@@ -81,6 +82,15 @@ export default class CCTextField extends CCView {
     constructor(frame: CCRect) {
         super(frame);
         this.backgroundColor = CCColor.lightGray;
+    }
+
+    public loadJSXAttributes(attrs: JSX.AttributesFor<CCTextField, {frame: JSX.AttributeValues<CCRect>}>): void {
+        super.loadJSXAttributes(attrs);
+        if (attrs.placeholderText !== undefined) this._placeholderText = attrs.placeholderText;
+        if (attrs.textColor !== undefined) this._textColor = typeof attrs.textColor === "number" ? attrs.textColor : CCColor[attrs.textColor];
+        if (attrs.disabledTextColor !== undefined) this._disabledTextColor = typeof attrs.disabledTextColor === "number" ? attrs.disabledTextColor : CCColor[attrs.disabledTextColor];
+        if (attrs.isEnabled !== undefined) this._isEnabled = attrs.isEnabled === "true" || attrs.isEnabled === true;
+        if (attrs.isSecureTextEntry !== undefined) this._isSecureTextEntry = attrs.isSecureTextEntry === "true" || attrs.isSecureTextEntry === true;
     }
 
     public becomeFirstResponder(): boolean {
@@ -167,4 +177,18 @@ export default class CCTextField extends CCView {
         }
         this.setNeedsDisplay();
     }
+}
+
+/**
+ * Creates a new JSX element.
+ * @param attrs The attributes for the element
+ * @returns The new element
+ */
+export function JSX(attrs: JSX.AttributesFor<CCTextField, {frame: JSX.AttributeValues<CCRect>}>, text: string | undefined, parameters: JSX.ParameterElements[]): CCView {
+    const f: number[] = attrs.frame.split(" ").map(n => tonumber(n)) as number[];
+    if (f.length < 4) throw "Bad frame attribute in JSX code";
+    let retval = new CCTextField({x: f[0], y: f[1], width: f[2], height: f[3]});
+    if (text !== undefined) retval.text = text;
+    retval.loadJSXAttributes(attrs);
+    return retval;
 }
